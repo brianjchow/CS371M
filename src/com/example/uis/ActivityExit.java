@@ -18,7 +18,7 @@ import android.widget.Button;
 
 
 
-public class ExitActivity extends ActionBarActivity implements View.OnClickListener{
+public class ActivityExit extends ActionBarActivity implements View.OnClickListener{
 
 
 

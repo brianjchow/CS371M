@@ -124,7 +124,7 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 	}
 
 	public void exit() {
-		startActivityForResult(new Intent(this, ExitActivity.class), 0);
+		startActivityForResult(new Intent(this, ActivityExit.class), 0);
 	}
 
 	public void getRoomRec() {

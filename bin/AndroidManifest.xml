@@ -41,7 +41,7 @@
             android:label="@string/title_activity_find_room_later" >
         </activity>
         <activity
-            android:name=".ExitActivity"
+            android:name=".ActivityExit"
             android:label="@string/title_activity_exit" >
         </activity>
         
