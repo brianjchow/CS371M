@@ -67,19 +67,33 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			if (has_network_cxn) {
+				// cxn switched off while reading; go to waiting screen
+			}
+			else {
+				// cxn switched on; commence reading
+			}
 			set_network_state();
 		}
 	}
 	
+	// http://stackoverflow.com/questions/9434235/android-i-want-to-set-listener-to-listen-on-wireless-state-can-anyone-help-me-w
 	private void set_network_state() {
 		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo net_info = manager.getActiveNetworkInfo();
 		if (net_info != null && (net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE)) {
-			Log.d(TAG, "Wifi/mobile network cxn enabled");
+			if (net_info.isConnected() || net_info.isConnectedOrConnecting()) {
+				
+			}
+			else {
+				Log.d(TAG, "Wifi/mobile network cxn may be enabled, but it isn't connected");
+			}
+			
+			Log.d(TAG, "Wifi/mobile network cxn enabled, not necessarily connected");
 			has_network_cxn = true;
 		}
 		else {
-			Log.d(TAG, "Wifi/mobile network cxn disabled");
+			Log.d(TAG, "Wifi/mobile network cxn disabled, not necessarily connected");
 			has_network_cxn = false;
 		}
 	}

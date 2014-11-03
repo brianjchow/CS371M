@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class ActivityRoomRec extends ActionBarActivity implements View.OnClickListener{
+public class ActivityRoomRec extends ActionBarActivity implements View.OnClickListener {
 
 	private final String TAG = "RoomRecActivity";
 	
@@ -62,10 +62,6 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 		if (!recommendation.equals(Constants.NO_ROOMS_AVAIL_MSG)) {
 			String temp = new Location(recommendation).get_room().replaceAll("\\.", "");
 			int res_id = getResId("gdc_" + temp, R.drawable.class);
-//			Log.d(TAG, "trying to get " + "gdc_" + temp);
-//			Log.d(TAG, recommendation + "; found room; changing background to " + temp);
-//			Log.d(TAG, "res id is " + res_id);
-			
 			if (res_id != -1) {
 				background.setBackgroundResource(res_id);
 			}
@@ -75,16 +71,6 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 		}
 	}
 
-//	private void search_now() {
-//		setContentView(R.layout.activity_find_room);
-//		ohkay = (Button)findViewById(R.id.ohkay);
-//		newRoom = (Button)findViewById(R.id.new_Room);
-//		ohkay.setOnClickListener(this);
-//		newRoom.setOnClickListener(this);
-//		recommendation = new Query().search();
-//		setTextViewInfo();
-//	}
-	
 	// http://stackoverflow.com/questions/4427608/android-getting-resource-id-from-string
 	private int getResId(String var_name, Class<?> c) {
 		int id = -1;

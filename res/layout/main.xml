@@ -19,7 +19,7 @@
         android:layout_marginBottom="103dp"
         android:layout_marginRight="10dp"        
         android:background="#1975FF"
-        android:text="Find a Room Now!" />
+        android:text="@string/find_room_now" />
 
     <Button
         android:id="@+id/find_room_for_later"
@@ -28,7 +28,7 @@
         android:layout_alignTop="@+id/find_room_now"
         android:layout_toRightOf="@+id/find_room_now"
         android:background="#1975FF"
-        android:text="Find a Room for Later!" />
+        android:text="@string/find_room_later" />
     
 
     <EditText
@@ -42,5 +42,5 @@
         android:layout_marginBottom="106dp"
         android:textSize="48dp"
         android:background="#1975FF"
-        android:text="GDC STUDYHALL" />
+        android:text="@string/app_name_caps" />
 </RelativeLayout>

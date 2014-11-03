@@ -46,10 +46,7 @@ public class Query implements Parcelable {
 		this.start_date = start_date;
 		this.duration = Constants.DEFAULT_QUERY_DURATION;
 
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(start_date);
-		calendar.add(Calendar.MINUTE, this.duration);
-		this.end_date = calendar.getTime();
+		set_end_date();		// set this.end_date
 		
 		this.options = new HashMap<String, Object>(10);
 		this.options.put(Constants.CAPACITY, Integer.valueOf(0));
@@ -414,13 +411,7 @@ public class Query implements Parcelable {
 		}
 		
 		this.duration = duration;
-		
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(this.start_date);
-		calendar.add(Calendar.MINUTE, duration);
-		
-		// automatically set new end date according to new duration
-		this.end_date = calendar.getTime();
+		set_end_date();		// automatically set new end date according to new duration
 		
 		return true;
 	}
@@ -530,10 +521,7 @@ public class Query implements Parcelable {
 	}
 	
 	protected boolean set_start_time(int hour, int minute) {
-		if (hour < 0 || hour > 23) {
-			return false;
-		}
-		else if (minute < 0 || minute > 60) {
+		if (hour < 0 || hour > 23 || minute < 0 || minute > 60) {
 			return false;
 		}
 		

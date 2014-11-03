@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">GDC Study Hall</string>
+    <string name = "app_name_caps">GDC STUDY HALL</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name = "title_activity_main">MainActivity</string>
@@ -10,4 +11,44 @@
     <string name="title_activity_exit">Quit</string>
     <string name="title_activity_load_csv">LoadCSVActivity</string>
 
+    <!-- Load CSV -->
+    <string name = "loading_msg">Loading...</string>
+    <string name = "need_cxn_msg">Get yoself a wifi/mobile connection</string>
+    
+    <!-- Main -->
+    <string name = "find_room_now">Find a room now!</string>
+    <string name = "find_room_later">Find a room later!</string>
+    
+    <!-- Number picker dialogs -->
+    <string name = "cancel">Cancel</string>
+    <string name = "set">Set</string>
+    
+    <!-- Load CSV failure dialogs -->
+    <string name = "load_error_msg">Unknown error during loading.\n\nProceeding may cause incorrect or incomplete search results.\n\nContinue/restart/abort?</string>
+    <string name = "continue_msg">Continue</string>
+    <string name = "restart">Restart</string>
+    <string name = "abort">Abort</string>
+    
+    <!-- Find room activity -->
+    <string name = "ok">OK</string>
+    <string name = "new_room">New room</string>
+    <string name = "new_room_caps">NEW ROOM</string>
+    <string name = "try_room">Try room</string>
+    <string name = "try_room_caps">TRY ROOM</string>
+    
+    <!-- Find room later activity -->
+    <string name = "set_start_date">Set start date</string>
+    <string name = "set_start_time">Set start time</string>
+    <string name = "set_minimum_duration">Set minimum duration</string>
+    <string name = "set_minimum_capacity">Set minimum capacity</string>
+    <string name = "power_plugs_question">Is you need power plugs for erryone?</string>
+    <string name = "get_room">Get room</string>
+    <string name = "get_room_enthusiastic">Get room!</string>
+    <string name = "current_query">Current query:</string>
+    
+    <!-- Exit activity -->
+    <string name = "yes">Yes</string>
+    <string name = "no">No</string>
+    <string name = "quit_question">Are you sure you want to quit?</string>
+    
 </resources>

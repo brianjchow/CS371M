@@ -14,7 +14,7 @@
         android:id="@+id/dateButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Set start date" />
+        android:text="@string/set_start_date" />
 
     <Button
         android:id="@+id/timeButton"
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/dateButton"
         android:layout_marginTop="20dp"
-        android:text="Set start time" />
+        android:text="@string/set_start_time" />
 	
 	<Button
 	    android:id = "@+id/min_duration"
@@ -30,7 +30,7 @@
 	    android:layout_height = "wrap_content"
         android:layout_below="@+id/timeButton"
         android:layout_marginTop="20dp"
-	    android:text = "Set minimum duration" />
+	    android:text = "@string/set_minimum_duration" />
             	
 	<Button
 	    android:id = "@+id/min_capacity"
@@ -38,7 +38,7 @@
 	    android:layout_height = "wrap_content"
         android:layout_below="@+id/min_duration"
         android:layout_marginTop="20dp"
-	    android:text = "Set minimum capacity" />
+	    android:text = "@string/set_minimum_capacity" />
             
 	<CheckBox
         android:id="@+id/has_power"
@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/min_capacity"
         android:layout_marginTop="20dp"
-        android:text="Is you need power plugs for erryone?"
+        android:text="@string/power_plugs_question"
         android:textSize="15sp"
         android:checked="false" />
 
@@ -58,8 +58,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:background="#1975FF"
-        android:text="Get room!"
-        android:textSize="36dp" />
+        android:text="@string/get_room_enthusiastic"
+        android:textSize="36sp" />
     
     <TextView
         android:id = "@+id/this_query"
@@ -67,7 +67,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/get_Room"
         android:layout_marginTop="20dp"
-        android:text = "Current query:"
+        android:text = "@string/current_query"
         android:textSize="12sp"
         />
 

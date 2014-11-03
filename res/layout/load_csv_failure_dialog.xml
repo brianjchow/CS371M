@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text = "Unknown error during loading.\n\nProceeding may cause incorrect or incomplete search results.\n\nContinue/restart/abort?"
+        android:text = "@string/load_error_msg"
         />
     
     <LinearLayout
@@ -29,7 +29,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight = "1"
-        android:text="Continue"
+        android:text="@string/continue_msg"
         android:textSize = "12sp" />
 
     <Button
@@ -37,7 +37,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight = "1"
-        android:text="Restart"
+        android:text="@string/restart"
         android:textSize = "12sp" />
     
     <Button
@@ -45,7 +45,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight = "1"
-        android:text="Abort"
+        android:text="@string/abort"
         android:textSize = "12sp" />
             
         </LinearLayout>

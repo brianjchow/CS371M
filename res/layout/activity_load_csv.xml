@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="Loading..."
+        android:text="@string/loading_msg"
         android:textSize = "36sp"
         android:textColor = "#ffffff" />
     
@@ -24,7 +24,7 @@
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="You must have a wireless or mobile connection you dipshit"
+        android:text="@string/need_cxn_msg"
         />
 
 	<ImageView

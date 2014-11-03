@@ -21,8 +21,8 @@
         android:layout_marginBottom="103dp"
         android:layout_marginRight="10dp"        
         android:background="#1975FF"
-        android:textSize="36dp"
-        android:text="OK" />
+        android:textSize="36sp"
+        android:text="@string/ok" />
 
 
         <Button
@@ -32,7 +32,7 @@
             android:layout_alignRight="@+id/room_num"
             android:layout_below="@+id/room_num"
             android:background="#1975FF"
-            android:text="NEW ROOM"
+            android:text="@string/new_room_caps"
             android:textSize="36dp" />
         
     	<EditText
@@ -46,8 +46,8 @@
             android:editable="false"
             android:ems="10"
             android:gravity="center"
-            android:text="Try Room"
-            android:textSize="48dp" />
+            android:text="@string/try_room"
+            android:textSize="48sp" />
 
         <EditText
             android:id="@+id/room_num"
@@ -61,7 +61,7 @@
             android:ems="10"
             android:gravity="center"
             android:text="4.302"
-            android:textSize="48dp" 
+            android:textSize="48sp" 
             />
 
 
