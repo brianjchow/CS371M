@@ -34,5 +34,13 @@
         android:layout_height = "wrap_content"
         android:indeterminate = "true"
         />
+    
+	<ImageView
+	    android:id="@+id/progressSpinner"
+        android:layout_below = "@+id/loading_msg" 
+        android:layout_marginTop = "10dp"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

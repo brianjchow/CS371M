@@ -17,19 +17,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 //public class FindRoomLaterActivity extends ActionBarActivity implements View.OnClickListener {
 public class FindRoomLaterActivity extends FragmentActivity {	//  implements OnDateSetListener, TimePickerDialog.OnTimeSetListener
 
-	private final String TAG = "FindRoomLaterActivity";
+	private static final String TAG = "FindRoomLaterActivity";
+	private static final int SECS_IN_DAY = 24 * 60 * 60;
 	
-	Button getRoom;
-	int hour;
-	int minute;
-	TimePicker timePicker1;
+	private Button getRoom;
+	private int hour;
+	private int minute;
+	private TimePicker timePicker1;
 //	TextView roomRecText;
 	
 	private int selected_year;
@@ -37,6 +42,11 @@ public class FindRoomLaterActivity extends FragmentActivity {	//  implements OnD
 	private int selected_day;
 	private int selected_hour;
 	private int selected_minute;
+	private int selected_duration;
+	private int selected_capacity;
+	private boolean selected_power;
+	
+	Query this_query;	// MERGE ALL FIELDS ABOVE INTO THIS QUERY
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +59,23 @@ public class FindRoomLaterActivity extends FragmentActivity {	//  implements OnD
 		selected_day = curr_time.get(Calendar.DAY_OF_MONTH);
 		selected_hour = curr_time.get(Calendar.HOUR_OF_DAY);
 		selected_minute = curr_time.get(Calendar.MINUTE);
+		selected_duration = 60;
+		selected_capacity = 0;
+		selected_power = false;
+		this_query = new Query();
+		
+		update_query_textview();
 		
 		findViewById(R.id.dateButton).setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				Calendar calendar = Calendar.getInstance();
-				Dialog datepicker_dialog = new DatePickerDialog(FindRoomLaterActivity.this, datepicker_dialog_listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+//				Dialog datepicker_dialog = new DatePickerDialog(FindRoomLaterActivity.this, datepicker_dialog_listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+				DatePickerDialog datepicker_dialog = new DatePickerDialog(FindRoomLaterActivity.this, datepicker_dialog_listener, selected_year, selected_month - 1, selected_day);
+				if (!Constants.DEBUG) {
+					datepicker_dialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+				}
 				datepicker_dialog.show();
 			}
 		});
@@ -64,8 +84,9 @@ public class FindRoomLaterActivity extends FragmentActivity {	//  implements OnD
 			
 			@Override
 			public void onClick(View v) {
-				Calendar calendar = Calendar.getInstance();
-				Dialog timepicker_dialog = new TimePickerDialog(FindRoomLaterActivity.this, timepicker_dialog_listener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+//				Calendar calendar = Calendar.getInstance();
+//				Dialog timepicker_dialog = new TimePickerDialog(FindRoomLaterActivity.this, timepicker_dialog_listener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+				Dialog timepicker_dialog = new TimePickerDialog(FindRoomLaterActivity.this, timepicker_dialog_listener, selected_hour, selected_minute, true);
 				timepicker_dialog.show();
 			}
 		});
@@ -82,6 +103,90 @@ public class FindRoomLaterActivity extends FragmentActivity {	//  implements OnD
 //            }
 //        }
 		
+		findViewById(R.id.min_duration).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				show_duration_picker();
+			}
+		});
+		
+		findViewById(R.id.min_capacity).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				show_capacity_picker();
+				
+				// http://stackoverflow.com/questions/11800589/number-picker-dialog
+//				LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+////				View np_view = inflater.inflate(R.layout.numberpicker_layout, null);
+//				AlertDialog.Builder builder = new AlertDialog.Builder(FindRoomLaterActivity.this);
+//				Dialog dialog = builder
+//					.setTitle("Set minimum capacity")
+////					.setView(np_view)
+//					.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//						public void onClick(DialogInterface dialog, int whichButton) {
+//							
+//						}
+//					})
+//					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//						public void onClick(DialogInterface dialog, int whichButton) {
+//							
+//						}
+//					})
+//					.create();
+//				
+//				dialog.show();
+			}
+		});
+		
+//		findViewById(R.id.min_capacity).requestFocus();
+//		findViewById(R.id.min_capacity).setOnFocusChangeListener(new OnFocusChangeListener() {
+//
+//			private EditText set_capacity = (EditText) findViewById(R.id.min_capacity);
+//			private InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//			
+//			@Override
+//			public void onFocusChange(View v, boolean hasFocus) {
+//				if (hasFocus) {
+//					imm.showSoftInput(set_capacity, InputMethodManager.SHOW_IMPLICIT);
+//				}
+//				else {
+//					imm.hideSoftInputFromWindow(set_capacity.getWindowToken(), 0);
+//				}
+//			}
+//		});
+		
+//		findViewById(R.id.min_capacity).setOnClickListener(new OnClickListener() {
+//
+////			private EditText set_capacity = (EditText) findViewById(R.id.min_capacity);
+////			private InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//			
+//			@Override
+//			public void onClick(View v) {
+//				getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+////				imm.showSoftInput(set_capacity, InputMethodManager.SHOW_IMPLICIT);
+//			}
+//		});
+		
+		// http://stackoverflow.com/questions/8386832/android-checkbox-listener
+		CheckBox has_power = (CheckBox) findViewById(R.id.has_power);
+		has_power.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (isChecked) {
+					selected_power = true;
+				}
+				else {
+					selected_power = false;
+				}
+//				Toast.makeText(FindRoomLaterActivity.this, "Selected power option: " + selected_power, Toast.LENGTH_SHORT).show();
+				update_this_query();
+			}
+		});
+		
 		findViewById(R.id.get_Room).setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -93,23 +198,135 @@ public class FindRoomLaterActivity extends FragmentActivity {	//  implements OnD
 	
 	private DatePickerDialog.OnDateSetListener datepicker_dialog_listener = new OnDateSetListener() {
 		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-			Toast.makeText(FindRoomLaterActivity.this, "Date selected: " + year + "/" + (monthOfYear + 1) + "/" + dayOfMonth, Toast.LENGTH_LONG).show();
+//			Toast.makeText(FindRoomLaterActivity.this, "Date selected: " + year + "/" + (monthOfYear + 1) + "/" + dayOfMonth, Toast.LENGTH_SHORT).show();
 			selected_year = year;
 			selected_month = monthOfYear + 1;
 			selected_day = dayOfMonth;
+			update_this_query();
+			
+//			long time = this_query.get_start_date().getTime();
+//			time = (time / 1000) % SECS_IN_DAY;
+//			time /= 60;
+//			int time_remaining_in_day_mins = (int) time;
+//			if (selected_duration > time_remaining_in_day_mins) {
+//				selected_duration = time_remaining_in_day_mins;
+//				update_this_query();
+//			}
 		}
 	};
 	
 	private TimePickerDialog.OnTimeSetListener timepicker_dialog_listener = new OnTimeSetListener() {
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-			Toast.makeText(FindRoomLaterActivity.this, "Time selected: " + hourOfDay + ":" + minute, Toast.LENGTH_LONG).show();
+//			Toast.makeText(FindRoomLaterActivity.this, "Time selected: " + hourOfDay + ":" + minute, Toast.LENGTH_SHORT).show();
 			selected_hour = hourOfDay;
 			selected_minute = minute;
+			update_this_query();
 		}
 	};
+	
+	// http://stackoverflow.com/questions/17805040/how-to-create-a-number-picker-dialog
+	// http://stackoverflow.com/questions/16968111/android-numberpicker-doesn%C2%B4t-work
+	private void show_capacity_picker() {
+		final Dialog dialog = new Dialog(FindRoomLaterActivity.this);
+		dialog.setTitle("Set minimum capacity (0 = no preference)");
+		dialog.setContentView(R.layout.numberpicker_layout);
+		Button set_button = (Button) dialog.findViewById(R.id.set_button);
+		Button cancel_button = (Button) dialog.findViewById(R.id.cancel_button);
+		
+		final NumberPicker np = (NumberPicker) dialog.findViewById(R.id.number_picker);
+		String[] nums = new String[51];
+		for (int i = 0; i < nums.length; i++) {
+			nums[i] = Integer.toString(i);
+		}
+		
+		np.setMinValue(0);
+		np.setMaxValue(nums.length - 1);
+		np.setWrapSelectorWheel(false);
+		np.setDisplayedValues(nums);
+		np.setValue(selected_capacity);
+		np.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+			
+			@Override
+			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+//				Toast.makeText(FindRoomLaterActivity.this, "Old val: " + oldVal + "; new val: " + newVal, Toast.LENGTH_SHORT).show();
+			}
+		});
+		set_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+//				Toast.makeText(FindRoomLaterActivity.this, "Capacity selected: " + np.getValue(), Toast.LENGTH_SHORT).show();
+				selected_capacity = np.getValue();
+				update_this_query();
+				dialog.dismiss();
+			}
+		});
+		cancel_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+		
+		dialog.show();
+	}
+	
+	private void show_duration_picker() {
+		final Dialog dialog = new Dialog(FindRoomLaterActivity.this);
+		dialog.setTitle("Set minimum duration");
+		dialog.setContentView(R.layout.numberpicker_layout);
+		Button set_button = (Button) dialog.findViewById(R.id.set_button);
+		Button cancel_button = (Button) dialog.findViewById(R.id.cancel_button);
+		
+		long time = this_query.get_start_date().getTime();
+		time = (time / 1000) % SECS_IN_DAY;
+		time /= 60;
+		int time_remaining_in_day_mins = (int) time;
+		
+		time_remaining_in_day_mins = SECS_IN_DAY / 60;	// disable if limiting searches to the current day
+		
+		final NumberPicker np = (NumberPicker) dialog.findViewById(R.id.number_picker);
+		String[] nums = new String[(int) time_remaining_in_day_mins + 1];
+		for (int i = 0; i < nums.length; i++) {
+			nums[i] = Integer.toString(i + 1);
+		}
+		
+		np.setMinValue(1);
+		np.setMaxValue(time_remaining_in_day_mins);
+		np.setWrapSelectorWheel(false);
+		np.setDisplayedValues(nums);
+		np.setValue(selected_duration);
+		np.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+			
+			@Override
+			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+//				Toast.makeText(FindRoomLaterActivity.this, "Old val: " + oldVal + "; new val: " + newVal, Toast.LENGTH_SHORT).show();
+			}
+		});
+		set_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+//				Toast.makeText(FindRoomLaterActivity.this, "Duration selected: " + np.getValue(), Toast.LENGTH_SHORT).show();
+				selected_duration = np.getValue();
+				update_this_query();
+				dialog.dismiss();
+			}
+		});
+		cancel_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+		
+		dialog.show();
+	}
 
 //	@Override
-//	protected void onCreate(Bundle savedInstanceState) 
+//	protected void onCreate(Bundle savedInstanceState)
 //	{
 //		super.onCreate(savedInstanceState);
 //		setContentView(R.layout.activity_find_room_later);
@@ -168,7 +385,7 @@ public class FindRoomLaterActivity extends FragmentActivity {	//  implements OnD
 		case TIME_DIALOG_ID:
 			// set time picker as current time
 			return new TimePickerDialog(this, 
-                                        timePickerListener, hour, minute,false);
+                                        timePickerListener, hour, minute, false);
  
 		}
 		return null;
@@ -185,9 +402,12 @@ public class FindRoomLaterActivity extends FragmentActivity {	//  implements OnD
 		}
 	};
 	
-	public void getRoomRec()
-	{
-		Intent intent = new Intent(getApplicationContext(), RoomRecActivity.class);
+	private void update_query_textview() {
+		TextView temp = (TextView) findViewById(R.id.this_query);
+		temp.setText("Current query:\n" + this_query.toString());
+	}
+	
+	private void update_this_query() {
 		String hour_str = Integer.toString(selected_hour);
 		hour_str = Utilities.pad_to_len_leading_zeroes(hour_str, 2);
 		String minute_str = Integer.toString(selected_minute);
@@ -198,10 +418,25 @@ public class FindRoomLaterActivity extends FragmentActivity {	//  implements OnD
 		Log.d(TAG, "Selected time: " + selected_hour + ":" + selected_minute);
 		Log.d(TAG, "Selected " + selected_month + "/" + selected_day + "/" + selected_year + " at " + Integer.parseInt(temp));
 		
-		Query new_query = new Query(new_date);
-		intent.putExtra("this_query", new_query);
+		this_query = new Query(new_date);
 		
-		Log.d(TAG, "Transmitting parcelable to RoomRecActivity: " + new_query.toString());
+		this_query.set_duration(Integer.valueOf(selected_duration));
+		this_query.set_option_capacity(Integer.valueOf(selected_capacity));
+		if (selected_power) {
+			this_query.set_option_power(Boolean.valueOf(true));
+		}
+		
+		update_query_textview();
+	}
+	
+	public void getRoomRec() {
+
+		update_this_query();
+		
+		Intent intent = new Intent(getApplicationContext(), RoomRecActivity.class);
+		intent.putExtra("this_query", this_query);
+		
+		Log.d(TAG, "Transmitting parcelable to RoomRecActivity: " + this_query.toString());
 		
 //		startActivity(intent);
 		

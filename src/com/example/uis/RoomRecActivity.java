@@ -14,10 +14,10 @@ public class RoomRecActivity extends ActionBarActivity implements View.OnClickLi
 
 	private final String TAG = "RoomRecActivity";
 	
-	Button ohkay;
-	Button newRoom;
-	TextView roomRecText;
-	String recommendation;
+	private Button ohkay;
+	private Button newRoom;
+	private TextView roomRecText;
+	private String recommendation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,15 +57,15 @@ public class RoomRecActivity extends ActionBarActivity implements View.OnClickLi
 		setTextViewInfo();
 	}
 
-	private void search_now() {
-		setContentView(R.layout.activity_find_room);
-		ohkay = (Button)findViewById(R.id.ohkay);
-		newRoom = (Button)findViewById(R.id.new_Room);
-		ohkay.setOnClickListener(this);
-		newRoom.setOnClickListener(this);
-		recommendation = new Query().search();
-		setTextViewInfo();
-	}
+//	private void search_now() {
+//		setContentView(R.layout.activity_find_room);
+//		ohkay = (Button)findViewById(R.id.ohkay);
+//		newRoom = (Button)findViewById(R.id.new_Room);
+//		ohkay.setOnClickListener(this);
+//		newRoom.setOnClickListener(this);
+//		recommendation = new Query().search();
+//		setTextViewInfo();
+//	}
 
 	private void setTextViewInfo() {	// get the TextViews
 		roomRecText = (TextView) findViewById(R.id.room_num);
@@ -103,11 +103,14 @@ public class RoomRecActivity extends ActionBarActivity implements View.OnClickLi
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.ohkay:
-				exit();
+//				exit();
+				Intent intent = new Intent(this, MainActivity.class);
+				startActivity(intent);
+				finish();
 				break;
 			case R.id.new_Room:
 //				getRoomRec();
-				search_now();
+				search();
 				break;
 		}
 

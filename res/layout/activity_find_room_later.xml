@@ -14,34 +14,62 @@
         android:id="@+id/dateButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:text="Select Date" />
-    
-    <TimePicker
-        android:id="@+id/timePicker1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:background="#1975FF"        
-        android:layout_centerVertical="true" />
-    
+        android:text="Set start date" />
+
     <Button
         android:id="@+id/timeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dateButton"
-        android:text="Select Time" />
-    
+        android:layout_marginTop="20dp"
+        android:text="Set start time" />
+	
+	<Button
+	    android:id = "@+id/min_duration"
+	    android:layout_width = "wrap_content"
+	    android:layout_height = "wrap_content"
+        android:layout_below="@+id/timeButton"
+        android:layout_marginTop="20dp"
+	    android:text = "Set minimum duration" />
+            	
+	<Button
+	    android:id = "@+id/min_capacity"
+	    android:layout_width = "wrap_content"
+	    android:layout_height = "wrap_content"
+        android:layout_below="@+id/min_duration"
+        android:layout_marginTop="20dp"
+	    android:text = "Set minimum capacity" />
+            
+	<CheckBox
+        android:id="@+id/has_power"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/min_capacity"
+        android:layout_marginTop="20dp"
+        android:text="Is you need power plugs for erryone?"
+        android:textSize="15sp"
+        android:checked="false" />
+
     <Button
         android:id="@+id/get_Room"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/timeButton"
+        android:layout_below="@+id/has_power"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="55dp"
+        android:layout_marginTop="20dp"
         android:background="#1975FF"
         android:text="Get room!"
-        android:textSize="36dp" />    
+        android:textSize="36dp" />
+    
+    <TextView
+        android:id = "@+id/this_query"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/get_Room"
+        android:layout_marginTop="20dp"
+        android:text = "Current query:"
+        android:textSize="12sp"
+        />
 
 </RelativeLayout>
 
@@ -82,5 +110,21 @@
 
         <requestFocus />
     </EditText>
+	
+	<EditText
+	    android:id = "@+id/min_capacity"
+	    android:layout_width = "wrap_content"
+	    android:layout_height = "wrap_content"
+        android:layout_below="@+id/timeButton"
+	    android:hint = "Minimum room capacity"
+	    android:inputType = "number" />
+            
+ <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="vibrate"
+        android:layout_marginBottom="30dp"
+        android:id="@+id/checkBoxVibrate"
+        android:checked="true"/>
 
 -->
