@@ -90,7 +90,7 @@ public class ExitActivity extends ActionBarActivity implements View.OnClickListe
 
 	{
 
-		startActivityForResult(new Intent(this, FindRoomLaterActivity.class), 0);
+		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
 
 	}
 
@@ -100,7 +100,7 @@ public class ExitActivity extends ActionBarActivity implements View.OnClickListe
 
 	{
 
-		Intent intent = new Intent(getApplicationContext(),MainActivity.class );
+		Intent intent = new Intent(getApplicationContext(),ActivityMain.class );
 
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 

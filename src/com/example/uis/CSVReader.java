@@ -123,7 +123,7 @@ final class CSVReader {
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.start();
 
-		if (MainActivity.has_network_cxn && !Constants.DEBUG) {
+		if (ActivityMain.has_network_cxn && !Constants.DEBUG) {
 			Log.d(TAG, "Now reading from UTCS servers");
 //			event_strings = reader.read_csv_from_url(ALL_EVENTS_SCHEDULE);
 //			events.add(event_strings);
