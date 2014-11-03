@@ -18,7 +18,7 @@ import android.widget.ImageView;
 
 public class ActivityLoadCSV extends ActionBarActivity {
 
-	private final String TAG = "LoadCSVActivity";
+	private static final String TAG = "LoadCSVActivity";
 	
 	private boolean has_network_cxn = false;
 	
@@ -48,26 +48,12 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			Log.d(TAG, "Wifi/mobile network cxn disabled onCreate LoadCSV");
 			has_network_cxn = false;
 		}
-		
-//		if (!has_network_cxn) {
-//			findViewById(R.id.loading_msg).setVisibility(View.GONE);
-//			findViewById(R.id.loading_animation).setVisibility(View.GONE);
-//			findViewById(R.id.no_cxn_msg).setVisibility(View.VISIBLE);
-//			
-////			while (!has_network_cxn) {		// set timeout period !!!!!!!!!!!
-////				// do nothing
-////			}
-////
-////			findViewById(R.id.loading_msg).setVisibility(View.VISIBLE);
-////			findViewById(R.id.loading_animation).setVisibility(View.VISIBLE);
-////			findViewById(R.id.no_cxn_msg).setVisibility(View.GONE);
-//		}
-		
+
 		ReadFeedTask read_csv = new ReadFeedTask();
 		read_csv.execute(this);		// 4.78 seconds
 		read_csv.cancel(true);
 		
-//		boolean done = read_csv.doInBackground(this);		// only 1.52 seconds - what gives
+//		boolean done = read_csv.doInBackground(this);		// illegal, but only 1.52 seconds - what gives
 //		if (done) {
 //			startActivity(new Intent(this, MainActivity.class));
 //		}
@@ -77,25 +63,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 
 	}
 
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		// Inflate the menu; this adds items to the action bar if it is present.
-//		getMenuInflater().inflate(R.menu.load_csv, menu);
-//		return true;
-//	}
-//
-//	@Override
-//	public boolean onOptionsItemSelected(MenuItem item) {
-//		// Handle action bar item clicks here. The action bar will
-//		// automatically handle clicks on the Home/Up button, so long
-//		// as you specify a parent activity in AndroidManifest.xml.
-//		int id = item.getItemId();
-//		if (id == R.id.action_settings) {
-//			return true;
-//		}
-//		return super.onOptionsItemSelected(item);
-//	}
-	
 	public class WifiReceiver extends BroadcastReceiver {
 		
 		@Override
@@ -203,5 +170,42 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		
 		dialog.show();
 	}
+	
+/*
+		
+//		if (!has_network_cxn) {
+//			findViewById(R.id.loading_msg).setVisibility(View.GONE);
+//			findViewById(R.id.loading_animation).setVisibility(View.GONE);
+//			findViewById(R.id.no_cxn_msg).setVisibility(View.VISIBLE);
+//			
+////			while (!has_network_cxn) {		// set timeout period !!!!!!!!!!!
+////				// do nothing
+////			}
+////
+////			findViewById(R.id.loading_msg).setVisibility(View.VISIBLE);
+////			findViewById(R.id.loading_animation).setVisibility(View.VISIBLE);
+////			findViewById(R.id.no_cxn_msg).setVisibility(View.GONE);
+//		}
+		
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.load_csv, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+ */
 	
 }		// end of file
