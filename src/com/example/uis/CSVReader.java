@@ -276,6 +276,7 @@ Log.d(TAG, Character.toString((char) temp));
 	 * @return a List of Maps of Strings; each Map contains Strings for one
 	 * 		   event parsed from the CSV feed given by site (a URL)
 	 */
+	@SuppressWarnings("unused")
 	private List<HashMap<String, String>> read_csv_from_url(String site) {
 		if (site == null || site.length() <= 0) {
 			throw new IllegalArgumentException("Error: cannot read from null or empty site name, read_csv_from_url()");

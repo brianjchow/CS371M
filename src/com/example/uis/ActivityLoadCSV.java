@@ -1,5 +1,6 @@
 package com.example.uis;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,8 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 
 public class ActivityLoadCSV extends ActionBarActivity {
@@ -62,6 +65,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		
 		ReadFeedTask read_csv = new ReadFeedTask();
 		read_csv.execute(this);		// 4.78 seconds
+		read_csv.cancel(true);
 		
 //		boolean done = read_csv.doInBackground(this);		// only 1.52 seconds - what gives
 //		if (done) {
@@ -114,28 +118,41 @@ public class ActivityLoadCSV extends ActionBarActivity {
 	}
 	
 	private class ReadFeedTask extends AsyncTask<Context, Void, Boolean> {
-		private Exception exception;
+		private Exception exception = null;
 		
 		protected Boolean doInBackground(Context... context) {
+			boolean result = false;
 			try {
 				Log.d(TAG, "Now reading CSV...");
 				Constants.init(context[0]);
-				Log.d(TAG, "Now returning true after reading CSV...");
-				return Boolean.valueOf(true);
+				if (isCancelled()) {
+					result = false;
+				}
+				result = true;
 			}
 			catch (Exception e) {
 				this.exception = e;
-				return Boolean.valueOf(false);
+				result = false;
 			}
+			Log.d(TAG, "Now returning " + result + " after reading CSV...");
+			return result;
+		}
+		
+		@Override
+		protected void onCancelled(Boolean done) {
+			Log.d(TAG, "Unexpected cancellation");
+			show_failure_dialog();
 		}
 		
 		@Override
 		protected void onPostExecute(Boolean done) {
+			if (exception != null) {
+				Log.d(TAG, "Exception occurred while reading CSV");
+				show_failure_dialog();
+			}
+			
 			if (done.equals(Boolean.valueOf(true))) {
 				Log.d(TAG, "Done reading CSV, now entering MainActivity...");
-//				Intent intent = new Intent(this, MainActivity.class);
-//				startActivity(intent);
-//				startActivity(new Intent(getApplicationContext(), MainActivity.class));
 				startActivity(new Intent(mContext, ActivityMain.class));
 				finish();	// kill this activity off the stack; prevent back button from returning to this activity
 			}
@@ -146,4 +163,45 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		}
 	}
 
-}
+	private void show_failure_dialog() {
+		final Dialog dialog = new Dialog(ActivityLoadCSV.this);
+		dialog.setTitle("Load failure");
+		dialog.setContentView(R.layout.load_csv_failure_dialog);
+		dialog.setCancelable(false);
+		Button continue_button = (Button) dialog.findViewById(R.id.continue_button);
+		Button restart_button = (Button) dialog.findViewById(R.id.restart_button);
+		Button abort_button = (Button) dialog.findViewById(R.id.abort_button);
+		
+		continue_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "Failed to complete reading CSV, now entering MainActivity...");
+				startActivity(new Intent(mContext, ActivityMain.class));
+				finish();
+			}
+		});
+
+		restart_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "Failed to complete reading CSV, now restarting app...");
+				startActivity(new Intent(mContext, ActivityLoadCSV.class));
+				finish();
+			}
+		});
+
+		abort_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "Failed to complete reading CSV, now aborting...");
+				finish();
+			}
+		});
+		
+		dialog.show();
+	}
+	
+}		// end of file

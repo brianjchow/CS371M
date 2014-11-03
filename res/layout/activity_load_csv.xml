@@ -14,7 +14,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="Loading..." />
+        android:text="Loading..."
+        android:textSize = "36sp"
+        android:textColor = "#ffffff" />
     
     <TextView
         android:id = "@+id/no_cxn_msg"
@@ -24,6 +26,18 @@
         android:layout_height="wrap_content"
         android:text="You must have a wireless or mobile connection you dipshit"
         />
+
+	<ImageView
+	    android:id="@+id/progressSpinner"
+        android:layout_below = "@+id/loading_msg" 
+        android:layout_marginTop = "10dp"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
+
+<!-- 
     
     <ProgressBar
         android:id = "@+id/loading_animation"
@@ -35,12 +49,4 @@
         android:indeterminate = "true"
         />
     
-	<ImageView
-	    android:id="@+id/progressSpinner"
-        android:layout_below = "@+id/loading_msg" 
-        android:layout_marginTop = "10dp"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_centerHorizontal="true" />
-
-</RelativeLayout>
+-->

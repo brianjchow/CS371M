@@ -20,7 +20,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".LoadCSVActivity"
+            android:name=".ActivityLoadCSV"
             android:label = "@string/app_name" >
             <intent-filter>
                 <action android:name = "android.intent.action.MAIN" />
@@ -29,15 +29,15 @@
         </activity>
         
         <activity
-            android:name=".MainActivity"
+            android:name=".ActivityMain"
             android:label = "@string/title_activity_main" >
         </activity>
         <activity
-            android:name=".RoomRecActivity"
+            android:name=".ActivityRoomRec"
             android:label="@string/title_activity_find_room" >
         </activity>
         <activity
-            android:name=".FindRoomLaterActivity"
+            android:name=".ActivityFindRoomLater"
             android:label="@string/title_activity_find_room_later" >
         </activity>
         <activity

@@ -497,18 +497,66 @@ public class Query implements Parcelable {
 		}
 		
 		this.start_date = start_date;
+		set_end_date();
+		
+		return true;
+	}
+	
+	protected boolean set_start_date(int month, int day, int year) {
+		if (month < 1 || month > 12) {
+			return false;
+		}
+		else if (year < Constants.MIN_YEAR || year > Constants.MAX_YEAR) {
+			return false;
+		}
+		
+		int days_in_this_month = Constants.DAYS_IN_MONTH[month - 1];
+		if (month == 2 && Utilities.is_leap_year(year)) {
+			days_in_this_month++;
+		}
+		if (day < 1 || day > days_in_this_month) {
+			return false;
+		}
 		
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(start_date);
-		calendar.add(Calendar.MINUTE, this.duration);
+		calendar.setTime(this.start_date);
+		calendar.set(Calendar.MONTH, month - 1);
+		calendar.set(Calendar.DAY_OF_MONTH, day);
+		calendar.set(Calendar.YEAR, year);
+		this.start_date = calendar.getTime();
+		set_end_date();
 		
-		// automatically set new end date according to
-		// start_date and specified duration
-		this.end_date = calendar.getTime();
+		return true;
+	}
+	
+	protected boolean set_start_time(int hour, int minute) {
+		if (hour < 0 || hour > 23) {
+			return false;
+		}
+		else if (minute < 0 || minute > 60) {
+			return false;
+		}
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(this.start_date);
+		calendar.set(Calendar.HOUR, hour);
+		calendar.set(Calendar.MINUTE, minute);
+		this.start_date = calendar.getTime();
+		set_end_date();
 		
 		return true;
 	}
 
+	// automatically set new end date according to
+	// start_date and specified duration
+	private boolean set_end_date() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(start_date);
+		calendar.add(Calendar.MINUTE, this.duration);
+		this.end_date = calendar.getTime();
+		return true;
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#clone()
 	 */

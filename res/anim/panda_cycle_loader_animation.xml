@@ -3,16 +3,16 @@
     android:oneshot="false" >
 
     <item
-        android:drawable="@drawable/frame_000_100p"
+        android:drawable="@drawable/frame_000_200p_transparent"
         android:duration="100"/>
     <item
-        android:drawable="@drawable/frame_001_100p"
+        android:drawable="@drawable/frame_001_200p_transparent"
         android:duration="100"/>
     <item
-        android:drawable="@drawable/frame_002_100p"
+        android:drawable="@drawable/frame_002_200p_transparent"
         android:duration="100"/>
     <item
-        android:drawable="@drawable/frame_003_100p"
+        android:drawable="@drawable/frame_003_200p_transparent"
         android:duration="100"/>
     
 </animation-list>

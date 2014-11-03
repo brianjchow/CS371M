@@ -193,7 +193,7 @@ public class Utilities {
 		return time_str;
 	}
 	
-	private static boolean is_leap_year(int year) {
+	protected static boolean is_leap_year(int year) {
 		if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
 			return true;
 		}
