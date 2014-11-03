@@ -92,10 +92,9 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			try {
 				Log.d(TAG, "Now reading CSV...");
 				Constants.init(context[0]);
-				if (isCancelled()) {
-					result = false;
+				if (!isCancelled()) {
+					result = true;
 				}
-				result = true;
 			}
 			catch (Exception e) {
 				this.exception = e;
