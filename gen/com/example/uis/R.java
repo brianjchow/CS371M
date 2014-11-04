@@ -1080,66 +1080,59 @@ containing a value of this type.
         public static final int abc_textfield_searchview_right_holo_light=0x7f020056;
         public static final int atrium=0x7f020057;
         public static final int backgroundinitial=0x7f020058;
-        public static final int frame_000=0x7f020059;
-        public static final int frame_000_100p=0x7f02005a;
-        public static final int frame_000_200p_transparent=0x7f02005b;
-        public static final int frame_001=0x7f02005c;
-        public static final int frame_001_100p=0x7f02005d;
-        public static final int frame_001_200p_transparent=0x7f02005e;
-        public static final int frame_002=0x7f02005f;
-        public static final int frame_002_100p=0x7f020060;
-        public static final int frame_002_200p_transparent=0x7f020061;
-        public static final int frame_003=0x7f020062;
-        public static final int frame_003_100p=0x7f020063;
-        public static final int frame_003_200p_transparent=0x7f020064;
-        public static final int gdc_1210=0x7f020065;
-        public static final int gdc_1304=0x7f020066;
-        public static final int gdc_1406=0x7f020067;
-        public static final int gdc_2104=0x7f020068;
-        public static final int gdc_2210=0x7f020069;
-        public static final int gdc_2216=0x7f02006a;
-        public static final int gdc_2402=0x7f02006b;
-        public static final int gdc_2410=0x7f02006c;
-        public static final int gdc_2502=0x7f02006d;
-        public static final int gdc_2506=0x7f02006e;
-        public static final int gdc_2712=0x7f02006f;
-        public static final int gdc_2902=0x7f020070;
-        public static final int gdc_3100=0x7f020071;
-        public static final int gdc_3416=0x7f020072;
-        public static final int gdc_3516=0x7f020073;
-        public static final int gdc_3816=0x7f020074;
-        public static final int gdc_3828=0x7f020075;
-        public static final int gdc_4100=0x7f020076;
-        public static final int gdc_4302=0x7f020077;
-        public static final int gdc_4304=0x7f020078;
-        public static final int gdc_4416=0x7f020079;
-        public static final int gdc_4440=0x7f02007a;
-        public static final int gdc_4516=0x7f02007b;
-        public static final int gdc_4816=0x7f02007c;
-        public static final int gdc_4828=0x7f02007d;
-        public static final int gdc_5100=0x7f02007e;
-        public static final int gdc_5302=0x7f02007f;
-        public static final int gdc_5304=0x7f020080;
-        public static final int gdc_5416=0x7f020081;
-        public static final int gdc_5440=0x7f020082;
-        public static final int gdc_5516=0x7f020083;
-        public static final int gdc_5816=0x7f020084;
-        public static final int gdc_5828=0x7f020085;
-        public static final int gdc_6102=0x7f020086;
-        public static final int gdc_6202=0x7f020087;
-        public static final int gdc_6302=0x7f020088;
-        public static final int gdc_6416=0x7f020089;
-        public static final int gdc_6440=0x7f02008a;
-        public static final int gdc_6516=0x7f02008b;
-        public static final int gdc_6816=0x7f02008c;
-        public static final int gdc_6828=0x7f02008d;
-        public static final int gdc_7808=0x7f02008e;
-        public static final int gdc_7820=0x7f02008f;
-        public static final int gdcemptyroom=0x7f020090;
-        public static final int ic_launcher=0x7f020091;
+        public static final int frame_000_200p_transparent=0x7f020059;
+        public static final int frame_001_200p_transparent=0x7f02005a;
+        public static final int frame_002_200p_transparent=0x7f02005b;
+        public static final int frame_003_200p_transparent=0x7f02005c;
+        public static final int gdc_1210=0x7f02005d;
+        public static final int gdc_1304=0x7f02005e;
+        public static final int gdc_1406=0x7f02005f;
+        public static final int gdc_2104=0x7f020060;
+        public static final int gdc_2210=0x7f020061;
+        public static final int gdc_2216=0x7f020062;
+        public static final int gdc_2402=0x7f020063;
+        public static final int gdc_2410=0x7f020064;
+        public static final int gdc_2502=0x7f020065;
+        public static final int gdc_2506=0x7f020066;
+        public static final int gdc_2712=0x7f020067;
+        public static final int gdc_2902=0x7f020068;
+        public static final int gdc_3100=0x7f020069;
+        public static final int gdc_3416=0x7f02006a;
+        public static final int gdc_3516=0x7f02006b;
+        public static final int gdc_3816=0x7f02006c;
+        public static final int gdc_3828=0x7f02006d;
+        public static final int gdc_4100=0x7f02006e;
+        public static final int gdc_4302=0x7f02006f;
+        public static final int gdc_4304=0x7f020070;
+        public static final int gdc_4416=0x7f020071;
+        public static final int gdc_4440=0x7f020072;
+        public static final int gdc_4516=0x7f020073;
+        public static final int gdc_4816=0x7f020074;
+        public static final int gdc_4828=0x7f020075;
+        public static final int gdc_5100=0x7f020076;
+        public static final int gdc_5302=0x7f020077;
+        public static final int gdc_5304=0x7f020078;
+        public static final int gdc_5416=0x7f020079;
+        public static final int gdc_5440=0x7f02007a;
+        public static final int gdc_5516=0x7f02007b;
+        public static final int gdc_5816=0x7f02007c;
+        public static final int gdc_5828=0x7f02007d;
+        public static final int gdc_6102=0x7f02007e;
+        public static final int gdc_6202=0x7f02007f;
+        public static final int gdc_6302=0x7f020080;
+        public static final int gdc_6416=0x7f020081;
+        public static final int gdc_6440=0x7f020082;
+        public static final int gdc_6516=0x7f020083;
+        public static final int gdc_6816=0x7f020084;
+        public static final int gdc_6828=0x7f020085;
+        public static final int gdc_7808=0x7f020086;
+        public static final int gdc_7820=0x7f020087;
+        public static final int gdcemptyroom=0x7f020088;
+        public static final int ic_launcher=0x7f020089;
+        public static final int no_cxn_dinosaur=0x7f02008a;
     }
     public static final class id {
-        public static final int abort_button=0x7f060050;
+        public static final int abort_button=0x7f060051;
         public static final int action_bar=0x7f06001c;
         public static final int action_bar_activity_content=0x7f060015;
         public static final int action_bar_container=0x7f06001b;
@@ -1151,29 +1144,30 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f060016;
         public static final int action_menu_presenter=0x7f060017;
         public static final int action_mode_close_button=0x7f060024;
-        public static final int action_settings=0x7f060056;
+        public static final int action_settings=0x7f060057;
         public static final int activity_chooser_view_content=0x7f060025;
         public static final int always=0x7f06000b;
         public static final int background=0x7f06003f;
         public static final int beginning=0x7f060011;
-        public static final int cancel_button=0x7f060054;
+        public static final int cancel_button=0x7f060055;
         public static final int checkbox=0x7f06002d;
         public static final int collapseActionView=0x7f06000d;
-        public static final int continue_button=0x7f06004e;
-        public static final int dateButton=0x7f060043;
+        public static final int continue_button=0x7f06004f;
+        public static final int dateButton=0x7f060044;
         public static final int default_activity_button=0x7f060028;
         public static final int dialog=0x7f06000e;
+        public static final int dinosaur=0x7f06004d;
         public static final int disableHome=0x7f060008;
         public static final int dropdown=0x7f06000f;
         public static final int edit_query=0x7f060030;
         public static final int end=0x7f060013;
-        public static final int error_msg=0x7f06004d;
+        public static final int error_msg=0x7f06004e;
         public static final int expand_activities_button=0x7f060026;
         public static final int expanded_menu=0x7f06002c;
-        public static final int find_room_for_later=0x7f060052;
-        public static final int find_room_now=0x7f060051;
-        public static final int get_Room=0x7f060048;
-        public static final int has_power=0x7f060047;
+        public static final int find_room_for_later=0x7f060053;
+        public static final int find_room_now=0x7f060052;
+        public static final int get_Room=0x7f060049;
+        public static final int has_power=0x7f060048;
         public static final int home=0x7f060014;
         public static final int homeAsUp=0x7f060005;
         public static final int icon=0x7f06002a;
@@ -1183,21 +1177,21 @@ containing a value of this type.
         public static final int list_item=0x7f060029;
         public static final int loading_msg=0x7f06004a;
         public static final int middle=0x7f060012;
-        public static final int min_capacity=0x7f060046;
-        public static final int min_duration=0x7f060045;
+        public static final int min_capacity=0x7f060047;
+        public static final int min_duration=0x7f060046;
         public static final int never=0x7f060009;
         public static final int new_Room=0x7f060041;
         public static final int no_cxn_msg=0x7f06004b;
         public static final int no_get_new_Room=0x7f06003d;
         public static final int none=0x7f060010;
         public static final int normal=0x7f060000;
-        public static final int number_picker=0x7f060053;
+        public static final int number_picker=0x7f060054;
         public static final int ohkay=0x7f060040;
         public static final int progressSpinner=0x7f06004c;
         public static final int progress_circular=0x7f060018;
         public static final int progress_horizontal=0x7f060019;
         public static final int radio=0x7f06002f;
-        public static final int restart_button=0x7f06004f;
+        public static final int restart_button=0x7f060050;
         public static final int room_num=0x7f060042;
         public static final int search_badge=0x7f060032;
         public static final int search_bar=0x7f060031;
@@ -1209,7 +1203,7 @@ containing a value of this type.
         public static final int search_plate=0x7f060036;
         public static final int search_src_text=0x7f060037;
         public static final int search_voice_btn=0x7f06003b;
-        public static final int set_button=0x7f060055;
+        public static final int set_button=0x7f060056;
         public static final int shortcut=0x7f06002e;
         public static final int showCustom=0x7f060007;
         public static final int showHome=0x7f060004;
@@ -1217,8 +1211,8 @@ containing a value of this type.
         public static final int split_action_bar=0x7f06001e;
         public static final int submit_area=0x7f060039;
         public static final int tabMode=0x7f060002;
-        public static final int this_query=0x7f060049;
-        public static final int timeButton=0x7f060044;
+        public static final int this_query=0x7f060043;
+        public static final int timeButton=0x7f060045;
         public static final int title=0x7f06002b;
         public static final int title_heading=0x7f06003e;
         public static final int top_action_bar=0x7f060020;
@@ -1281,28 +1275,33 @@ containing a value of this type.
         public static final int activity_find_room=0x7f030019;
         public static final int activity_find_room_later=0x7f03001a;
         public static final int activity_load_csv=0x7f03001b;
-        public static final int load_csv_failure_dialog=0x7f03001c;
-        public static final int main=0x7f03001d;
-        public static final int numberpicker_dialog=0x7f03001e;
-        public static final int support_simple_spinner_dropdown_item=0x7f03001f;
+        public static final int activity_wait_for_cxn=0x7f03001c;
+        public static final int load_csv_failure_dialog=0x7f03001d;
+        public static final int main=0x7f03001e;
+        public static final int numberpicker_dialog=0x7f03001f;
+        public static final int support_simple_spinner_dropdown_item=0x7f030020;
     }
     public static final class menu {
-        public static final int exit=0x7f0d0000;
-        public static final int find_room=0x7f0d0001;
-        public static final int find_room_later=0x7f0d0002;
-        public static final int load_csv=0x7f0d0003;
-        public static final int main=0x7f0d0004;
+        public static final int activity_wait_for_cxn=0x7f0d0000;
+        public static final int exit=0x7f0d0001;
+        public static final int find_room=0x7f0d0002;
+        public static final int find_room_later=0x7f0d0003;
+        public static final int load_csv=0x7f0d0004;
+        public static final int main=0x7f0d0005;
     }
     public static final class raw {
-        public static final int calendar_events_feed_2710=0x7f050000;
-        public static final int calendar_events_feed_2910=0x7f050001;
-        public static final int calendar_events_feed_3110=0x7f050002;
-        public static final int calendar_events_today_feed_2710=0x7f050003;
-        public static final int calendar_events_today_feed_2910=0x7f050004;
-        public static final int calendar_events_today_feed_3110=0x7f050005;
-        public static final int calendar_rooms_feed_2710=0x7f050006;
-        public static final int calendar_rooms_feed_2910=0x7f050007;
-        public static final int calendar_rooms_feed_3110=0x7f050008;
+        public static final int calendar_events_feed_0311=0x7f050000;
+        public static final int calendar_events_feed_2710=0x7f050001;
+        public static final int calendar_events_feed_2910=0x7f050002;
+        public static final int calendar_events_feed_3110=0x7f050003;
+        public static final int calendar_events_today_feed_0311=0x7f050004;
+        public static final int calendar_events_today_feed_2710=0x7f050005;
+        public static final int calendar_events_today_feed_2910=0x7f050006;
+        public static final int calendar_events_today_feed_3110=0x7f050007;
+        public static final int calendar_rooms_feed_0311=0x7f050008;
+        public static final int calendar_rooms_feed_2710=0x7f050009;
+        public static final int calendar_rooms_feed_2910=0x7f05000a;
+        public static final int calendar_rooms_feed_3110=0x7f05000b;
     }
     public static final class string {
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
@@ -1345,14 +1344,60 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abc_shareactionprovider_share_with_application=0x7f0b000b;
-        public static final int action_settings=0x7f0b000f;
+        public static final int abort=0x7f0b001f;
+        public static final int action_settings=0x7f0b0010;
         public static final int app_name=0x7f0b000d;
-        public static final int hello_world=0x7f0b000e;
-        public static final int title_activity_exit=0x7f0b0013;
-        public static final int title_activity_find_room=0x7f0b0011;
-        public static final int title_activity_find_room_later=0x7f0b0012;
-        public static final int title_activity_load_csv=0x7f0b0014;
-        public static final int title_activity_main=0x7f0b0010;
+        public static final int app_name_caps=0x7f0b000e;
+        /**  Number picker dialogs 
+         */
+        public static final int cancel=0x7f0b001a;
+        public static final int continue_msg=0x7f0b001d;
+        public static final int current_query=0x7f0b002e;
+        public static final int find_room_later=0x7f0b0019;
+        /**  Main 
+         */
+        public static final int find_room_now=0x7f0b0018;
+        public static final int get_room=0x7f0b002c;
+        public static final int get_room_enthusiastic=0x7f0b002d;
+        public static final int hello_world=0x7f0b000f;
+        /**  Load CSV failure dialogs 
+         */
+        public static final int load_error_msg=0x7f0b001c;
+        /**  Load CSV 
+         */
+        public static final int loading_msg=0x7f0b0016;
+        public static final int need_cxn_msg=0x7f0b0017;
+        public static final int new_room=0x7f0b0022;
+        public static final int new_room_caps=0x7f0b0023;
+        public static final int no=0x7f0b0030;
+        /**  Wait for cxn activity 
+         */
+        public static final int no_cxn_msg=0x7f0b0020;
+        /**  Find room activity 
+         */
+        public static final int ok=0x7f0b0021;
+        public static final int power_plugs_question=0x7f0b002b;
+        public static final int quit_question=0x7f0b0031;
+        public static final int restart=0x7f0b001e;
+        public static final int search_later=0x7f0b0026;
+        public static final int set=0x7f0b001b;
+        public static final int set_minimum_capacity=0x7f0b002a;
+        public static final int set_minimum_duration=0x7f0b0029;
+        /**  Find room later activity 
+         */
+        public static final int set_start_date=0x7f0b0027;
+        public static final int set_start_time=0x7f0b0028;
+        public static final int title_activity_activity_wait_for_cxn=0x7f0b0032;
+        public static final int title_activity_exit=0x7f0b0014;
+        public static final int title_activity_find_room=0x7f0b0012;
+        public static final int title_activity_find_room_later=0x7f0b0013;
+        public static final int title_activity_load_csv=0x7f0b0015;
+        public static final int title_activity_main=0x7f0b0011;
+        public static final int try_room=0x7f0b0024;
+        public static final int try_room_caps=0x7f0b0025;
+        /**  Exit activity 
+         */
+        public static final int yes=0x7f0b002f;
     }
     public static final class style {
         /** 

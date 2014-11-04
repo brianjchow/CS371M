@@ -37,6 +37,16 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		setContentView(R.layout.activity_find_room_later);
 
 		this_query = new Query();
+		
+		Bundle bundle = getIntent().getExtras();
+		if (bundle != null) {
+			Query query = (Query) bundle.getParcelable("this_query");
+			if (query != null) {
+				Log.d(TAG, "Using transmitted parcelable: " + query.toString());
+				this_query = query;
+			}
+		}
+		
 		update_query_textview();
 		
 		findViewById(R.id.dateButton).setOnClickListener(new OnClickListener() {

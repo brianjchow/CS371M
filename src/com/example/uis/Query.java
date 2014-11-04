@@ -67,6 +67,7 @@ public class Query implements Parcelable {
 		}
 
 		Set<Location> merged = new HashSet<Location>();
+		Set<Location> invalid = new HashSet<Location>();
 		
 		int wanted_capacity = this.get_option_capacity();
 		boolean wanted_power = this.get_option_power();
@@ -86,18 +87,79 @@ public class Query implements Parcelable {
 				is_valid = false;
 			}
 			
-			// only add it if all requirements as specified
-			// by the options are met
+			/*
+			 * Add current location to list of valid locations only
+			 * if all reqs as specified by the options are met; add
+			 * to list of invalid locations otherwise
+			 */
 			if (is_valid) {
 				merged.add(location);
 				
 //				Log.d(TAG, "Adding " + location.toString() + " to locs filtered by query");
 			}
+			else {
+				invalid.add(location);
+			}
 			
 			is_valid = true;
 		}
+		
+		merged = this.filter_by_query_get_all_other_rooms(merged, invalid);
 
 		return merged;
+	}
+	
+	private Set<Location> filter_by_query_get_all_other_rooms(Set<Location> valid, Set<Location> invalid) {
+//		if (invalid == null) {
+//			throw new IllegalArgumentException("Error: other_set cannot be null, filter_by_query_get_all_other_rooms()");
+//		}
+//		else if (invalid.size() <= 0) {
+//			return invalid;
+//		}
+		
+		int wanted_capacity = this.get_option_capacity();
+		boolean wanted_power = this.get_option_power();
+
+		Iterator<Map.Entry<Location, Room>> itr = Constants.VALID_GDC_ROOMS_ROOMLIST.get_iterator();
+		Map.Entry<Location, Room> curr_entry;
+		Location curr_loc;
+		Room curr_room;
+		boolean is_valid = true;
+		while (itr.hasNext()) {
+			curr_entry = itr.next();
+			curr_loc = curr_entry.getKey();
+			curr_room = curr_entry.getValue();
+			
+			boolean valid_contains_curr_loc = valid.contains(curr_loc);
+			boolean invalid_contains_curr_loc = invalid.contains(curr_loc);
+			
+			if (valid_contains_curr_loc || invalid_contains_curr_loc) {
+				continue;
+			}
+			
+			if (!valid_contains_curr_loc && !invalid_contains_curr_loc) {
+				
+				// check power and capacity requirements
+				if (wanted_power && !curr_room.get_has_power()) {
+					is_valid = false;
+				}
+				if (curr_room.get_capacity() < wanted_capacity) {
+					is_valid = false;
+				}
+				
+				/*
+				 * Add current location to list of valid locations only
+				 * if all reqs as specified by the options are met.
+				 */
+				if (is_valid) {
+					valid.add(curr_loc);
+				}
+				
+				is_valid = true;				
+			}
+		}
+		
+		return valid;
 	}
 	
 	/**
@@ -392,8 +454,17 @@ public class Query implements Parcelable {
 		String random_room = random.get(random_index).toString();
 		
 		if (Constants.DEBUG) {
+//			Log.d(TAG, "Avail rooms as found in feeds:\n");
+//			Iterator<Event> itr = reduced.get_iterator();
+//			Event temp;
+//			while (itr.hasNext()) {
+//				temp = itr.next();
+//				Log.d(TAG, temp.get_location().toString());
+//			}
+			
 			Collections.sort(random);
-			Log.d(TAG, this.toString() + "\n" + random.size() + " " + random.toString() + "\n");
+//			Log.d(TAG, this.toString() + "\n" + random.size() + " " + random.toString() + "\n");
+			Log.d(TAG, "All rooms found:\n" + random.size() + " " + random.toString() + "\n");
 //			System.out.println(random.size() + " " + random.toString() + "\n");			
 		}
 		
@@ -521,7 +592,7 @@ public class Query implements Parcelable {
 	}
 	
 	protected boolean set_start_time(int hour, int minute) {
-		if (hour < 0 || hour > 23 || minute < 0 || minute > 60) {
+		if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
 			return false;
 		}
 		

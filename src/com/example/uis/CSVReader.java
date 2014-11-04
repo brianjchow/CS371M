@@ -32,7 +32,8 @@ final class CSVReader {
 	private static final char DELIMITER = '\"';
 	private static final String TAG = "CSVReader";
 	
-	private static int lines_read = 0;
+	protected static int lines_read = 0;
+	protected static double time_to_read = 0;
 	
 	/**
 	 * Default constructor. Empty.
@@ -123,7 +124,7 @@ final class CSVReader {
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.start();
 
-		if (ActivityMain.has_network_cxn && !Constants.DEBUG) {
+		if (!Constants.DEBUG) {
 			Log.d(TAG, "Now reading from UTCS servers");
 //			event_strings = reader.read_csv_from_url(ALL_EVENTS_SCHEDULE);
 //			events.add(event_strings);
@@ -150,24 +151,24 @@ final class CSVReader {
 		else {
 			Log.d(TAG, "Now reading from local files");			
 //			event_strings = reader.read_csv_from_file("calendar_events_today_feed_2710.csv");
-			event_strings = reader.read_csv_from_file(context, R.raw.calendar_events_today_feed_3110);
+			event_strings = reader.read_csv_from_file(context, R.raw.calendar_events_today_feed_0311);
 			events.add(event_strings);
 			
 //			event_strings = reader.read_csv_from_file("calendar_events_feed_2710.csv");
-			event_strings = reader.read_csv_from_file(context, R.raw.calendar_events_feed_3110);
+			event_strings = reader.read_csv_from_file(context, R.raw.calendar_events_feed_0311);
 			events.add(event_strings);
 
 //			event_strings = reader.read_csv_from_file("calendar_rooms_feed_2710.csv");
-			event_strings = reader.read_csv_from_file(context, R.raw.calendar_rooms_feed_3110);
+			event_strings = reader.read_csv_from_file(context, R.raw.calendar_rooms_feed_0311);
 			events.add(event_strings);	
 		}
 		
 		stopwatch.stop();
 		
-		if (Constants.DEBUG) {
-			System.out.println("Took " + stopwatch.time() + " seconds to read " + lines_read + " lines\n");
-		}
-
+		time_to_read = stopwatch.time();
+		Log.d(TAG, "Took " + time_to_read + " seconds to read " + lines_read + " lines");
+//		Toast.makeText(context, "Took " + stopwatch.time() + " seconds to read " + lines_read + " lines", Toast.LENGTH_SHORT).show();	// DO NOT TOAST HERE; WILL CAUSE EXCEPTION (can't update UI thread here)
+		
 		return events;		
 	}
 		
@@ -244,7 +245,7 @@ final class CSVReader {
 		HashMap<String, String> result;
 		StringBuilder curr_line = new StringBuilder();
 		while ((temp = reader.read()) != -1) {
-Log.d(TAG, Character.toString((char) temp));
+//Log.d(TAG, Character.toString((char) temp));
 			char curr_byte = (char) temp;
 			if (curr_byte != '\n') {
 				curr_line.append(curr_byte);
@@ -316,7 +317,7 @@ Log.d(TAG, Character.toString((char) temp));
 		HashMap<String, String> result;
 		StringBuilder curr_line = new StringBuilder();
 		while ((temp = reader.read()) != -1) {
-Log.d(TAG, Character.toString((char) temp));
+//Log.d(TAG, Character.toString((char) temp));
 			char curr_byte = (char) temp;
 			if (curr_byte != '\n') {
 				curr_line.append(curr_byte);

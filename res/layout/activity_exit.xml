@@ -8,6 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/gdcemptyroom"
     tools:context="com.example.uis.ActivityRoomRec" 
+    android:orientation="vertical"
     >
 
 

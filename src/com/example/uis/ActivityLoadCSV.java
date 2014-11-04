@@ -4,9 +4,11 @@ import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -15,13 +17,16 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+/*
+ * TODO: behaviour when cxn shuts off in the middle of reading
+ */
 
 public class ActivityLoadCSV extends ActionBarActivity {
 
-	private static final String TAG = "LoadCSVActivity";
-	
-	private boolean has_network_cxn = false;
-	
+	private static final String TAG = "ActivityLoadCSV";
+
 	private Context mContext;
 	
 	@Override
@@ -37,21 +42,16 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		anim_draw.start();
 
 		mContext = this;
-
-		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo net_info = manager.getActiveNetworkInfo();
-		if (net_info != null && (net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE)) {
-			Log.d(TAG, "Wifi/mobile network cxn enabled onCreate LoadCSV");
-			has_network_cxn = true;
-		}
-		else {
-			Log.d(TAG, "Wifi/mobile network cxn disabled onCreate LoadCSV");
-			has_network_cxn = false;
+		
+		if (!is_connected_wifi_or_mobile()) {
+			Log.d(TAG, "No wifi and/or mobile cxn detected on startup, onCreate(), LoadCSV");
+			startActivity(new Intent(ActivityLoadCSV.this, ActivityWaitForCxn.class));
+			finish();
 		}
 
 		ReadFeedTask read_csv = new ReadFeedTask();
-		read_csv.execute(this);		// 4.78 seconds
-		read_csv.cancel(true);
+		read_csv.execute(this);		// 3.56 seconds
+//		read_csv.cancel(true);
 		
 //		boolean done = read_csv.doInBackground(this);		// illegal, but only 1.52 seconds - what gives
 //		if (done) {
@@ -62,42 +62,82 @@ public class ActivityLoadCSV extends ActionBarActivity {
 //		}
 
 	}
-
-	public class WifiReceiver extends BroadcastReceiver {
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		// register BroadcastReceiver
+		Log.d(TAG, "Registering broadcast receiver, onResume()");
+		IntentFilter intent_filter = new IntentFilter();
+		intent_filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);	// SUPPLICANT_CONNECTION_CHANGE_ACTION
+		registerReceiver(broadcast_receiver, intent_filter);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		
+		// unregister BroadcastReceiver
+		Log.d(TAG, "Unregistering broadcast receiver, onPause()");
+		unregisterReceiver(broadcast_receiver);
+	}
+	
+	private BroadcastReceiver broadcast_receiver = new BroadcastReceiver() {
 		
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (has_network_cxn) {
-				// cxn switched off while reading; go to waiting screen
+			// http://stackoverflow.com/questions/5888502/how-to-detect-when-wifi-connection-has-been-established-in-android?rq=1
+			
+			final String action = intent.getAction();
+			if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {	// SUPPLICANT_CONNECTION_CHANGE_ACTION
+				Log.d(TAG, "Wifi state changed to enabled, onReceive()");
+				Toast.makeText(ActivityLoadCSV.this, "Wifi state changed to enabled, ActivityLoadCSV", Toast.LENGTH_SHORT).show();
 			}
 			else {
-				// cxn switched on; commence reading
+				Log.d(TAG, "Wifi state changed to disabled, onReceive()");
+				Toast.makeText(ActivityLoadCSV.this, "Wifi state changed to disabled, ActivityLoadCSV", Toast.LENGTH_SHORT).show();
 			}
-			set_network_state();
 		}
-	}
+	};
 	
-	// http://stackoverflow.com/questions/9434235/android-i-want-to-set-listener-to-listen-on-wireless-state-can-anyone-help-me-w
-	private void set_network_state() {
+	private boolean is_connected_wifi_or_mobile() {
 		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo net_info = manager.getActiveNetworkInfo();
-		if (net_info != null && (net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE)) {
-			if (net_info.isConnected() || net_info.isConnectedOrConnecting()) {
-				
+		if (net_info != null) {
+			if (net_info.getType() == ConnectivityManager.TYPE_WIFI && net_info.isConnected()) {
+				Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
+				return true;
 			}
-			else {
-				Log.d(TAG, "Wifi/mobile network cxn may be enabled, but it isn't connected");
+			else if (net_info.getType() == ConnectivityManager.TYPE_MOBILE && net_info.isConnected()) {
+				Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
+				return true;		
 			}
-			
-			Log.d(TAG, "Wifi/mobile network cxn enabled, not necessarily connected");
-			has_network_cxn = true;
 		}
-		else {
-			Log.d(TAG, "Wifi/mobile network cxn disabled, not necessarily connected");
-			has_network_cxn = false;
-		}
+		
+		return false;
 	}
-	
+
+//	private boolean is_connected_wifi() {
+//		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//		NetworkInfo net_info = manager.getActiveNetworkInfo();
+//		if (net_info != null && net_info.getType() == ConnectivityManager.TYPE_WIFI && net_info.isConnected()) {
+//			Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
+//			return true;
+//		}
+//		return false;
+//	}
+//	
+//	private boolean is_connected_mobile() {
+//		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//		NetworkInfo net_info = manager.getActiveNetworkInfo();
+//		if (net_info != null && net_info.getType() == ConnectivityManager.TYPE_MOBILE && net_info.isConnected()) {
+//			Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
+//			return true;
+//		}
+//		return false;
+//	}
+
 	private class ReadFeedTask extends AsyncTask<Context, Void, Boolean> {
 		private Exception exception = null;
 		
@@ -107,10 +147,12 @@ public class ActivityLoadCSV extends ActionBarActivity {
 				Log.d(TAG, "Now reading CSV...");
 				Constants.init(context[0]);
 				if (!isCancelled()) {
+					Log.d(TAG, "Successfully finished reading CSV");
 					result = true;
 				}
 			}
 			catch (Exception e) {
+				Log.d(TAG, "Caught an exception while reading CSV: " + e.getMessage());
 				this.exception = e;
 				result = false;
 			}
@@ -133,6 +175,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			
 			if (done.equals(Boolean.valueOf(true))) {
 				Log.d(TAG, "Done reading CSV, now entering MainActivity...");
+				Toast.makeText(mContext, "Took " + CSVReader.time_to_read + " seconds to read " + CSVReader.lines_read + " lines", Toast.LENGTH_LONG).show();
 				startActivity(new Intent(mContext, ActivityMain.class));
 				finish();	// kill this activity off the stack; prevent back button from returning to this activity
 			}
@@ -185,6 +228,49 @@ public class ActivityLoadCSV extends ActionBarActivity {
 	}
 	
 /*
+	
+	private BroadcastReceiver broadcast_receiver;
+	private boolean has_network_cxn = false;
+	
+	public class WifiReceiver extends BroadcastReceiver {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// http://stackoverflow.com/questions/5888502/how-to-detect-when-wifi-connection-has-been-established-in-android?rq=1
+			
+			final String action = intent.getAction();
+			if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {	// SUPPLICANT_CONNECTION_CHANGE_ACTION
+				Log.d(TAG, "Wifi state changed to enabled, onReceive()");
+				Toast.makeText(ActivityLoadCSV.this, "Wifi state changed to enabled, ActivityLoadCSV", Toast.LENGTH_SHORT).show();
+			}
+			else {
+				Log.d(TAG, "Wifi state changed to disabled, onReceive()");
+				Toast.makeText(ActivityLoadCSV.this, "Wifi state changed to disabled, ActivityLoadCSV", Toast.LENGTH_SHORT).show();
+			}
+		}
+	}
+	
+	// http://stackoverflow.com/questions/9434235/android-i-want-to-set-listener-to-listen-on-wireless-state-can-anyone-help-me-w
+	private void set_network_state() {
+		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo net_info = manager.getActiveNetworkInfo();
+		if (net_info != null && (net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE)) {
+			if (net_info.isConnected() || net_info.isConnectedOrConnecting()) {
+				
+			}
+			else {
+				Log.d(TAG, "Wifi/mobile network cxn may be enabled, but it isn't connected");
+			}
+			
+			Log.d(TAG, "Wifi/mobile network cxn enabled, not necessarily connected");
+			has_network_cxn = true;
+		}
+		else {
+			Log.d(TAG, "Wifi/mobile network cxn disabled, not necessarily connected");
+			has_network_cxn = false;
+		}
+	}
+				
 		
 //		if (!has_network_cxn) {
 //			findViewById(R.id.loading_msg).setVisibility(View.GONE);

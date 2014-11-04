@@ -1,10 +1,6 @@
 package com.example.uis;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -20,16 +16,9 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 	Button find_room_now;
 	Button find_room_later;
 	
-	protected static boolean has_network_cxn = false;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		set_network_state();		
-////		Constants.init(getApplicationContext());
-//		ReadFeedTask read_feed_task = new ReadFeedTask();
-//		read_feed_task.doInBackground(getApplicationContext());
 		
 		setContentView(R.layout.main);
 		find_room_now = (Button)findViewById(R.id.find_room_now);
@@ -38,6 +27,7 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 		find_room_later.setOnClickListener(this);
 		
 		if (getIntent().getBooleanExtra("EXIT",  false)) {
+			Log.d(TAG, "Now exiting");
 			finish();
 		}
 	}
@@ -63,8 +53,6 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 		return super.onOptionsItemSelected(item);
 	}
 
-
-
 	public void findRoom() {
 		startActivityForResult(new Intent(this, ActivityRoomRec.class), 0);
 	}
@@ -84,41 +72,9 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 				break;
 		}
 	}
-	
-	public class WifiReceiver extends BroadcastReceiver {
-		
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			set_network_state();
-		}
-	}
-	
-	private void set_network_state() {
-		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo net_info = manager.getActiveNetworkInfo();
-		if (net_info != null && (net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE)) {
-			Log.d(TAG, "Wifi/mobile network cxn just enabled");
-			has_network_cxn = true;
-		}
-		else {
-			Log.d(TAG, "Wifi/mobile network cxn just disabled");
-			has_network_cxn = false;
-		}
-	}
-	
-//	private class ReadFeedTask extends AsyncTask<Context, Void, Boolean> {
-//		private Exception exception;
-//		
-//		protected Boolean doInBackground(Context... context) {
-//			try {
-//				Constants.init(context[0]);
-//				return true;
-//			}
-//			catch (Exception e) {
-//				this.exception = e;
-//				return false;
-//			}
-//		}
-//	}
 
-}
+}		// end of file
+
+
+
+

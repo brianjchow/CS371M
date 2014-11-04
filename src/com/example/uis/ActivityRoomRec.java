@@ -20,33 +20,47 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 	private Button newRoom;
 	private TextView roomRecText;
 	private String recommendation;
+	
+	private Query this_query;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		this_query = new Query();
 		
 //if (Constants.CSV_FEEDS_MASTER != null) {
 //	Log.d(TAG, Constants.CSV_FEEDS_MASTER.toString());
 //}
 		
 		Bundle bundle = getIntent().getExtras();
-		if (bundle == null) {
-			search();
-		}
-		else {
+		if (bundle != null) {
 			Query query = (Query) bundle.getParcelable("this_query");
 			if (query != null) {
 				Log.d(TAG, "Using transmitted parcelable: " + query.toString());
-				search(query);
+				this_query = query;
 			}
 		}
+		
+		search();
+		
+//		if (bundle == null) {
+//			search();
+//		}
+//		else {
+//			Query query = (Query) bundle.getParcelable("this_query");
+//			if (query != null) {
+//				Log.d(TAG, "Using transmitted parcelable: " + query.toString());
+//				search(query);
+//			}
+//		}
 
 	}
 	
 	// @Override protected void onActivityResult(int requestCode, int resultCode, Intent intent) { }
 
 	private void search() {
-		search(new Query());
+		search(this_query);
 	}
 	
 	private void search(Query query) {
@@ -63,12 +77,11 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 			String temp = new Location(recommendation).get_room().replaceAll("\\.", "");
 			int res_id = getResId("gdc_" + temp, R.drawable.class);
 			if (res_id != -1) {
-				background.setBackgroundResource(res_id);
+				background.setBackgroundResource(res_id);	// getResources().getDrawable(int id), View.setBackgroundResource(int id)
 			}
-						
-			// getResources().getDrawable(int id)
-			// view.setBackgroundResource(int id)
 		}
+		
+		update_query_textview(query);
 	}
 
 	// http://stackoverflow.com/questions/4427608/android-getting-resource-id-from-string
@@ -88,6 +101,11 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 	private void setTextViewInfo() {	// get the TextViews
 		roomRecText = (TextView) findViewById(R.id.room_num);
 		roomRecText.setText(recommendation);
+	}
+	
+	private void update_query_textview(Query query) {
+		TextView temp = (TextView) findViewById(R.id.this_query);
+		temp.setText("Current query:\n" + query.toString());
 	}
 
 	@Override
@@ -116,6 +134,13 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 	public void getRoomRec() {
 		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
 	}
+	
+//	private void search_later() {
+//		Intent intent = new Intent(getApplicationContext(), ActivityFindRoomLater.class);
+//		intent.putExtra("this_query", this_query);
+//		startActivity(intent);
+//		finish();
+//	}
 
 	@Override
 	public void onClick(View v) {
@@ -130,6 +155,10 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 //				getRoomRec();
 				search();
 				break;
+//			case R.id.search_later:
+//				Log.d(TAG, "Clicked search later button");
+//				search_later();
+//				break;
 		}
 
 	}

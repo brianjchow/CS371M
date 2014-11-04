@@ -8,6 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/backgroundinitial"
     tools:context="com.example.uis.ActivityMain" 
+    android:orientation="vertical"
     >
 
     <Button
