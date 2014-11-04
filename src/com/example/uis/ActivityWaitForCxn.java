@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -23,6 +22,8 @@ import android.widget.TextView;
 public class ActivityWaitForCxn extends ActionBarActivity {
 
 	private static final String TAG = "ActivityWaitForCxn";
+	
+	private static final boolean INFINITE_TIMEOUT = true;
 	private static final int TIMEOUT_AFTER = 60000;			// milliseconds
 	
 	private Context mContext;
@@ -35,29 +36,25 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		
 		mContext = this;
 		mHasCxn = false;
-		
-		if (is_connected_wifi_or_mobile()) {
-			Log.d(TAG, "ERROR: entered ActivityWaitForCxn with active wifi/mobile connection");
-			
-			mHasCxn = true;
-			start_loading_csv();
-		}
-		
+
 		final WaitTask wait_task = new WaitTask();
 		wait_task.execute();
 		
-		// http://stackoverflow.com/questions/7882739/android-setting-a-timeout-for-an-asynctask
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			
-			@Override
-			public void run() {
-				if (wait_task.getStatus() == AsyncTask.Status.RUNNING) {
-					wait_task.cancel(true);
+		if (!INFINITE_TIMEOUT) {
+			// http://stackoverflow.com/questions/7882739/android-setting-a-timeout-for-an-asynctask
+			Handler handler = new Handler();
+			handler.postDelayed(new Runnable() {
+				
+				@Override
+				public void run() {
+					if (wait_task.getStatus() == AsyncTask.Status.RUNNING) {
+						wait_task.cancel(true);
+					}
 				}
-			}
-			
-		}, TIMEOUT_AFTER);
+				
+			}, TIMEOUT_AFTER);
+		}
+
 	}
 	
 	@Override
@@ -88,94 +85,86 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 			
 			final String action = intent.getAction();
 			if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {	// SUPPLICANT_CONNECTION_CHANGE_ACTION
-				Log.d(TAG, "Wifi state changed to enabled, onReceive()");
-//				Toast.makeText(ActivityWaitForCxn.this, "Wifi state changed to enabled, ActivityWaitForCxn", Toast.LENGTH_SHORT).show();
+				Log.d(TAG, "Network state just changed");
 				
-				mHasCxn = true;
-			}
-			else {
-				Log.d(TAG, "Wifi state changed to disabled, onReceive()");
-//				Toast.makeText(ActivityWaitForCxn.this, "Wifi state changed to disabled, ActivityWaitForCxn", Toast.LENGTH_SHORT).show();
-				
-				mHasCxn = false;
-			}
-		}
-	};
-	
-	private boolean is_connected_wifi_or_mobile() {
-		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo net_info = manager.getActiveNetworkInfo();
-		if (net_info != null) {
-			
-//			if ((net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE) && net_info.isConnected()) {
-//				if (Constants.DEBUG) {
-//					if (net_info.getType() == ConnectivityManager.TYPE_WIFI) {
-//						Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
+				NetworkInfo net_info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+				if (net_info != null) {
+					
+//					if ((net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE) && net_info.isConnected()) {
+//						if (Constants.DEBUG) {
+//							if (net_info.getType() == ConnectivityManager.TYPE_WIFI) {
+//								Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
+//							}
+//							else {
+//								Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
+//							}
+//						}
+//						return true;
+//					}
+					
+					if (net_info.getState().equals(NetworkInfo.State.CONNECTED)) {
+						Log.d(TAG, "Network connectivity just enabled");
+						mHasCxn = true;
+					}
+					else {
+						mHasCxn = false;
+					}
+					
+//					if (net_info.getType() == ConnectivityManager.TYPE_WIFI && net_info.isConnected()) {
+//						Log.d(TAG, "Wifi cxn just enabled");
+//						mHasCxn = true;
+//					}
+//					else if (net_info.getType() == ConnectivityManager.TYPE_MOBILE && net_info.isConnected()) {
+//						Log.d(TAG, "Mobile cxn just enabled");
+//						mHasCxn = true;
 //					}
 //					else {
-//						Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
+//						mHasCxn = false;
 //					}
+				}
+				else {
+					Log.d(TAG, "Net info null");
+					mHasCxn = false;
+				}
+				
+//				boolean no_cxn = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
+//				if (no_cxn) {
+//					mHasCxn = false;
 //				}
-//				return true;
+//				else {
+//					mHasCxn = true;
+//				}
+				
+//				Log.d(TAG, "Wifi state changed to enabled, onReceive()");
+////				Toast.makeText(ActivityWaitForCxn.this, "Wifi state changed to enabled, ActivityWaitForCxn", Toast.LENGTH_SHORT).show();
+//				
+//				mHasCxn = true;
+			}
+//			else {
+//				Log.d(TAG, "Wifi state changed to disabled, onReceive()");
+////				Toast.makeText(ActivityWaitForCxn.this, "Wifi state changed to disabled, ActivityWaitForCxn", Toast.LENGTH_SHORT).show();
+//				
+//				mHasCxn = false;
 //			}
-			
-			if (net_info.getType() == ConnectivityManager.TYPE_WIFI && net_info.isConnected()) {
-				Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
-				return true;
-			}
-			else if (net_info.getType() == ConnectivityManager.TYPE_MOBILE && net_info.isConnected()) {
-				Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
-				return true;		
-			}
 		}
-		
-		return false;
-	}
+	};
 
-//	private boolean is_connected_wifi() {
-//		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//		NetworkInfo net_info = manager.getActiveNetworkInfo();
-//		if (net_info != null && net_info.getType() == ConnectivityManager.TYPE_WIFI && net_info.isConnected()) {
-//			return true;
-//		}
-//		return false;
-//	}
-//	
-//	private boolean is_connected_mobile() {
-//		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//		NetworkInfo net_info = manager.getActiveNetworkInfo();
-//		if (net_info != null && net_info.getType() == ConnectivityManager.TYPE_MOBILE && net_info.isConnected()) {
-//			return true;
-//		}
-//		return false;
-//	}
-	
 	private class WaitTask extends AsyncTask<Void, Void, Boolean> {
 		
 		protected Boolean doInBackground(Void... args) {
-			boolean result = false;
-//			double time_elapsed = 0;
-//			
-//			Stopwatch stopwatch = new Stopwatch();
-//			stopwatch.start();
-//			
-//			while ((time_elapsed = stopwatch.time()) < TIMEOUT_AFTER && !mHasCxn) {
-//				// wait
-//			}
-//			
-//			stopwatch.stop();
-			
+			Boolean result = Boolean.valueOf(false);
+
 			while (!mHasCxn) {
 				// do nothing; refer to timeout code in onCreate()
 				
 				if (isCancelled()) {
-					return false;
+					return Boolean.valueOf(false);
 				}
 			}
 			
 			if (mHasCxn) {		// redundant
 				Log.d(TAG, "Cxn established, transferring to ActivityLoadCSV...");
-				result = true;
+				result = Boolean.valueOf(true);
 			}
 			
 			return result;
@@ -184,21 +173,22 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		@Override
 		protected void onCancelled(Boolean result) {
 			Log.d(TAG, "AsyncTask was cancelled, checking results");
-			if (result.equals(Boolean.valueOf(true))) {
-				start_loading_csv();
+			if (result == null || result.equals(Boolean.valueOf(false))) {
+				show_failure_dialog();
 			}
 			else {
-				show_failure_dialog();
+				start_loading_csv();
 			}
 		}
 		
 		@Override
 		protected void onPostExecute(Boolean result) {
-			if (result.equals(Boolean.valueOf(true))) {
-				start_loading_csv();
+			Log.d(TAG, "Reached onPostExecute(), ActivityWaitForCxn");
+			if (result == null || result.equals(Boolean.valueOf(false))) {
+				show_failure_dialog();
 			}
 			else {
-				show_failure_dialog();
+				start_loading_csv();
 			}
 		}
 	}
@@ -206,6 +196,7 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 	private void start_loading_csv() {
 		startActivity(new Intent(ActivityWaitForCxn.this, ActivityLoadCSV.class));
 		finish();
+		return;
 	}
 
 	private void show_failure_dialog() {
@@ -214,32 +205,23 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		dialog.setContentView(R.layout.load_csv_failure_dialog);
 		dialog.setCancelable(false);
 		
-		TextView err_msg = (TextView) findViewById(R.id.error_msg);
+		TextView err_msg = (TextView) dialog.findViewById(R.id.error_msg);
 		err_msg.setText("Timeout period exceeded.\n\nRestart/abort?");
 		
 		dialog.findViewById(R.id.continue_button).setVisibility(View.GONE);
 		
-//		Button continue_button = (Button) dialog.findViewById(R.id.continue_button);
 		Button restart_button = (Button) dialog.findViewById(R.id.restart_button);
 		Button abort_button = (Button) dialog.findViewById(R.id.abort_button);
-		
-//		continue_button.setOnClickListener(new OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {
-//				Log.d(TAG, "Failed to complete reading CSV, now entering MainActivity...");
-//				startActivity(new Intent(mContext, ActivityMain.class));
-//				finish();
-//			}
-//		});
 
 		restart_button.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG, "Timed out while waiting for cxn establishment, now restarting app...");
+				dialog.dismiss();
 				startActivity(new Intent(mContext, ActivityLoadCSV.class));
 				finish();
+				return;
 			}
 		});
 
@@ -248,17 +230,15 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG, "Timed out while waiting for cxn establishment, now aborting...");
+				dialog.dismiss();
 				finish();
+				return;
 			}
 		});
 		
 		dialog.show();
 	}
 		
-	
-	
-	
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -277,4 +257,9 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-}
+	
+}		// end of file
+
+
+
+

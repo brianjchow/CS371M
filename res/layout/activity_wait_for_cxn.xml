@@ -10,20 +10,29 @@
     android:orientation = "vertical" >
 
     <TextView
-        android:id = "@+id/no_cxn_msg"
+        android:id = "@+id/no_cxn_smartass_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/no_cxn_msg"
+        android:text="@string/no_cxn_smartass_msg"
         android:layout_centerHorizontal = "true"
-        android:textSize = "36sp" />
-
+        android:textSize = "24sp" />
+    
 	<ImageView
 	    android:id="@+id/dinosaur"
-	    android:drawable = "@drawable/no_cxn_dinosaur"
-        android:layout_below = "@+id/no_cxn_msg" 
+	    android:src = "@drawable/no_cxn_dinosaur_transparent"
+        android:layout_below = "@+id/no_cxn_smartass_msg"
         android:layout_marginTop = "10dp"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_centerHorizontal="true" />
 
+    <TextView
+        android:id = "@+id/no_cxn_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below = "@+id/dinosaur"
+        android:text="@string/no_cxn_msg"
+        android:layout_centerHorizontal = "true"
+        android:textSize = "24sp" />
+	
 </RelativeLayout>

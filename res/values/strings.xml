@@ -30,7 +30,8 @@
     <string name="abort">Abort</string>
     
     <!-- Wait for cxn activity -->
-    <string name = "no_cxn_msg">Hey, stop being a lusr and get a wireless/mobile connection already. </string>
+    <string name = "no_cxn_smartass_msg">What is this, 1979?</string>
+    <string name = "no_cxn_msg">No connection</string>
 
     <!-- Find room activity -->
     <string name="ok">OK</string>

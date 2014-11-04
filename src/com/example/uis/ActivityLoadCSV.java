@@ -21,6 +21,10 @@ import android.widget.Toast;
 
 /*
  * TODO: behaviour when cxn shuts off in the middle of reading
+ * 
+ * Other
+ * 		- call return; directly after finish(); finish() doesn't actually kill the activity (http://stackoverflow.com/questions/4924071/calling-finish-on-an-android-activity-doesnt-actually-finish)
+ * 		- default background color ranges from 0xfbfbfb to 0xfdfdfd
  */
 
 public class ActivityLoadCSV extends ActionBarActivity {
@@ -45,22 +49,22 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		
 		if (!is_connected_wifi_or_mobile()) {
 			Log.d(TAG, "No wifi and/or mobile cxn detected on startup, onCreate(), LoadCSV");
-			startActivity(new Intent(ActivityLoadCSV.this, ActivityWaitForCxn.class));
-			finish();
+			goto_wait_for_cxn();
 		}
 
 		ReadFeedTask read_csv = new ReadFeedTask();
-		read_csv.execute(this);		// 3.56 seconds
+		read_csv.execute(this);
 //		read_csv.cancel(true);
 		
-//		boolean done = read_csv.doInBackground(this);		// illegal, but only 1.52 seconds - what gives
-//		if (done) {
-//			startActivity(new Intent(this, MainActivity.class));
-//		}
-//		else {
-//			finish();
-//		}
-
+	}
+	
+	private void goto_wait_for_cxn() {
+		Constants.CSV_FEEDS_MASTER = null;
+		Constants.CSV_FEEDS_CLEANED = null;
+		
+		startActivity(new Intent(ActivityLoadCSV.this, ActivityWaitForCxn.class));
+		finish();
+		return;
 	}
 	
 	@Override
@@ -91,12 +95,25 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			
 			final String action = intent.getAction();
 			if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {	// SUPPLICANT_CONNECTION_CHANGE_ACTION
-				Log.d(TAG, "Wifi state changed to enabled, onReceive()");
-				Toast.makeText(ActivityLoadCSV.this, "Wifi state changed to enabled, ActivityLoadCSV", Toast.LENGTH_SHORT).show();
-			}
-			else {
-				Log.d(TAG, "Wifi state changed to disabled, onReceive()");
-				Toast.makeText(ActivityLoadCSV.this, "Wifi state changed to disabled, ActivityLoadCSV", Toast.LENGTH_SHORT).show();
+				
+				NetworkInfo net_info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+				if (net_info != null) {
+
+					if (!net_info.getState().equals(NetworkInfo.State.CONNECTED)) {
+						Log.d(TAG, "Network connectivity just disabled");
+						goto_wait_for_cxn();
+					}
+					
+//					if ((net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE) && !net_info.isConnected()) {
+//						goto_wait_for_cxn();
+//					}
+					// else do nothing, because connection was established (should never happen within this class)
+				}
+				else {
+					// ??? assume disconnected ???
+					goto_wait_for_cxn();
+				}
+
 			}
 		}
 	};
@@ -105,38 +122,35 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo net_info = manager.getActiveNetworkInfo();
 		if (net_info != null) {
-			if (net_info.getType() == ConnectivityManager.TYPE_WIFI && net_info.isConnected()) {
-				Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
+			
+			if (net_info.getState().equals(NetworkInfo.State.CONNECTED)) {
 				return true;
 			}
-			else if (net_info.getType() == ConnectivityManager.TYPE_MOBILE && net_info.isConnected()) {
-				Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
-				return true;		
-			}
+			
+//			if ((net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE) && net_info.isConnected()) {
+//				if (Constants.DEBUG) {
+//					if (net_info.getType() == ConnectivityManager.TYPE_WIFI) {
+//						Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
+//					}
+//					else {
+//						Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
+//					}
+//				}
+//				return true;
+//			}
+			
+//			if (net_info.getType() == ConnectivityManager.TYPE_WIFI && net_info.isConnected()) {
+//				Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
+//				return true;
+//			}
+//			else if (net_info.getType() == ConnectivityManager.TYPE_MOBILE && net_info.isConnected()) {
+//				Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
+//				return true;		
+//			}
 		}
 		
 		return false;
 	}
-
-//	private boolean is_connected_wifi() {
-//		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//		NetworkInfo net_info = manager.getActiveNetworkInfo();
-//		if (net_info != null && net_info.getType() == ConnectivityManager.TYPE_WIFI && net_info.isConnected()) {
-//			Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
-//			return true;
-//		}
-//		return false;
-//	}
-//	
-//	private boolean is_connected_mobile() {
-//		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//		NetworkInfo net_info = manager.getActiveNetworkInfo();
-//		if (net_info != null && net_info.getType() == ConnectivityManager.TYPE_MOBILE && net_info.isConnected()) {
-//			Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
-//			return true;
-//		}
-//		return false;
-//	}
 
 	private class ReadFeedTask extends AsyncTask<Context, Void, Boolean> {
 		private Exception exception = null;
@@ -177,11 +191,13 @@ public class ActivityLoadCSV extends ActionBarActivity {
 				Log.d(TAG, "Done reading CSV, now entering MainActivity...");
 				Toast.makeText(mContext, "Took " + CSVReader.time_to_read + " seconds to read " + CSVReader.lines_read + " lines", Toast.LENGTH_LONG).show();
 				startActivity(new Intent(mContext, ActivityMain.class));
-				finish();	// kill this activity off the stack; prevent back button from returning to this activity
+				finish();
+				return;
 			}
 			else {
 				Log.d(TAG, "Unknown error while loading CSV");
 				finish();
+				return;
 			}
 		}
 	}
@@ -202,6 +218,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 				Log.d(TAG, "Failed to complete reading CSV, now entering MainActivity...");
 				startActivity(new Intent(mContext, ActivityMain.class));
 				finish();
+				return;
 			}
 		});
 
@@ -212,6 +229,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 				Log.d(TAG, "Failed to complete reading CSV, now restarting app...");
 				startActivity(new Intent(mContext, ActivityLoadCSV.class));
 				finish();
+				return;
 			}
 		});
 
@@ -221,6 +239,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			public void onClick(View v) {
 				Log.d(TAG, "Failed to complete reading CSV, now aborting...");
 				finish();
+				return;
 			}
 		});
 		

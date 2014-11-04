@@ -28,11 +28,7 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 		super.onCreate(savedInstanceState);
 		
 		this_query = new Query();
-		
-//if (Constants.CSV_FEEDS_MASTER != null) {
-//	Log.d(TAG, Constants.CSV_FEEDS_MASTER.toString());
-//}
-		
+
 		Bundle bundle = getIntent().getExtras();
 		if (bundle != null) {
 			Query query = (Query) bundle.getParcelable("this_query");
@@ -43,18 +39,6 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 		}
 		
 		search();
-		
-//		if (bundle == null) {
-//			search();
-//		}
-//		else {
-//			Query query = (Query) bundle.getParcelable("this_query");
-//			if (query != null) {
-//				Log.d(TAG, "Using transmitted parcelable: " + query.toString());
-//				search(query);
-//			}
-//		}
-
 	}
 	
 	// @Override protected void onActivityResult(int requestCode, int resultCode, Intent intent) { }

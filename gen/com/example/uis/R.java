@@ -1130,9 +1130,10 @@ containing a value of this type.
         public static final int gdcemptyroom=0x7f020088;
         public static final int ic_launcher=0x7f020089;
         public static final int no_cxn_dinosaur=0x7f02008a;
+        public static final int no_cxn_dinosaur_transparent=0x7f02008b;
     }
     public static final class id {
-        public static final int abort_button=0x7f060051;
+        public static final int abort_button=0x7f060052;
         public static final int action_bar=0x7f06001c;
         public static final int action_bar_activity_content=0x7f060015;
         public static final int action_bar_container=0x7f06001b;
@@ -1144,28 +1145,28 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f060016;
         public static final int action_menu_presenter=0x7f060017;
         public static final int action_mode_close_button=0x7f060024;
-        public static final int action_settings=0x7f060057;
+        public static final int action_settings=0x7f060058;
         public static final int activity_chooser_view_content=0x7f060025;
         public static final int always=0x7f06000b;
         public static final int background=0x7f06003f;
         public static final int beginning=0x7f060011;
-        public static final int cancel_button=0x7f060055;
+        public static final int cancel_button=0x7f060056;
         public static final int checkbox=0x7f06002d;
         public static final int collapseActionView=0x7f06000d;
-        public static final int continue_button=0x7f06004f;
+        public static final int continue_button=0x7f060050;
         public static final int dateButton=0x7f060044;
         public static final int default_activity_button=0x7f060028;
         public static final int dialog=0x7f06000e;
-        public static final int dinosaur=0x7f06004d;
+        public static final int dinosaur=0x7f06004e;
         public static final int disableHome=0x7f060008;
         public static final int dropdown=0x7f06000f;
         public static final int edit_query=0x7f060030;
         public static final int end=0x7f060013;
-        public static final int error_msg=0x7f06004e;
+        public static final int error_msg=0x7f06004f;
         public static final int expand_activities_button=0x7f060026;
         public static final int expanded_menu=0x7f06002c;
-        public static final int find_room_for_later=0x7f060053;
-        public static final int find_room_now=0x7f060052;
+        public static final int find_room_for_later=0x7f060054;
+        public static final int find_room_now=0x7f060053;
         public static final int get_Room=0x7f060049;
         public static final int has_power=0x7f060048;
         public static final int home=0x7f060014;
@@ -1182,16 +1183,17 @@ containing a value of this type.
         public static final int never=0x7f060009;
         public static final int new_Room=0x7f060041;
         public static final int no_cxn_msg=0x7f06004b;
+        public static final int no_cxn_smartass_msg=0x7f06004d;
         public static final int no_get_new_Room=0x7f06003d;
         public static final int none=0x7f060010;
         public static final int normal=0x7f060000;
-        public static final int number_picker=0x7f060054;
+        public static final int number_picker=0x7f060055;
         public static final int ohkay=0x7f060040;
         public static final int progressSpinner=0x7f06004c;
         public static final int progress_circular=0x7f060018;
         public static final int progress_horizontal=0x7f060019;
         public static final int radio=0x7f06002f;
-        public static final int restart_button=0x7f060050;
+        public static final int restart_button=0x7f060051;
         public static final int room_num=0x7f060042;
         public static final int search_badge=0x7f060032;
         public static final int search_bar=0x7f060031;
@@ -1203,7 +1205,7 @@ containing a value of this type.
         public static final int search_plate=0x7f060036;
         public static final int search_src_text=0x7f060037;
         public static final int search_voice_btn=0x7f06003b;
-        public static final int set_button=0x7f060056;
+        public static final int set_button=0x7f060057;
         public static final int shortcut=0x7f06002e;
         public static final int showCustom=0x7f060007;
         public static final int showHome=0x7f060004;
@@ -1352,13 +1354,13 @@ containing a value of this type.
          */
         public static final int cancel=0x7f0b001a;
         public static final int continue_msg=0x7f0b001d;
-        public static final int current_query=0x7f0b002e;
+        public static final int current_query=0x7f0b002f;
         public static final int find_room_later=0x7f0b0019;
         /**  Main 
          */
         public static final int find_room_now=0x7f0b0018;
-        public static final int get_room=0x7f0b002c;
-        public static final int get_room_enthusiastic=0x7f0b002d;
+        public static final int get_room=0x7f0b002d;
+        public static final int get_room_enthusiastic=0x7f0b002e;
         public static final int hello_world=0x7f0b000f;
         /**  Load CSV failure dialogs 
          */
@@ -1367,37 +1369,38 @@ containing a value of this type.
          */
         public static final int loading_msg=0x7f0b0016;
         public static final int need_cxn_msg=0x7f0b0017;
-        public static final int new_room=0x7f0b0022;
-        public static final int new_room_caps=0x7f0b0023;
-        public static final int no=0x7f0b0030;
+        public static final int new_room=0x7f0b0023;
+        public static final int new_room_caps=0x7f0b0024;
+        public static final int no=0x7f0b0031;
+        public static final int no_cxn_msg=0x7f0b0021;
         /**  Wait for cxn activity 
          */
-        public static final int no_cxn_msg=0x7f0b0020;
+        public static final int no_cxn_smartass_msg=0x7f0b0020;
         /**  Find room activity 
          */
-        public static final int ok=0x7f0b0021;
-        public static final int power_plugs_question=0x7f0b002b;
-        public static final int quit_question=0x7f0b0031;
+        public static final int ok=0x7f0b0022;
+        public static final int power_plugs_question=0x7f0b002c;
+        public static final int quit_question=0x7f0b0032;
         public static final int restart=0x7f0b001e;
-        public static final int search_later=0x7f0b0026;
+        public static final int search_later=0x7f0b0027;
         public static final int set=0x7f0b001b;
-        public static final int set_minimum_capacity=0x7f0b002a;
-        public static final int set_minimum_duration=0x7f0b0029;
+        public static final int set_minimum_capacity=0x7f0b002b;
+        public static final int set_minimum_duration=0x7f0b002a;
         /**  Find room later activity 
          */
-        public static final int set_start_date=0x7f0b0027;
-        public static final int set_start_time=0x7f0b0028;
-        public static final int title_activity_activity_wait_for_cxn=0x7f0b0032;
+        public static final int set_start_date=0x7f0b0028;
+        public static final int set_start_time=0x7f0b0029;
+        public static final int title_activity_activity_wait_for_cxn=0x7f0b0033;
         public static final int title_activity_exit=0x7f0b0014;
         public static final int title_activity_find_room=0x7f0b0012;
         public static final int title_activity_find_room_later=0x7f0b0013;
         public static final int title_activity_load_csv=0x7f0b0015;
         public static final int title_activity_main=0x7f0b0011;
-        public static final int try_room=0x7f0b0024;
-        public static final int try_room_caps=0x7f0b0025;
+        public static final int try_room=0x7f0b0025;
+        public static final int try_room_caps=0x7f0b0026;
         /**  Exit activity 
          */
-        public static final int yes=0x7f0b002f;
+        public static final int yes=0x7f0b0030;
     }
     public static final class style {
         /** 

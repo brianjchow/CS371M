@@ -87,7 +87,7 @@ final class Constants {
 	public static final		String		SEMINAR;
 	
 	static {
-		DEBUG						=	true;
+		DEBUG						=	false;
 		
 		ALL_DAY						=	"all day";
 		ATRIUM						=	"Atrium";
