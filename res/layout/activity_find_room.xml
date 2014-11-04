@@ -11,8 +11,104 @@
     tools:context="com.example.uis.ActivityRoomRec" 
     android:orientation="vertical"
     >
+        
+    <LinearLayout
+        android:id = "@+id/bottom_button_bar"
+        android:layout_width = "match_parent"
+        android:layout_height = "wrap_content"
+        android:layout_alignParentBottom = "true" >
+    
+	    <Button
+	        android:id="@+id/ohkay"
+	        android:layout_width="0dp"
+	        android:layout_height="50dp"
+	        android:layout_weight = "1"
+	        android:text="@string/home"
+	        android:textSize = "12sp"
+	        android:textColor = "@color/white" />
+	    
+	    <View
+	        android:layout_height = "fill_parent"
+	        android:layout_width = "2px"
+	        android:background = "@color/white" />
+	    
+	    <Button
+	        android:id="@+id/new_Room"
+	        android:layout_width="0dp"
+	        android:layout_height="50dp"
+	        android:layout_weight = "1"
+	        android:text="@string/new_room"
+	        android:textSize = "12sp"
+	        android:textColor = "@color/white" />
+	    
+	    <View
+	        android:layout_height = "fill_parent"
+	        android:layout_width = "2px"
+	        android:background = "@color/white" />
+	    
+	    <Button
+	        android:id="@+id/find_room_later"
+	        android:layout_width="0dp"
+	        android:layout_height="50dp"
+	        android:layout_weight = "1"
+	        android:text="@string/search_options"
+	        android:textSize = "10sp"
+	        android:textColor = "@color/white" />
+	    	    	    	    
+    </LinearLayout>
 
+    <TextView
+        android:id = "@+id/this_query"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above = "@+id/bottom_button_bar"
+        android:layout_marginBottom = "10dp"
+        android:text = "@string/current_query"
+        android:textSize="12sp"
+        android:textColor = "@color/white" />
+    
+    <TextView
+        android:id = "@+id/room_num"
+        android:layout_width = "wrap_content"
+        android:layout_height = "wrap_content"
+        android:layout_marginTop = "15dp"
+        android:ems = "10"
+        android:gravity = "center"
+        android:text = "4.302"
+        android:textSize = "40sp"
+        android:textColor = "@color/text_colour" />
 
+</RelativeLayout>
+
+<!-- 
+
+    <TextView
+        android:id = "@+id/title_heading"
+        android:layout_width = "wrap_content"
+        android:layout_height = "wrap_content"
+        android:ems = "10"
+        android:gravity = "center"
+        android:text = "@string/try_room"
+        android:textSize = "40sp"
+        android:textColor = "#ffffff" />
+        
+    <Button
+        android:id="@+id/search_later"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop = "16dp"
+      	android:layout_marginLeft = "76dp"
+        android:layout_below="@+id/room_num"
+        android:background="#1975FF"
+        android:text="@string/search_later"
+        android:textSize="16sp" />
+
+-->
+
+<!--
+
+	ORIGINAL
+    
     <Button
         android:id="@+id/ohkay"
         android:layout_width="wrap_content"
@@ -24,7 +120,6 @@
         android:background="#1975FF"
         android:textSize="36sp"
         android:text="@string/ok" />
-
 
         <Button
             android:id="@+id/new_Room"
@@ -64,30 +159,5 @@
             android:text="4.302"
             android:textSize="48sp" 
             />
-    
-    <TextView
-        android:id = "@+id/this_query"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/new_Room"
-        android:layout_marginTop="20dp"
-        android:text = "@string/current_query"
-        android:textSize="12sp"
-        />
-
-</RelativeLayout>
-
-<!-- 
-    
-    <Button
-        android:id="@+id/search_later"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop = "16dp"
-      	android:layout_marginLeft = "76dp"
-        android:layout_below="@+id/room_num"
-        android:background="#1975FF"
-        android:text="@string/search_later"
-        android:textSize="16sp" />
-
+     
 -->

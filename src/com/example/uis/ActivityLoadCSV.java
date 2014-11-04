@@ -11,12 +11,14 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /*
@@ -30,6 +32,7 @@ import android.widget.Toast;
 public class ActivityLoadCSV extends ActionBarActivity {
 
 	private static final String TAG = "ActivityLoadCSV";
+	private static final int TIMEOUT_AFTER = 15000;		// milliseconds
 
 	private Context mContext;
 	
@@ -50,21 +53,34 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		if (!is_connected_wifi_or_mobile()) {
 			Log.d(TAG, "No wifi and/or mobile cxn detected on startup, onCreate(), LoadCSV");
 			goto_wait_for_cxn();
+			return;
 		}
 
-		ReadFeedTask read_csv = new ReadFeedTask();
+		final ReadFeedTask read_csv = new ReadFeedTask();
 		read_csv.execute(this);
 //		read_csv.cancel(true);
 		
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
+					read_csv.cancel(true);
+				}
+			}
+			
+		}, TIMEOUT_AFTER);
+		
 	}
 	
+	// MUST CALL return AFTER CALLING THIS METHOD
 	private void goto_wait_for_cxn() {
 		Constants.CSV_FEEDS_MASTER = null;
 		Constants.CSV_FEEDS_CLEANED = null;
 		
 		startActivity(new Intent(ActivityLoadCSV.this, ActivityWaitForCxn.class));
 		finish();
-		return;
 	}
 	
 	@Override
@@ -102,6 +118,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 					if (!net_info.getState().equals(NetworkInfo.State.CONNECTED)) {
 						Log.d(TAG, "Network connectivity just disabled");
 						goto_wait_for_cxn();
+						return;
 					}
 					
 //					if ((net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE) && !net_info.isConnected()) {
@@ -112,6 +129,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 				else {
 					// ??? assume disconnected ???
 					goto_wait_for_cxn();
+					return;
 				}
 
 			}
@@ -176,8 +194,8 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		
 		@Override
 		protected void onCancelled(Boolean done) {
-			Log.d(TAG, "Unexpected cancellation");
-			show_failure_dialog();
+			Log.d(TAG, "Timed out");
+			show_warning_dialog();
 		}
 		
 		@Override
@@ -202,6 +220,51 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		}
 	}
 
+	private void show_warning_dialog() {
+		final Dialog dialog = new Dialog(ActivityLoadCSV.this);
+		dialog.setTitle("Warning");
+		dialog.setContentView(R.layout.load_csv_failure_dialog);
+		dialog.setCancelable(false);		
+		
+		TextView err_msg = (TextView) dialog.findViewById(R.id.error_msg);
+		err_msg.setText("This app uses information obtained directly from the CS department.\n\n" +
+						"However, it appears you have been blocked from accessing their servers. " +
+						"You may proceed, but search results may be more accurate if you try again later.\n\n" +
+						"Continue/abort?");
+		
+		dialog.findViewById(R.id.restart_button).setVisibility(View.GONE);
+		
+		Button continue_button = (Button) dialog.findViewById(R.id.continue_button);
+		Button abort_button = (Button) dialog.findViewById(R.id.abort_button);
+		
+		continue_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Constants.CSV_FEEDS_MASTER = null;
+				Constants.CSV_FEEDS_CLEANED = null;
+				Constants.init(mContext, true);
+				
+				dialog.dismiss();
+				startActivity(new Intent(mContext, ActivityMain.class));
+				finish();
+				return;
+			}
+		});
+
+		abort_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+				finish();
+				return;
+			}
+		});
+		
+		dialog.show();
+	}
+	
 	private void show_failure_dialog() {
 		final Dialog dialog = new Dialog(ActivityLoadCSV.this);
 		dialog.setTitle("Load failure");
@@ -216,6 +279,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG, "Failed to complete reading CSV, now entering MainActivity...");
+				dialog.dismiss();
 				startActivity(new Intent(mContext, ActivityMain.class));
 				finish();
 				return;
@@ -227,6 +291,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG, "Failed to complete reading CSV, now restarting app...");
+				dialog.dismiss();
 				startActivity(new Intent(mContext, ActivityLoadCSV.class));
 				finish();
 				return;
@@ -238,6 +303,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG, "Failed to complete reading CSV, now aborting...");
+				dialog.dismiss();
 				finish();
 				return;
 			}

@@ -104,11 +104,15 @@ final class CSVReader {
 		}
 		return false;
 	}
+	
+	protected static EventList read_csv(Context context) {
+		return read_csv(context, Constants.DEBUG);
+	}
 		
 	/**
 	 * @return An EventList of events parsed from a CSV feed(s).
 	 */
-	protected static EventList read_csv(Context context) {
+	protected static EventList read_csv(Context context, boolean read_from_local_feeds) {
 		if (Constants.CSV_FEEDS_MASTER != null) {
 			return Constants.CSV_FEEDS_MASTER.clone();
 		}
@@ -124,7 +128,7 @@ final class CSVReader {
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.start();
 
-		if (!Constants.DEBUG) {
+		if (!read_from_local_feeds) {
 			Log.d(TAG, "Now reading from UTCS servers");
 //			event_strings = reader.read_csv_from_url(ALL_EVENTS_SCHEDULE);
 //			events.add(event_strings);

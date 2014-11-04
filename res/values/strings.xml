@@ -10,14 +10,16 @@
     <string name="title_activity_find_room_later">Find room later</string>
     <string name="title_activity_exit">Quit</string>
     <string name="title_activity_load_csv">LoadCSVActivity</string>
+    
+    <string name = "home">Home</string>
 
     <!-- Load CSV -->
-    <string name="loading_msg">Loading...</string>
+    <string name="loading_msg">Loading&#8230;</string>
     <string name="need_cxn_msg">Get yoself a wifi/mobile connection</string>
 
     <!-- Main -->
-    <string name="find_room_now">Find a room now!</string>
-    <string name="find_room_later">Find a room later!</string>
+    <string name="find_room_now">Find a room now</string>
+    <string name="find_room_later">Find a room later</string>
 
     <!-- Number picker dialogs -->
     <string name="cancel">Cancel</string>
@@ -32,6 +34,9 @@
     <!-- Wait for cxn activity -->
     <string name = "no_cxn_smartass_msg">What is this, 1979?</string>
     <string name = "no_cxn_msg">No connection</string>
+    <string name = "try_again">Try again</string>
+    <string name = "quit">Quit</string>
+    <string name = "content_desc">No connection image</string>
 
     <!-- Find room activity -->
     <string name="ok">OK</string>
@@ -40,6 +45,7 @@
     <string name="try_room">Try room</string>
     <string name="try_room_caps">TRY ROOM</string>
     <string name = "search_later">Search later</string>
+    <string name = "search_options">Search options</string>
 
     <!-- Find room later activity -->
     <string name="set_start_date">Set start date</string>

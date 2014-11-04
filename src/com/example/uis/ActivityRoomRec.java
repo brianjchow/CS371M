@@ -16,11 +16,6 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 
 	private final String TAG = "RoomRecActivity";
 	
-	private Button ohkay;
-	private Button newRoom;
-	private TextView roomRecText;
-	private String recommendation;
-	
 	private Query this_query;
 
 	@Override
@@ -49,12 +44,16 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 	
 	private void search(Query query) {
 		setContentView(R.layout.activity_find_room);
-		ohkay = (Button)findViewById(R.id.ohkay);
-		newRoom = (Button)findViewById(R.id.new_Room);
+		
+		Button ohkay = (Button) findViewById(R.id.ohkay);
+		Button newRoom = (Button) findViewById(R.id.new_Room);
+		Button find_room_later_button = (Button) findViewById(R.id.find_room_later);
 		ohkay.setOnClickListener(this);
 		newRoom.setOnClickListener(this);
-		recommendation = query.search();
-		setTextViewInfo();
+		find_room_later_button.setOnClickListener(this);
+		
+		String recommendation = query.search();
+		setTextViewInfo(recommendation);
 		
 		View background = findViewById(R.id.background);
 		if (!recommendation.equals(Constants.NO_ROOMS_AVAIL_MSG)) {
@@ -82,9 +81,12 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 		return id;
 	}
 
-	private void setTextViewInfo() {	// get the TextViews
-		roomRecText = (TextView) findViewById(R.id.room_num);
-		roomRecText.setText(recommendation);
+	private void setTextViewInfo(String recommendation) {
+		TextView roomRecText = (TextView) findViewById(R.id.room_num);
+		if (!recommendation.equals(Constants.NO_ROOMS_AVAIL_MSG)) {
+			recommendation = "Try " + recommendation;
+		}
+		roomRecText.setText(recommendation);		
 	}
 	
 	private void update_query_textview(Query query) {
@@ -119,12 +121,12 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
 	}
 	
-//	private void search_later() {
-//		Intent intent = new Intent(getApplicationContext(), ActivityFindRoomLater.class);
-//		intent.putExtra("this_query", this_query);
-//		startActivity(intent);
-//		finish();
-//	}
+	private void find_room_later() {
+		Intent intent = new Intent(getApplicationContext(), ActivityFindRoomLater.class);
+		intent.putExtra("this_query", this_query);
+		startActivity(intent);
+		finish();
+	}
 
 	@Override
 	public void onClick(View v) {
@@ -139,10 +141,10 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 //				getRoomRec();
 				search();
 				break;
-//			case R.id.search_later:
-//				Log.d(TAG, "Clicked search later button");
-//				search_later();
-//				break;
+			case R.id.find_room_later:
+				Log.d(TAG, "Clicked search later button");
+				find_room_later();
+				break;
 		}
 
 	}

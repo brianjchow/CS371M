@@ -11,6 +11,33 @@
     android:orientation="vertical"
     >
 
+    <LinearLayout
+        android:id = "@+id/bottom_button_bar"
+        android:layout_width = "match_parent"
+        android:layout_height = "wrap_content"
+        android:layout_alignParentBottom = "true" >
+
+	    <Button
+	        android:id="@+id/get_Room"
+	        android:layout_width="0dp"
+	        android:layout_height="50dp"
+	        android:layout_weight = "1"
+	        android:text="@string/get_room_enthusiastic"
+	        android:textSize = "24sp"
+	        android:textColor = "@color/white" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id = "@+id/this_query"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom_button_bar"
+        android:layout_marginBottom="10dp"
+        android:text = "@string/current_query"
+        android:textSize="12sp"
+        android:textColor = "@color/white" />
+    
     <Button
         android:id="@+id/dateButton"
         android:layout_width="wrap_content"
@@ -51,6 +78,26 @@
         android:textSize="15sp"
         android:checked="false" />
 
+</RelativeLayout>
+
+<!--
+
+    <TextView
+        android:id = "@+id/this_query"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/get_Room"
+        android:layout_marginTop="20dp"
+        android:text = "@string/current_query"
+        android:textSize="12sp"
+        android:textColor = "#ffffff" />
+
+-->
+
+<!--
+
+	ORIGINAL
+
     <Button
         android:id="@+id/get_Room"
         android:layout_width="wrap_content"
@@ -61,18 +108,8 @@
         android:background="#1975FF"
         android:text="@string/get_room_enthusiastic"
         android:textSize="36sp" />
-    
-    <TextView
-        android:id = "@+id/this_query"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/get_Room"
-        android:layout_marginTop="20dp"
-        android:text = "@string/current_query"
-        android:textSize="12sp"
-        />
-
-</RelativeLayout>
+            
+-->
 
 <!-- 
 

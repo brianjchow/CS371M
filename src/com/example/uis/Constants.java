@@ -87,7 +87,7 @@ final class Constants {
 	public static final		String		SEMINAR;
 	
 	static {
-		DEBUG						=	false;
+		DEBUG						=	true;
 		
 		ALL_DAY						=	"all day";
 		ATRIUM						=	"Atrium";
@@ -169,13 +169,22 @@ final class Constants {
 
 	}
 	
-	public static void init(Context context) {
+	protected static void init(Context context) {
 		if (context == null) {
 			throw new IllegalArgumentException();
 		}
 		
 		CSV_FEEDS_MASTER = CSVReader.read_csv(context);
 		CSV_FEEDS_CLEANED = get_events_cleaned();
+	}
+	
+	protected static void init(Context context, boolean read_from_local_feeds) {
+		if (context == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		CSV_FEEDS_MASTER = CSVReader.read_csv(context, read_from_local_feeds);
+		CSV_FEEDS_CLEANED = get_events_cleaned();	
 	}
 	
 	/*

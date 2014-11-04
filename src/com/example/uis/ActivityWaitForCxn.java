@@ -55,6 +55,27 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 			}, TIMEOUT_AFTER);
 		}
 
+		Button try_again_button = (Button) findViewById(R.id.try_again);
+		try_again_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(ActivityWaitForCxn.this, ActivityLoadCSV.class));
+				finish();
+				return;
+			}
+		});
+		
+		Button quit_button = (Button) findViewById(R.id.quit_button);
+		quit_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				finish();
+				return;
+			}
+		});
+		
 	}
 	
 	@Override

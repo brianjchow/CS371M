@@ -16,5 +16,10 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
+    
+    <color name = "text_colour">#1975ff</color>
+    <color name = "white">#ffffff</color>
+    <color name = "black">#000000</color>
+    <color name = "default_background_grey">#838383</color>
 
 </resources>
