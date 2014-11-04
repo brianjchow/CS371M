@@ -7,7 +7,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/atrium"
-    tools:context="com.example.uis.ActivityFindRoomLater"
+    tools:context="com.example.app.ActivityFindRoomLater"
     android:orientation="vertical"
     >
 

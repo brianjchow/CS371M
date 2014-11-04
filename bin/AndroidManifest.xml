@@ -16,11 +16,11 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
+        android:label="@string/title_activity_load_csv"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".ActivityLoadCSV"
-            android:label="@string/app_name" >
+            android:name="com.example.app.ActivityLoadCSV"
+            android:label="@string/title_activity_load_csv" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,24 +28,24 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ActivityMain"
+            android:name="com.example.app.ActivityMain"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name=".ActivityRoomRec"
+            android:name="com.example.app.ActivityRoomRec"
             android:label="@string/title_activity_find_room" >
         </activity>
         <activity
-            android:name=".ActivityFindRoomLater"
+            android:name="com.example.app.ActivityFindRoomLater"
             android:label="@string/title_activity_find_room_later" >
         </activity>
         <activity
-            android:name=".ActivityExit"
+            android:name="com.example.app.ActivityExit"
             android:label="@string/title_activity_exit" >
         </activity>
         <activity
-            android:name=".ActivityWaitForCxn"
-            android:label="@string/title_activity_activity_wait_for_cxn" >
+            android:name="com.example.app.ActivityWaitForCxn"
+            android:label="@string/title_activity_wait_for_cxn" >
         </activity>
     </application>
 

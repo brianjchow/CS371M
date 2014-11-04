@@ -21,5 +21,7 @@
     <color name = "white">#ffffff</color>
     <color name = "black">#000000</color>
     <color name = "default_background_grey">#838383</color>
+    <color name = "grey">#fbfbfb</color>
+    <color name = "button_border_grey">#e5e5e5</color> <!-- #d9d9d9 for darker grey, #e5e5e5 for lighter grey -->
 
 </resources>

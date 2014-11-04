@@ -9,7 +9,8 @@
     <string name="title_activity_find_room">Room recommendation</string>
     <string name="title_activity_find_room_later">Find room later</string>
     <string name="title_activity_exit">Quit</string>
-    <string name="title_activity_load_csv">LoadCSVActivity</string>
+    <string name="title_activity_load_csv">Loading</string>
+    <string name = "title_activity_wait_for_cxn">No connection</string>
     
     <string name = "home">Home</string>
 
@@ -25,13 +26,20 @@
     <string name="cancel">Cancel</string>
     <string name="set">Set</string>
 
-    <!-- Load CSV failure dialogs -->
+    <!-- Load CSV warning/failure dialogs -->
     <string name="load_error_msg">Unknown error during loading.\n\nProceeding may cause incorrect or incomplete search results.\n\nContinue/restart/abort?</string>
+    <string name = "load_warning_msg">"This app uses information obtained directly from the CS department.\n\n" +
+									  "However, it appears you have been blocked from accessing their servers. " +
+									  "You may proceed, but search results may be more accurate if you try again later.\n\n" +
+									  "Continue/abort?"</string>
+	<string name = "warning">Warning</string>
     <string name="continue_msg">Continue</string>
     <string name="restart">Restart</string>
     <string name="abort">Abort</string>
     
     <!-- Wait for cxn activity -->
+    <string name = "wait_title">Wait for connection timeout</string>
+    <string name = "timeout_exceeded_msg">"Timeout period exceeded.\n\nRestart/abort?"</string>
     <string name = "no_cxn_smartass_msg">What is this, 1979?</string>
     <string name = "no_cxn_msg">No connection</string>
     <string name = "try_again">Try again</string>
