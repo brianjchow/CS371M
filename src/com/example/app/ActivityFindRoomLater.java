@@ -29,7 +29,7 @@ import android.widget.TimePicker;
 public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnDateSetListener, TimePickerDialog.OnTimeSetListener
 
 	private static final String TAG = "FindRoomLaterActivity";
-	private static final int SECS_IN_DAY = 24 * 60 * 60;
+	private static final int SECS_IN_DAY = 1440;		// 24 * 60 * 60
 
 	private Query this_query;
 	
@@ -38,14 +38,25 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_find_room_later);
 
-		this_query = new Query();
-		
-		Bundle bundle = getIntent().getExtras();
-		if (bundle != null) {
-			Query query = (Query) bundle.getParcelable("this_query");
-			if (query != null) {
-				Log.d(TAG, "Using transmitted parcelable: " + query.toString());
-				this_query = query;
+		if (savedInstanceState != null) {
+			Query temp = (Query) savedInstanceState.getParcelable("this_query");
+			if (temp != null) {
+				this_query = temp;
+			}
+			else {
+				this_query = new Query();
+			}
+		}
+		else {
+			this_query = new Query();		
+			
+			Bundle bundle = getIntent().getExtras();
+			if (bundle != null) {
+				Query query = (Query) bundle.getParcelable("this_query");
+				if (query != null) {
+					Log.d(TAG, "Using transmitted parcelable: " + query.toString());
+					this_query = query;
+				}
 			}
 		}
 		
@@ -112,6 +123,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 
 		// http://stackoverflow.com/questions/8386832/android-checkbox-listener
 		CheckBox has_power = (CheckBox) findViewById(R.id.has_power);
+		has_power.setChecked(this_query.get_option_power());
 		has_power.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			
 			@Override
@@ -163,6 +175,22 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			update_query_textview();
 		}
 	};
+
+	private void update_query_textview() {
+		TextView temp = (TextView) findViewById(R.id.this_query);
+		temp.setText("Current query:\n" + this_query.toString());
+	}
+
+	public void getRoomRec() {
+		Intent intent = new Intent(getApplicationContext(), ActivityRoomRec.class);
+		intent.putExtra("this_query", this_query);
+		
+		Log.d(TAG, "Transmitting parcelable to RoomRecActivity: " + this_query.toString());
+		
+		startActivity(intent);
+//		startActivityForResult(intent, 0);
+//		startActivityForResult(new Intent(this, RoomRecActivity.class), 0);
+	}
 	
 	// http://stackoverflow.com/questions/17805040/how-to-create-a-number-picker-dialog
 	// http://stackoverflow.com/questions/16968111/android-numberpicker-doesn%C2%B4t-work
@@ -270,6 +298,13 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		
 		dialog.show();
 	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		outState.putParcelable("this_query", this_query);
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -288,22 +323,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	private void update_query_textview() {
-		TextView temp = (TextView) findViewById(R.id.this_query);
-		temp.setText("Current query:\n" + this_query.toString());
-	}
-
-	public void getRoomRec() {
-		Intent intent = new Intent(getApplicationContext(), ActivityRoomRec.class);
-		intent.putExtra("this_query", this_query);
-		
-		Log.d(TAG, "Transmitting parcelable to RoomRecActivity: " + this_query.toString());
-		
-		startActivity(intent);
-//		startActivityForResult(intent, 0);
-//		startActivityForResult(new Intent(this, RoomRecActivity.class), 0);
 	}
 
 /*

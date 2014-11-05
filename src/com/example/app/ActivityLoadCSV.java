@@ -1,7 +1,5 @@
 package com.example.app;
 
-import com.example.uis.R;
-
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -23,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.uis.R;
+
 /*
  * TODO: behaviour when cxn shuts off in the middle of reading
  * 
@@ -43,6 +43,8 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_load_csv);
 		findViewById(R.id.no_cxn_msg).setVisibility(View.GONE);
+		
+//		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		
 		// http://learniosandroid.blogspot.com/2013/04/android-customising-progress-spinner.html
 		ImageView progressSpinner = (ImageView) findViewById(R.id.progressSpinner);
@@ -123,6 +125,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 //						return;
 //					}
 					
+					// call AsyncTask.cancel() here?
 					if ((net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE) && !net_info.isConnected()) {
 						goto_wait_for_cxn();
 					}

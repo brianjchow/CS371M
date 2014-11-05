@@ -1,0 +1,99 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.app.ActivityLoadCSV" 
+    android:orientation="horizontal"
+    >
+    
+    <LinearLayout
+    	style = "?android:attr/buttonBarStyle"
+        android:id = "@+id/bottom_button_bar"
+        android:layout_width = "match_parent"
+        android:layout_height = "wrap_content"
+        android:layout_alignParentBottom = "true" >
+
+	    <Button
+	        style = "?android:attr/buttonBarButtonStyle"
+	        android:id="@+id/continue_button"
+	        android:layout_width="0dp"
+	        android:layout_height="40dp"
+	        android:layout_weight = "1"
+	        android:text="@string/continue_msg"
+	        android:textSize = "14sp" />
+	    
+	    <View
+	        android:layout_height = "fill_parent"
+	        android:layout_width = "1dp"
+	        android:background = "@color/button_border_grey" />
+	    	
+	    <Button
+	        style = "?android:attr/buttonBarButtonStyle"
+	        android:id="@+id/restart_button"
+	        android:layout_width="0dp"
+	        android:layout_height="40dp"
+	        android:layout_weight = "1"
+	        android:text="@string/restart"
+	        android:textSize = "14sp" />
+	    
+	    <View
+	        android:layout_height = "fill_parent"
+	        android:layout_width = "1dp"
+	        android:background = "@color/button_border_grey" />
+	    	    
+	    <Button
+	        style = "?android:attr/buttonBarButtonStyle"
+	        android:id="@+id/abort_button"
+	        android:layout_width="0dp"
+	        android:layout_height="40dp"
+	        android:layout_weight = "1"
+	        android:text="@string/abort"
+	        android:textSize = "14sp" />
+            
+    </LinearLayout>
+    
+    <View
+        android:layout_above = "@+id/bottom_button_bar"
+        android:layout_width = "fill_parent"
+        android:layout_height = "1dp"
+        android:background = "@color/button_border_grey" />
+        
+    <TextView
+        android:id = "@+id/error_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft = "17dp"
+        android:layout_marginRight = "17dp"
+        android:text = "@string/load_error_msg"
+        android:textSize = "16sp"
+        />
+
+</RelativeLayout>
+
+<!-- 
+    
+    <TextView
+        android:id = "@+id/error_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text = "@string/load_error_msg"
+        />
+    
+    style = "?android:attr/buttonBarStyle"
+    
+    <Button
+        style = "?android:attr/buttonBarButtonStyle"
+        android:id="@+id/abort_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/continue_button"
+        android:layout_alignBottom="@+id/continue_button"
+        android:layout_marginRight="16dp"
+        android:layout_toRightOf="@+id/restart_button"
+        android:text="Abort" />
+    
+-->
+

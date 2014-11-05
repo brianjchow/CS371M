@@ -4,7 +4,7 @@
     android:layout_height="250dp"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.app.ActivityFindRoomLater" 
-    android:orientation="vertical"
+    android:orientation="horizontal"
     >
 
     <LinearLayout

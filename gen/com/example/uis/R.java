@@ -1356,71 +1356,72 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abc_shareactionprovider_share_with_application=0x7f0b000b;
-        public static final int abort=0x7f0b0023;
+        public static final int abort=0x7f0b0024;
         public static final int action_settings=0x7f0b0010;
         public static final int app_name=0x7f0b000d;
         public static final int app_name_caps=0x7f0b000e;
         /**  Number picker dialogs 
          */
-        public static final int cancel=0x7f0b001c;
-        public static final int content_desc=0x7f0b002a;
-        public static final int continue_msg=0x7f0b0021;
-        public static final int current_query=0x7f0b0039;
-        public static final int find_room_later=0x7f0b001b;
+        public static final int cancel=0x7f0b001d;
+        public static final int continue_msg=0x7f0b0022;
+        public static final int current_query=0x7f0b003a;
+        public static final int find_room_later=0x7f0b001c;
         /**  Main 
          */
-        public static final int find_room_now=0x7f0b001a;
-        public static final int get_room=0x7f0b0037;
-        public static final int get_room_enthusiastic=0x7f0b0038;
+        public static final int find_room_now=0x7f0b001b;
+        public static final int get_room=0x7f0b0038;
+        public static final int get_room_enthusiastic=0x7f0b0039;
         public static final int hello_world=0x7f0b000f;
         public static final int home=0x7f0b0017;
         /**  Load CSV warning/failure dialogs 
          */
-        public static final int load_error_msg=0x7f0b001e;
-        public static final int load_warning_msg=0x7f0b001f;
+        public static final int load_error_msg=0x7f0b001f;
+        public static final int load_warning_msg=0x7f0b0020;
         /**  Load CSV 
          */
         public static final int loading_msg=0x7f0b0018;
+        public static final int loading_spinner_desc=0x7f0b001a;
         public static final int need_cxn_msg=0x7f0b0019;
-        public static final int new_room=0x7f0b002c;
-        public static final int new_room_caps=0x7f0b002d;
-        public static final int no=0x7f0b003b;
-        public static final int no_cxn_msg=0x7f0b0027;
-        public static final int no_cxn_smartass_msg=0x7f0b0026;
+        public static final int new_room=0x7f0b002d;
+        public static final int new_room_caps=0x7f0b002e;
+        public static final int no=0x7f0b003c;
+        public static final int no_cxn_dinosaur_desc=0x7f0b002b;
+        public static final int no_cxn_msg=0x7f0b0028;
+        public static final int no_cxn_smartass_msg=0x7f0b0027;
         /**  Find room activity 
          */
-        public static final int ok=0x7f0b002b;
-        public static final int power_plugs_question=0x7f0b0036;
-        public static final int quit=0x7f0b0029;
-        public static final int quit_question=0x7f0b003c;
-        public static final int restart=0x7f0b0022;
-        public static final int search_later=0x7f0b0030;
-        public static final int search_options=0x7f0b0031;
-        public static final int set=0x7f0b001d;
-        public static final int set_minimum_capacity=0x7f0b0035;
-        public static final int set_minimum_duration=0x7f0b0034;
+        public static final int ok=0x7f0b002c;
+        public static final int power_plugs_question=0x7f0b0037;
+        public static final int quit=0x7f0b002a;
+        public static final int quit_question=0x7f0b003d;
+        public static final int restart=0x7f0b0023;
+        public static final int search_later=0x7f0b0031;
+        public static final int search_options=0x7f0b0032;
+        public static final int set=0x7f0b001e;
+        public static final int set_minimum_capacity=0x7f0b0036;
+        public static final int set_minimum_duration=0x7f0b0035;
         /**  Find room later activity 
          */
-        public static final int set_start_date=0x7f0b0032;
-        public static final int set_start_time=0x7f0b0033;
-        public static final int timeout_exceeded_msg=0x7f0b0025;
-        public static final int title_activity_activity_wait_for_cxn=0x7f0b003d;
+        public static final int set_start_date=0x7f0b0033;
+        public static final int set_start_time=0x7f0b0034;
+        public static final int timeout_exceeded_msg=0x7f0b0026;
+        public static final int title_activity_activity_wait_for_cxn=0x7f0b003e;
         public static final int title_activity_exit=0x7f0b0014;
         public static final int title_activity_find_room=0x7f0b0012;
         public static final int title_activity_find_room_later=0x7f0b0013;
         public static final int title_activity_load_csv=0x7f0b0015;
         public static final int title_activity_main=0x7f0b0011;
         public static final int title_activity_wait_for_cxn=0x7f0b0016;
-        public static final int try_again=0x7f0b0028;
-        public static final int try_room=0x7f0b002e;
-        public static final int try_room_caps=0x7f0b002f;
+        public static final int try_again=0x7f0b0029;
+        public static final int try_room=0x7f0b002f;
+        public static final int try_room_caps=0x7f0b0030;
         /**  Wait for cxn activity 
          */
-        public static final int wait_title=0x7f0b0024;
-        public static final int warning=0x7f0b0020;
+        public static final int wait_title=0x7f0b0025;
+        public static final int warning=0x7f0b0021;
         /**  Exit activity 
          */
-        public static final int yes=0x7f0b003a;
+        public static final int yes=0x7f0b003b;
     }
     public static final class style {
         /** 

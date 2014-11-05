@@ -8,7 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/gdcemptyroom"
     tools:context="com.example.app.ActivityRoomRec" 
-    android:orientation="vertical"
+    android:orientation="horizontal"
     >
 
     <Button
@@ -23,6 +23,7 @@
         android:textSize="36sp"
         android:text="@string/yes" />
 
+    
     	<Button
     	    android:id="@+id/no_get_new_Room"
     	    android:layout_width="wrap_content"
@@ -34,6 +35,7 @@
     	    android:background="#1975FF"
     	    android:text="@string/no"
     	    android:textSize="36sp" />
+    	
     	
     	<TextView
             android:id="@+id/title_heading"

@@ -14,6 +14,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+/*
+ * USE DialogFragment TO REOPEN DIALOG UPON ORIENTATION CHANGE
+ *	// OR THIS: http://stackoverflow.com/questions/1111980/how-to-handle-screen-orientation-change-when-progress-dialog-and-background-thre
+ */
+
 public class ActivityRoomRec extends ActionBarActivity implements View.OnClickListener {
 
 	private final String TAG = "RoomRecActivity";
@@ -23,17 +28,37 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		this_query = new Query();
 
-		Bundle bundle = getIntent().getExtras();
-		if (bundle != null) {
-			Query query = (Query) bundle.getParcelable("this_query");
-			if (query != null) {
-				Log.d(TAG, "Using transmitted parcelable: " + query.toString());
-				this_query = query;
+		if (savedInstanceState != null) {
+			Query temp = (Query) savedInstanceState.getParcelable("this_query");
+			if (temp != null) {
+				this_query = temp;
+			}
+			else {
+				this_query = new Query();
 			}
 		}
+		else {
+			this_query = new Query();		
+			
+			Bundle bundle = getIntent().getExtras();
+			if (bundle != null) {
+				Query query = (Query) bundle.getParcelable("this_query");
+				if (query != null) {
+					Log.d(TAG, "Using transmitted parcelable: " + query.toString());
+					this_query = query;
+				}
+			}
+		}
+		
+//		Bundle bundle = getIntent().getExtras();
+//		if (bundle != null) {
+//			Query query = (Query) bundle.getParcelable("this_query");
+//			if (query != null) {
+//				Log.d(TAG, "Using transmitted parcelable: " + query.toString());
+//				this_query = query;
+//			}
+//		}
 		
 		search();
 	}
@@ -95,6 +120,13 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 		TextView temp = (TextView) findViewById(R.id.this_query);
 		temp.setText("Current query:\n" + query.toString());
 	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		outState.putParcelable("this_query", this_query);
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -116,11 +148,13 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 	}
 
 	public void exit() {
-		startActivityForResult(new Intent(this, ActivityExit.class), 0);
+//		startActivityForResult(new Intent(this, ActivityExit.class), 0);
+		startActivity(new Intent(ActivityRoomRec.this, ActivityExit.class));
 	}
 
 	public void getRoomRec() {
-		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
+//		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
+		startActivity(new Intent(ActivityRoomRec.this, ActivityFindRoomLater.class));
 	}
 	
 	private void find_room_later() {

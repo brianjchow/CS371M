@@ -17,6 +17,7 @@
     <!-- Load CSV -->
     <string name="loading_msg">Loading&#8230;</string>
     <string name="need_cxn_msg">Get yoself a wifi/mobile connection</string>
+    <string name = "loading_spinner_desc">Loading spinner image</string>
 
     <!-- Main -->
     <string name="find_room_now">Find a room now</string>
@@ -44,7 +45,7 @@
     <string name = "no_cxn_msg">No connection</string>
     <string name = "try_again">Try again</string>
     <string name = "quit">Quit</string>
-    <string name = "content_desc">No connection image</string>
+    <string name = "no_cxn_dinosaur_desc">No connection image</string>
 
     <!-- Find room activity -->
     <string name="ok">OK</string>
