@@ -2,28 +2,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.app.ActivityWaitForCxn"
     android:orientation = "horizontal"
     >
+        
+    <LinearLayout
+        android:layout_width = "match_parent"
+        android:layout_height = "wrap_content"
+        android:layout_alignParentBottom = "true" >
+    
+	    <Button
+	        android:id="@+id/try_again"
+	        android:layout_width="0dp"
+	        android:layout_height="30dp"
+	        android:layout_weight = "1"
+	        android:text="@string/try_again"
+	        android:textSize = "12sp" />
 
+	    <Button
+	        android:id="@+id/quit_button"
+	        android:layout_width="0dp"
+	        android:layout_height="30dp"
+	        android:layout_weight = "1"
+	        android:text="@string/quit"
+	        android:textSize = "12sp" />
+	    	    
+    </LinearLayout>
+    
     <TextView
         android:id = "@+id/no_cxn_smartass_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_cxn_smartass_msg"
         android:layout_centerHorizontal = "true"
-        android:textSize = "24sp" />
+        android:textSize = "20sp" />
     
 	<ImageView
 	    android:id="@+id/dinosaur"
-	    android:src = "@drawable/no_cxn_dinosaur_transparent"
+	    android:src = "@drawable/no_cxn_dinosaur_transparent_150p"
 	    android:contentDescription = "@string/no_cxn_dinosaur_desc"
         android:layout_below = "@+id/no_cxn_smartass_msg"
-        android:layout_marginTop = "10dp"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_centerHorizontal="true" />
@@ -35,30 +54,6 @@
         android:layout_below = "@+id/dinosaur"
         android:text="@string/no_cxn_msg"
         android:layout_centerHorizontal = "true"
-        android:textSize = "24sp" />
-        
-    <LinearLayout
-        android:layout_width = "match_parent"
-        android:layout_height = "wrap_content"
-	    android:layout_below = "@+id/no_cxn_msg"
-        android:layout_marginTop = "15dp" >
-    
-	    <Button
-	        android:id="@+id/try_again"
-	        android:layout_width="0dp"
-	        android:layout_height="wrap_content"
-	        android:layout_weight = "1"
-	        android:text="@string/try_again"
-	        android:textSize = "16sp" />
-
-	    <Button
-	        android:id="@+id/quit_button"
-	        android:layout_width="0dp"
-	        android:layout_height="wrap_content"
-	        android:layout_weight = "1"
-	        android:text="@string/quit"
-	        android:textSize = "16sp" />
-	    	    
-    </LinearLayout>
+        android:textSize = "18sp" />
 
 </RelativeLayout>

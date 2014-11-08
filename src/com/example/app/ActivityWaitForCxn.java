@@ -39,7 +39,7 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		setContentView(R.layout.activity_wait_for_cxn);
 		
 		mContext = this;
-		mHasCxn = false;
+		mHasCxn = savedInstanceState.getBoolean("mHasCxn", false);
 
 		final WaitTask wait_task = new WaitTask();
 		wait_task.execute();
@@ -102,6 +102,13 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		// unregister BroadcastReceiver
 		Log.d(TAG, "Unregistering broadcast receiver, onPause()");
 		unregisterReceiver(broadcast_receiver);
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		outState.putBoolean("mHasCxn", mHasCxn);
 	}
 	
 	private BroadcastReceiver broadcast_receiver = new BroadcastReceiver() {

@@ -2,8 +2,6 @@ package com.example.app;
 
 import java.lang.reflect.Field;
 
-import com.example.uis.R;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -11,25 +9,33 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.View.OnClickListener;
 import android.widget.TextView;
+
+import com.example.uis.R;
 
 /*
  * USE DialogFragment TO REOPEN DIALOG UPON ORIENTATION CHANGE
  *	// OR THIS: http://stackoverflow.com/questions/1111980/how-to-handle-screen-orientation-change-when-progress-dialog-and-background-thre
  */
 
-public class ActivityRoomRec extends ActionBarActivity implements View.OnClickListener {
+// public class ActivityRoomRec extends ActionBarActivity implements View.OnClickListener {
+public class ActivityRoomRec extends ActionBarActivity {
 
 	private final String TAG = "RoomRecActivity";
 	
 	private Query this_query;
+	
+	private String curr_recommendation;
+	private int curr_recommendation_res_id;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		setContentView(R.layout.activity_find_room);		
+		
 		if (savedInstanceState != null) {
+//			Log.d(TAG, "Orientation changed, in onCreate(); bground res id: " + savedInstanceState.getInt("curr_recommendation_res_id", -65));
 			Query temp = (Query) savedInstanceState.getParcelable("this_query");
 			if (temp != null) {
 				this_query = temp;
@@ -37,6 +43,20 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 			else {
 				this_query = new Query();
 			}
+			
+			curr_recommendation = savedInstanceState.getString("curr_recommendation", Constants.NO_ROOMS_AVAIL_MSG);
+			curr_recommendation_res_id = savedInstanceState.getInt("curr_recommendation_res_id", 0);
+
+			View background = findViewById(R.id.background);
+			if (!curr_recommendation.equals(Constants.NO_ROOMS_AVAIL_MSG)) {
+				background.setBackgroundResource(curr_recommendation_res_id);
+			}
+			else {
+				background.setBackgroundResource(R.drawable.gdcemptyroom);
+			}
+
+			setTextViewInfo(curr_recommendation);
+			update_query_textview(this_query);
 		}
 		else {
 			this_query = new Query();		
@@ -51,15 +71,33 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 			}
 		}
 		
-//		Bundle bundle = getIntent().getExtras();
-//		if (bundle != null) {
-//			Query query = (Query) bundle.getParcelable("this_query");
-//			if (query != null) {
-//				Log.d(TAG, "Using transmitted parcelable: " + query.toString());
-//				this_query = query;
-//			}
-//		}
+		findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(ActivityRoomRec.this, ActivityMain.class);
+				startActivity(intent);
+				finish();
+				return;
+			}
+		});
 		
+		findViewById(R.id.new_Room).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				search();
+			}
+		});
+		
+		findViewById(R.id.find_room_later).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				find_room_later();
+			}
+		});
+
 		search();
 	}
 	
@@ -70,24 +108,16 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 	}
 	
 	private void search(Query query) {
-		setContentView(R.layout.activity_find_room);
-		
-		Button ohkay = (Button) findViewById(R.id.ohkay);
-		Button newRoom = (Button) findViewById(R.id.new_Room);
-		Button find_room_later_button = (Button) findViewById(R.id.find_room_later);
-		ohkay.setOnClickListener(this);
-		newRoom.setOnClickListener(this);
-		find_room_later_button.setOnClickListener(this);
-		
-		String recommendation = query.search();
-		setTextViewInfo(recommendation);
+		curr_recommendation = query.search();
+		setTextViewInfo(curr_recommendation);
 		
 		View background = findViewById(R.id.background);
-		if (!recommendation.equals(Constants.NO_ROOMS_AVAIL_MSG)) {
-			String temp = new Location(recommendation).get_room().replaceAll("\\.", "");
+		if (!curr_recommendation.equals(Constants.NO_ROOMS_AVAIL_MSG)) {
+			String temp = new Location(curr_recommendation).get_room().replaceAll("\\.", "");
 			int res_id = getResId("gdc_" + temp, R.drawable.class);
 			if (res_id != -1) {
 				background.setBackgroundResource(res_id);	// getResources().getDrawable(int id), View.setBackgroundResource(int id)
+				curr_recommendation_res_id = res_id;
 			}
 		}
 		
@@ -126,6 +156,10 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 		super.onSaveInstanceState(outState);
 		
 		outState.putParcelable("this_query", this_query);
+		outState.putString("curr_recommendation", curr_recommendation);
+		outState.putInt("curr_recommendation_res_id", curr_recommendation_res_id);
+		
+//		Log.d(TAG, "Orientation changed, in onSaveInstanceState(); bground res id: " + outState.getInt("curr_recommendation_res_id", -64));
 	}
 
 	@Override
@@ -164,26 +198,26 @@ public class ActivityRoomRec extends ActionBarActivity implements View.OnClickLi
 		finish();
 	}
 
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.ohkay:
-//				exit();
-				Intent intent = new Intent(this, ActivityMain.class);
-				startActivity(intent);
-				finish();
-				break;
-			case R.id.new_Room:
-//				getRoomRec();
-				search();
-				break;
-			case R.id.find_room_later:
-				Log.d(TAG, "Clicked search later button");
-				find_room_later();
-				break;
-		}
-
-	}
+//	@Override
+//	public void onClick(View v) {
+//		switch (v.getId()) {
+//			case R.id.ohkay:
+////				exit();
+//				Intent intent = new Intent(this, ActivityMain.class);
+//				startActivity(intent);
+//				finish();
+//				break;
+//			case R.id.new_Room:
+////				getRoomRec();
+//				search();
+//				break;
+//			case R.id.find_room_later:
+//				Log.d(TAG, "Clicked search later button");
+//				find_room_later();
+//				break;
+//		}
+//
+//	}
 
 }		// end of file
 

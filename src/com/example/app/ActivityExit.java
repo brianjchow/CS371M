@@ -1,7 +1,5 @@
 package com.example.app;
 
-
-
 import com.example.uis.R;
 
 import android.support.v7.app.ActionBarActivity;
@@ -18,20 +16,18 @@ import android.view.View;
 
 import android.widget.Button;
 
-
-
 public class ActivityExit extends ActionBarActivity implements View.OnClickListener {
 	
-	private Button yes;
-	private Button no;
+//	private Button yes;
+//	private Button no;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_exit);
-		yes = (Button)findViewById(R.id.yes);
-		no = (Button)findViewById(R.id.no_get_new_Room);
+		Button yes = (Button) findViewById(R.id.yes);
+		Button no = (Button) findViewById(R.id.no_get_new_Room);
 		yes.setOnClickListener(this);
 		no.setOnClickListener(this);
 	}
@@ -56,7 +52,8 @@ public class ActivityExit extends ActionBarActivity implements View.OnClickListe
 	}
 
 	public void getRoomRec() {
-		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
+//		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
+		startActivity(new Intent(ActivityExit.this, ActivityFindRoomLater.class));
 	}
 
 	public void exitApp() {

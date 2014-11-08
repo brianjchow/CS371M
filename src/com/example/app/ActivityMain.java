@@ -15,16 +15,16 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 
 	private static final String TAG = "MainActivity";
 	
-	Button find_room_now;
-	Button find_room_later;
+//	Button find_room_now;
+//	Button find_room_later;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.main);
-		find_room_now = (Button)findViewById(R.id.find_room_now);
-		find_room_later = (Button)findViewById(R.id.find_room_for_later);
+		Button find_room_now = (Button) findViewById(R.id.find_room_now);
+		Button find_room_later = (Button) findViewById(R.id.find_room_for_later);
 		find_room_now.setOnClickListener(this);
 		find_room_later.setOnClickListener(this);
 		
