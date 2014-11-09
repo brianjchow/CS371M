@@ -13,12 +13,34 @@ import java.util.TreeMap;
  * identical, even if Constants.java is modified.
  */
 
+@SuppressWarnings("unused")
 final class RoomList {
 
-	private static final String FILE_NAME = "course_schedules/cs_course_schedule_s15.csv";
+	private static final String CS_COURSE_SCHEDULE_S15 = "course_schedules/cs_course_schedule_s15.csv";
+	private static final String FULL_COURSE_SCHEDULE_S15 = "course_schedules/master_course_schedule_s15.csv";
 	private static final int DELIMITER = (int) '\t';
 	private static final int EOL = (int) '#';
-	private static final int STD_LINE_SIZE = 74;
+	private static final int MAX_ROOM_LENGTH = 4;
+	
+	/* If reading from master list, change OFFSET to 1; otherwise, keep at 0 (not sure why this happens) */
+	private static final int OFFSET = 1;
+	private static final int STD_LINE_SIZE = 74 + OFFSET;
+	
+	private static final int INDEX_CLASS_MEETING_DAYS = 28 + OFFSET;
+	private static final int INDEX_CLASS_START_DATE = 29 + OFFSET;
+	private static final int INDEX_CLASS_END_DATE = 30 + OFFSET;
+	private static final int INDEX_CLASS_BUILDING = 31 + OFFSET;
+	private static final int INDEX_CLASS_ROOM = 32 + OFFSET;
+	private static final int INDEX_CLASS_ROOM_CAPACITY = 33 + OFFSET;
+	
+	private static final int INDEX_LAB_MEETING_DAYS = 36 + OFFSET;
+	private static final int INDEX_LAB_START_TIME = 37 + OFFSET;
+	private static final int INDEX_LAB_END_TIME = 38 + OFFSET;
+	private static final int INDEX_LAB_BUILDING = 39 + OFFSET;
+	private static final int INDEX_LAB_ROOM = 40 + OFFSET;
+	private static final int INDEX_LAB_ROOM_CAPACITY = 41 + OFFSET;
+	
+	private static int line_counter = 0;
 	
 	private Map<Location, Room> list;
 	
@@ -45,7 +67,15 @@ final class RoomList {
 			this.add(room);
 		}
 		
+		Stopwatch stopwatch = new Stopwatch();
+		stopwatch.start();
+		
 		this.read_course_schedules();
+		
+		stopwatch.stop();
+		if (Constants.DEBUG) {
+			System.out.printf("\nTook %f seconds to read %d lines from %s\n", stopwatch.time(), line_counter, CS_COURSE_SCHEDULE_S15);
+		}
 	}
 
 	/**
@@ -113,7 +143,7 @@ final class RoomList {
 			this.list = new RoomList().list;
 		}
 		
-		InputReader input = new InputReader(FILE_NAME);
+		InputReader input = new InputReader(FULL_COURSE_SCHEDULE_S15);		// CS_COURSE_SCHEDULE_S15, FULL_COURSE_SCHEDULE_S15
 		
 		StringBuilder curr_line = new StringBuilder(200);
 		List<String> curr_line_tokens = new ArrayList<String>();
@@ -130,6 +160,8 @@ final class RoomList {
 				
 				curr_line.setLength(0);
 				curr_line_tokens = new ArrayList<String>();
+				
+				line_counter++;
 			}
 			else if (curr_char == DELIMITER) {
 //				if (curr_line.length() > 0) {
@@ -163,25 +195,26 @@ final class RoomList {
 	 */
 	private void parse_line(List<String> tokens) {
 		if (tokens == null || tokens.size() != STD_LINE_SIZE) {
+//			System.out.println("hi diddly hoe" + " " + tokens.size());
 			return;
 		}
 		
-		if (tokens.get(28).length() <= 0 || tokens.get(29).length() <= 0 || tokens.get(30).length() <= 0 || tokens.get(31).length() <= 0 || tokens.get(32).length() <= 0) {
+		if (tokens.get(INDEX_CLASS_MEETING_DAYS).length() <= 0 || tokens.get(INDEX_CLASS_START_DATE).length() <= 0 || tokens.get(INDEX_CLASS_END_DATE).length() <= 0 || tokens.get(INDEX_CLASS_BUILDING).length() <= 0 || tokens.get(INDEX_CLASS_ROOM).length() <= 0) {
 			return;
 		}
 
 		Event class_event = null;
-		String class_name = tokens.get(3) + tokens.get(4) + " - " + tokens.get(6);
-		boolean[] class_meeting_days = set_meeting_days(tokens.get(28));
-		Date class_start_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(29))));
-		Date class_end_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(30))));
+		String class_name = tokens.get(3 + OFFSET) + tokens.get(4 + OFFSET) + " - " + tokens.get(6 + OFFSET);
+		boolean[] class_meeting_days = set_meeting_days(tokens.get(INDEX_CLASS_MEETING_DAYS));
+		Date class_start_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_CLASS_START_DATE))));
+		Date class_end_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_CLASS_END_DATE))));
 		
-		String class_room = tokens.get(32);
-		if (class_room.length() < 4) {
-			class_room = pad_trailing_zeroes(class_room, 4);
+		String class_room = tokens.get(INDEX_CLASS_ROOM);
+		if (class_room.length() < MAX_ROOM_LENGTH && Utilities.containsIgnoreCase(class_room, "\\.")) {
+			class_room = pad_trailing_zeroes(class_room, MAX_ROOM_LENGTH);
 		}
 		
-		Location class_location = new Location(tokens.get(31) + " " + class_room);
+		Location class_location = new Location(tokens.get(INDEX_CLASS_BUILDING) + " " + class_room);
 
 //System.out.println(class_name + "\n" + Arrays.toString(class_meeting_days) + "\n" + Utilities.time_to_24h(tokens.get(29)) + "\n" + Utilities.time_to_24h(tokens.get(30)));
 		
@@ -192,24 +225,24 @@ final class RoomList {
 		Location lab_location;
 		
 		/* TODO: is the precondition check sufficient to determine whether or not the class has a lab? */
-		if (tokens.get(36).length() > 0 && tokens.get(37).length() > 0 && tokens.get(38).length() > 0 && tokens.get(39).length() > 0 && tokens.get(40).length() > 0) {
+		if (tokens.get(INDEX_LAB_MEETING_DAYS).length() > 0 && tokens.get(INDEX_LAB_START_TIME).length() > 0 && tokens.get(INDEX_LAB_END_TIME).length() > 0 && tokens.get(INDEX_LAB_BUILDING).length() > 0 && tokens.get(INDEX_LAB_ROOM).length() > 0) {
 			lab_name = class_name + " (Lab)";
-			lab_meeting_days = set_meeting_days(tokens.get(36));
-			lab_start_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(37))));
-			lab_end_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(38))));
+			lab_meeting_days = set_meeting_days(tokens.get(INDEX_LAB_MEETING_DAYS));
+			lab_start_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_LAB_START_TIME))));
+			lab_end_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_LAB_END_TIME))));
 			
-			String lab_room = tokens.get(40);
-			if (lab_room.length() < 4) {
-				lab_room = pad_trailing_zeroes(lab_room, 4);
+			String lab_room = tokens.get(INDEX_LAB_ROOM);
+			if (lab_room.length() < MAX_ROOM_LENGTH && Utilities.containsIgnoreCase(lab_room, ".")) {
+				lab_room = pad_trailing_zeroes(lab_room, MAX_ROOM_LENGTH);
 			}
 			
-			lab_location = new Location(tokens.get(39) + " " + lab_room);
+			lab_location = new Location(tokens.get(INDEX_LAB_BUILDING) + " " + lab_room);
 			
 //System.out.println(lab_name + "\n" + Arrays.toString(lab_meeting_days) + "\n" + Utilities.time_to_24h(tokens.get(37)) + "\n" + Utilities.time_to_24h(tokens.get(38)));
 			
 			if (lab_start_time != null && lab_end_time != null) {
 				lab_event = new Event(lab_name, lab_start_time, lab_end_time, lab_location);
-				this.add_event(lab_meeting_days, lab_location, lab_event);
+				this.add_event(lab_meeting_days, lab_location, tokens.get(41), lab_event);
 				
 //				System.out.println(lab_event.toString() + "\n");
 			}
@@ -217,14 +250,14 @@ final class RoomList {
 		
 		if (class_start_time != null && class_end_time != null) {
 			class_event = new Event(class_name, class_start_time, class_end_time, class_location);
-			this.add_event(class_meeting_days, class_location, class_event);
+			this.add_event(class_meeting_days, class_location, "0", class_event);
 			
 //			System.out.println(class_event.toString() + "\n");
 		}
 	}
 	
-	private void add_event(boolean[] meeting_days, Location location, Event event) {
-		if (meeting_days == null || location == null || event == null) {
+	private void add_event(boolean[] meeting_days, Location location, String capacity, Event event) {
+		if (meeting_days == null || location == null || capacity == null || event == null) {
 			throw new IllegalArgumentException("ERROR: one or more args null, RoomList.add_class_event()");
 		}
 		
@@ -241,12 +274,48 @@ final class RoomList {
 //System.out.println(event.toString() + "\n");
 		}
 		else {
-			// ignore for now if not in GDC
+			/* TODO: ignore if not in GDC? */
 			
 			// make new Room() using capacity in tokens[]
 			// add the event to it
 			// add it to this.list
+
+			int room_capacity = 0;
+			
+			boolean valid_capacity = true;
+			for (int i = 0; i < capacity.length(); i++) {
+				if (!Character.isDigit(capacity.charAt(i))) {
+					valid_capacity = false;
+					break;
+				}
+			}
+
+			if (valid_capacity) {
+				room_capacity = Integer.parseInt(capacity);
+			}
+	
+//			capacity = Utilities.regex_replace(capacity, "[A-Za-z]+", "");
+//			room_capacity = Integer.parseInt(capacity);
+			
+			Room to_add;
+			
+			if (room_capacity > 0) {
+				to_add = new Room(location, Constants.DEFAULT_ROOM_TYPE, room_capacity, Constants.DEFAULT_ROOM_HAS_POWER);
+			}
+			else {
+				to_add = new Room(location);
+			}
+			
+			for (int i = 0; i < meeting_days.length; i++) {
+				if (meeting_days[i]) {
+					to_add.add_event(i, event);
+				}
+			}
+
+			this.list.put(location, to_add);
 		}
+		
+//		System.out.println(event.toString() + "\n");
 	}
 	
 	private String pad_trailing_zeroes(String str, int final_len) {

@@ -22,7 +22,7 @@ final class Room implements Comparable<Room> {
 	 * with default values.
 	 */
 	protected Room(Location location) {
-		this(location, Constants.CONFERENCE, Constants.DEFAULT_ROOM_CAPACITY, false);
+		this(location, Constants.DEFAULT_ROOM_TYPE, Constants.DEFAULT_ROOM_CAPACITY, false);
 	}
 
 	/**
@@ -41,7 +41,7 @@ final class Room implements Comparable<Room> {
 		this.capacity = capacity;
 		this.has_power = has_power;
 		
-		// consider loopifying later
+		// loopify?
 		this.course_schedule = new HashMap<Integer, Set<Event>>();
 		this.course_schedule.put(Constants.MONDAY, new HashSet<Event>());
 		this.course_schedule.put(Constants.TUESDAY, new HashSet<Event>());

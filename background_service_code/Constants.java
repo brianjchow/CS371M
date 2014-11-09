@@ -32,7 +32,9 @@ final class Constants {
 	
 	public static final 	int 		DEFAULT_EVENT_DURATION;		// minutes	
 	public static final 	int 		DEFAULT_QUERY_DURATION;
+	public static final		boolean		DEFAULT_ROOM_HAS_POWER;
 	public static final 	int 		DEFAULT_ROOM_CAPACITY;
+	public static final		String		DEFAULT_ROOM_TYPE;
 	public static final 	String 		DEFAULT_GDC_LOCATION;
 	public static final 	String 		END_DATE;
 	public static final 	String 		EVENT_NAME;
@@ -144,6 +146,9 @@ final class Constants {
 		VALID_GDC_ROOMS_TYPES		=	initialise_valid_gdc_rooms_types();
 		VALID_GDC_ROOMS_CAPACITIES	=	initialise_valid_gdc_rooms_capacities();
 		VALID_GDC_ROOMS_POWERS		=	initialise_valid_gdc_rooms_powers();
+		
+		DEFAULT_ROOM_HAS_POWER		=	false;
+		DEFAULT_ROOM_TYPE			=	CONFERENCE;
 
 		VALID_GDC_ROOMS_ROOMLIST	=	new RoomList();
 		

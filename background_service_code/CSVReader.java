@@ -343,27 +343,27 @@ final class CSVReader {
 		
 //		System.out.println(Constants.VALID_GDC_ROOMS_ROOMLIST.toString());
 		
-		Iterator<Map.Entry<Location, Room>> itr = Constants.VALID_GDC_ROOMS_ROOMLIST.get_iterator();
-		Map.Entry<Location, Room> curr_entry;
-		Room curr_room;
-		while (itr.hasNext()) {
-			curr_entry = itr.next();
-			curr_room = curr_entry.getValue();
-			Map<Integer, Set<Event>> curr_room_events = curr_room.get_room_events();
-			
-			System.out.print(curr_room.get_location().toString() + "\n   ");
-			for (int i = Constants.MONDAY; i <= Constants.SUNDAY; i++) {
-				System.out.print(Constants.DAYS_OF_WEEK_SHORT[i] + ": ");
-				
-				for (Event event : curr_room_events.get(i)) {
-					System.out.print(event.get_event_name() + ", ");
-				}
-				
-				System.out.print("\n   ");
-			}
-			
-			System.out.println("\n");
-		}
+//		Iterator<Map.Entry<Location, Room>> itr = Constants.VALID_GDC_ROOMS_ROOMLIST.get_iterator();
+//		Map.Entry<Location, Room> curr_entry;
+//		Room curr_room;
+//		while (itr.hasNext()) {
+//			curr_entry = itr.next();
+//			curr_room = curr_entry.getValue();
+//			Map<Integer, Set<Event>> curr_room_events = curr_room.get_room_events();
+//			
+//			System.out.print(curr_room.get_location().toString() + "\n   ");
+//			for (int i = Constants.MONDAY; i <= Constants.SUNDAY; i++) {
+//				System.out.print(Constants.DAYS_OF_WEEK_SHORT[i] + ": ");
+//				
+//				for (Event event : curr_room_events.get(i)) {
+//					System.out.print(event.get_event_name() + ", ");
+//				}
+//				
+//				System.out.print("\n   ");
+//			}
+//			
+//			System.out.println("\n");
+//		}
 
 	}
 	
