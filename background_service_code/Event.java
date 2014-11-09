@@ -239,8 +239,8 @@ public class Event implements Comparable<Event> {
 	
 	public int compareTo(Event other) {
 		int result = ComparisonChain.start()
+				.compare(this.start_date, other.start_date)
 			.compare(this.event_name, other.event_name)
-			.compare(this.start_date, other.start_date)
 			.compare(this.location, other.location)
 			.compare(this.end_date, other.end_date)
 			.result();
@@ -250,8 +250,9 @@ public class Event implements Comparable<Event> {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object other) {
-		if (this == other) {
+		if (other == this) {
 			return true;
 		}
 		else if (!(other instanceof Event)) {
@@ -259,19 +260,10 @@ public class Event implements Comparable<Event> {
 		}
 
 		Event other_eo = (Event) other;
-		
-		Calendar this_cal_start = Calendar.getInstance();
-		this_cal_start.setTime(this.start_date);
-		Calendar this_cal_end = Calendar.getInstance();
-		this_cal_end.setTime(this.end_date);
-		Calendar other_cal_start = Calendar.getInstance();
-		other_cal_start.setTime(other_eo.start_date);
-		Calendar other_cal_end = Calendar.getInstance();
-		other_cal_end.setTime(other_eo.end_date);
-		
+				
 		if (this.event_name.equals(other_eo.event_name) &&
-			this_cal_start.equals(other_cal_start) &&
-			other_cal_start.equals(other_cal_start) &&
+			Utilities.dates_are_equal(this.start_date, other_eo.start_date) &&
+			Utilities.dates_are_equal(this.end_date, other_eo.end_date) &&
 			this.get_location().equals(other_eo.get_location())) {
 			return true;
 		}
@@ -279,13 +271,38 @@ public class Event implements Comparable<Event> {
 		return false;
 	}
 	
+//	private boolean dates_are_equal(Date date1, Date date2) {
+//		if (date1 == null || date2 == null) {
+//			throw new IllegalArgumentException();
+//		}
+//		
+//		Calendar date1_cal = Calendar.getInstance();
+//		date1_cal.setTime(date1);
+//		
+//		Calendar date2_cal = Calendar.getInstance();
+//		date2_cal.setTime(date2);
+//		
+//		boolean same = date1_cal.get(Calendar.YEAR) == date2_cal.get(Calendar.YEAR) &&
+//					   date1_cal.get(Calendar.DAY_OF_YEAR) == date2_cal.get(Calendar.DAY_OF_YEAR) &&
+//					   date1_cal.get(Calendar.HOUR_OF_DAY) == date2_cal.get(Calendar.HOUR_OF_DAY) &&
+//					   date1_cal.get(Calendar.MINUTE) == date2_cal.get(Calendar.MINUTE);
+//		
+//		return same;
+//	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
-		long result = Utilities.stringHashCode(this.event_name) * Utilities.dateHashCode(this.start_date) *
-					  Utilities.dateHashCode(this.end_date) * this.location.hashCode() * 37;
-		return ((int) result);
+//		long result = Utilities.stringHashCode(this.event_name) * Utilities.dateHashCode(this.start_date) *
+//					  Utilities.dateHashCode(this.end_date) * this.location.hashCode() * 37;
+		
+//		long result = Utilities.stringHashCode(this.event_name) * this.location.hashCode();
+
+//		return ((int) result);
+		
+		return (Utilities.stringHashCode(this.event_name) * this.location.hashCode());
 	}
 	
 	/* (non-Javadoc)

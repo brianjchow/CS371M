@@ -135,7 +135,8 @@ public class Location implements Comparable<Location> {
 	 */
 	@Override
 	public int hashCode() {
-		return (Utilities.stringHashCode(this.toString()));
+//		return (Utilities.stringHashCode(this.toString()));
+		return (Utilities.stringHashCode(this.toString()) * Utilities.stringHashCode(this.building) * 17 * (Utilities.stringHashCode(this.room) * 37));
 	}
 
 	/* (non-Javadoc)

@@ -148,7 +148,7 @@ final class Constants {
 		VALID_GDC_ROOMS_POWERS		=	initialise_valid_gdc_rooms_powers();
 		
 		DEFAULT_ROOM_HAS_POWER		=	false;
-		DEFAULT_ROOM_TYPE			=	CONFERENCE;
+		DEFAULT_ROOM_TYPE			=	CLASS;
 
 		VALID_GDC_ROOMS_ROOMLIST	=	new RoomList();
 		

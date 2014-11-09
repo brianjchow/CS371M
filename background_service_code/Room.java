@@ -2,11 +2,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.google.common.collect.ComparisonChain;
 
 final class Room implements Comparable<Room> {
 
+	private static final String TAB = "    ";
+	
 	private Location location;
 	private String type;
 	private int capacity;
@@ -203,7 +206,37 @@ final class Room implements Comparable<Room> {
 		out.append("Room:\t" + this.location.toString() + "\n");
 		out.append("Type:\t" + this.type + "\n");
 		out.append("Size:\t" + this.capacity + "\n");
-		out.append("Power:\t" + this.has_power);
+		out.append("Power:\t" + this.has_power + "\n");
+		out.append("Schedule:\n");
+		
+		for (int i = Constants.MONDAY; i <= Constants.SUNDAY; i++) {
+			out.append(TAB + Constants.DAYS_OF_WEEK_SHORT[i] + ": ");
+			
+			Set<Event> temp = this.course_schedule.get(i);
+			Set<Event> sorted_by_time = new TreeSet<Event>(temp);
+			
+			int counter = 0;
+//			Event prev_event = null;
+			for (Event event : sorted_by_time) {
+				if (counter > 0) {
+					out.append(", ");
+				}
+//System.out.println("\n " + event.hashCode() + "\n" + event.toString() + "\n");				
+				out.append(event.get_event_name() + " (" + Utilities.get_time(event.get_start_date()) + ")");
+//				out.append(" (" + event.hashCode() + ")");
+				
+//				if (prev_event != null) {
+//					out.append(" (" + (event.hashCode() == prev_event.hashCode()) + ", " + (event.equals(prev_event)) + ", " + (prev_event.equals(event)) + ")");
+//				}
+				
+				counter++;
+//				prev_event = event;
+			}
+			
+			out.append("\n");
+			
+//			out.append(sorted_by_time.toString() + "\n");
+		}
 
 		return (out.toString());
 	}

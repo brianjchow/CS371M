@@ -1,7 +1,9 @@
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -325,6 +327,11 @@ final class CSVReader {
 		return tuple;
 	}
 
+	/* TODO
+	 * - add "limit searches to GDC only" button
+	 * - holidays?
+	 * - keep separate databases for each semester; change database according to query
+	 */
 	public static void main(String[] args){
 		Constants.init();
 		
@@ -343,6 +350,8 @@ final class CSVReader {
 		
 //		System.out.println(Constants.VALID_GDC_ROOMS_ROOMLIST.toString());
 		
+//		int total_num_courses = 0;
+//		List<String> all_rooms = new ArrayList<String>(2000);
 //		Iterator<Map.Entry<Location, Room>> itr = Constants.VALID_GDC_ROOMS_ROOMLIST.get_iterator();
 //		Map.Entry<Location, Room> curr_entry;
 //		Room curr_room;
@@ -351,20 +360,41 @@ final class CSVReader {
 //			curr_room = curr_entry.getValue();
 //			Map<Integer, Set<Event>> curr_room_events = curr_room.get_room_events();
 //			
+//			all_rooms.add(curr_room.get_location().toString());
+//			
 //			System.out.print(curr_room.get_location().toString() + "\n   ");
 //			for (int i = Constants.MONDAY; i <= Constants.SUNDAY; i++) {
 //				System.out.print(Constants.DAYS_OF_WEEK_SHORT[i] + ": ");
 //				
 //				for (Event event : curr_room_events.get(i)) {
-//					System.out.print(event.get_event_name() + ", ");
+//					System.out.printf("%s (%s), ", event.get_event_name(), Utilities.get_time(event.get_start_date()));
 //				}
 //				
 //				System.out.print("\n   ");
 //			}
 //			
 //			System.out.println("\n");
+//			
+//			total_num_courses += curr_room.get_num_events();
 //		}
-
+//		Collections.sort(all_rooms);
+//		System.out.println(all_rooms.toString() + "\n");
+//		System.out.println("Total events in RoomList: " + total_num_courses);
+//		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.VALID_GDC_ROOMS_ROOMLIST.get_size());
+		
+		System.out.println(Constants.VALID_GDC_ROOMS_ROOMLIST.toString());
+		
+//		Event one = new Event("C S 302 - COMPUTER FLUENCY", Utilities.get_date(11, 9, 2014, 1600), Utilities.get_date(11, 9, 2014, 1700), new Location("WEL 3.502"));
+//		Event two = new Event("C S 302 - COMPUTER FLUENCY", Utilities.get_date(11, 9, 2014, 1600), Utilities.get_date(11, 9, 2014, 1700), new Location("WEL 3.502"));
+//
+//		System.out.println(one.hashCode());
+//		System.out.println(two.hashCode());
+//		
+//		Set<Event> test = new HashSet<Event>();
+//		test.add(one);
+//		System.out.println("Test contains two: " + test.contains(two));
+//		System.out.println("One and two are equal: " + one.equals(two) + " " + two.equals(one));
+		
 	}
 	
 	public static void test(Date date, int duration) {

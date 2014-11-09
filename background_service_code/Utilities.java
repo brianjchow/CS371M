@@ -10,6 +10,39 @@ import java.util.regex.PatternSyntaxException;
 
 public class Utilities {
 	
+	protected static boolean dates_are_equal(Date date1, Date date2) {
+		if (date1 == null || date2 == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		Calendar date1_cal = Calendar.getInstance();
+		date1_cal.setTime(date1);
+		
+		Calendar date2_cal = Calendar.getInstance();
+		date2_cal.setTime(date2);
+		
+		boolean same = date1_cal.get(Calendar.YEAR) == date2_cal.get(Calendar.YEAR) &&
+					   date1_cal.get(Calendar.DAY_OF_YEAR) == date2_cal.get(Calendar.DAY_OF_YEAR) &&
+					   date1_cal.get(Calendar.HOUR_OF_DAY) == date2_cal.get(Calendar.HOUR_OF_DAY) &&
+					   date1_cal.get(Calendar.MINUTE) == date2_cal.get(Calendar.MINUTE);
+		
+		return same;
+	}
+		
+	protected static String get_time(Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		
+		String out = "";
+		out += pad_to_len_leading_zeroes(Integer.toString(calendar.get(Calendar.HOUR_OF_DAY)), 2) + ":" + pad_to_len_leading_zeroes(Integer.toString(calendar.get(Calendar.MINUTE)), 2);
+		
+		return out;
+	}
+	
 	protected static boolean valid_day_of_week(int day_of_week) {
 		if (day_of_week < Constants.MONDAY || day_of_week > Constants.SUNDAY) {
 			return false;

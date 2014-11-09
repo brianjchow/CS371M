@@ -16,8 +16,12 @@ import java.util.TreeMap;
 @SuppressWarnings("unused")
 final class RoomList {
 
-	private static final String CS_COURSE_SCHEDULE_S15 = "course_schedules/cs_course_schedule_s15.csv";
+//	private static final String CS_COURSE_SCHEDULE_S15 = "course_schedules/cs_course_schedule_s15.csv";
 	private static final String FULL_COURSE_SCHEDULE_S15 = "course_schedules/master_course_schedule_s15.csv";
+	private static final String FULL_COURSE_SCHEDULE_F14 = "course_schedules/master_course_schedule_f14.csv";
+	
+	private static final boolean READ_ONLY_GDC = true;
+	
 	private static final int DELIMITER = (int) '\t';
 	private static final int EOL = (int) '#';
 	private static final int MAX_ROOM_LENGTH = 4;
@@ -70,11 +74,11 @@ final class RoomList {
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.start();
 		
-		this.read_course_schedules();
+		this.read_course_schedules(FULL_COURSE_SCHEDULE_S15);
 		
 		stopwatch.stop();
 		if (Constants.DEBUG) {
-			System.out.printf("\nTook %f seconds to read %d lines from %s\n", stopwatch.time(), line_counter, CS_COURSE_SCHEDULE_S15);
+			System.out.printf("\nTook %f seconds to read %d lines from schedule\n", stopwatch.time(), line_counter);
 		}
 	}
 
@@ -138,12 +142,17 @@ final class RoomList {
 		return out;
 	}
 	
-	private void read_course_schedules() {
+	private void read_course_schedules(String schedule_file) {
+		if (schedule_file == null || schedule_file.length() <= 0) {
+			throw new IllegalArgumentException();
+		}
 		if (this.list == null) {
 			this.list = new RoomList().list;
 		}
 		
-		InputReader input = new InputReader(FULL_COURSE_SCHEDULE_S15);		// CS_COURSE_SCHEDULE_S15, FULL_COURSE_SCHEDULE_S15
+//		final String WHICH_SCHEDULE = FULL_COURSE_SCHEDULE_S15;	// CS_COURSE_SCHEDULE_S15, FULL_COURSE_SCHEDULE_S15
+				
+		InputReader input = new InputReader(schedule_file);
 		
 		StringBuilder curr_line = new StringBuilder(200);
 		List<String> curr_line_tokens = new ArrayList<String>();
@@ -256,7 +265,7 @@ final class RoomList {
 		}
 	}
 	
-	private void add_event(boolean[] meeting_days, Location location, String capacity, Event event) {
+	private boolean add_event(boolean[] meeting_days, Location location, String capacity, Event event) {
 		if (meeting_days == null || location == null || capacity == null || event == null) {
 			throw new IllegalArgumentException("ERROR: one or more args null, RoomList.add_class_event()");
 		}
@@ -271,9 +280,12 @@ final class RoomList {
 			
 			this.list.put(location, curr_room);
 			
-//System.out.println(event.toString() + "\n");
+			//System.out.println(event.toString() + "\n");
+			
+			return true;
 		}
-		else {
+
+		if (!READ_ONLY_GDC) {
 			/* TODO: ignore if not in GDC? */
 			
 			// make new Room() using capacity in tokens[]
@@ -282,6 +294,7 @@ final class RoomList {
 
 			int room_capacity = 0;
 			
+			/* TODO: get rid of the ugly loop */
 			boolean valid_capacity = true;
 			for (int i = 0; i < capacity.length(); i++) {
 				if (!Character.isDigit(capacity.charAt(i))) {
@@ -313,9 +326,13 @@ final class RoomList {
 			}
 
 			this.list.put(location, to_add);
+			
+			return true;
 		}
 		
 //		System.out.println(event.toString() + "\n");
+		
+		return false;
 	}
 	
 	private String pad_trailing_zeroes(String str, int final_len) {
@@ -395,8 +412,8 @@ final class RoomList {
 		
 		for (Map.Entry<Location, Room> entry : temp.entrySet()) {
 			out.append(entry.getValue().toString() + "\n");
-			out.append("# events: " + entry.getValue().get_num_events());
-			out.append("\n\n");
+//			out.append("# events: " + entry.getValue().get_num_events() + "\n");
+			out.append("\n");
 		}
 		
 		return (out.toString());

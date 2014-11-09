@@ -640,8 +640,8 @@ public class Query {
 		}
 		
 		Query other_query = (Query) other;
-		if (this.start_date.equals(other_query.start_date) &&
-			this.end_date.equals(other_query.end_date) &&
+		if (Utilities.dates_are_equal(this.start_date, other_query.start_date) &&
+			Utilities.dates_are_equal(this.end_date, other_query.end_date) &&
 			this.duration == other_query.duration &&
 			this.options.equals(other_query.options)) {
 			
