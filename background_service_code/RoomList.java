@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /*
@@ -20,7 +21,7 @@ final class RoomList {
 	private static final String FULL_COURSE_SCHEDULE_S15 = "course_schedules/master_course_schedule_s15.csv";
 	private static final String FULL_COURSE_SCHEDULE_F14 = "course_schedules/master_course_schedule_f14.csv";
 	
-	private static final boolean READ_ONLY_GDC = true;
+	private static final boolean READ_ONLY_GDC = false;
 	
 	private static final int DELIMITER = (int) '\t';
 	private static final int EOL = (int) '#';
@@ -74,7 +75,7 @@ final class RoomList {
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.start();
 		
-		this.read_course_schedules(FULL_COURSE_SCHEDULE_S15);
+		this.read_course_schedules(FULL_COURSE_SCHEDULE_F14);
 		
 		stopwatch.stop();
 		if (Constants.DEBUG) {
@@ -128,6 +129,11 @@ final class RoomList {
 	 */
 	protected Iterator<Map.Entry<Location, Room>> get_iterator() {
 		return (this.list.entrySet().iterator());
+	}
+	
+	protected Iterator<Map.Entry<Location, Room>> get_sorted_map_iterator() {
+		Map<Location, Room> temp = this.get_sorted_map();
+		return (temp.entrySet().iterator());
 	}
 	
 	/**
@@ -272,7 +278,7 @@ final class RoomList {
 		
 		Room curr_room;
 		if ((curr_room = this.list.get(location)) != null) {
-			for (int i = 0; i < meeting_days.length; i++) {
+			for (int i = Constants.SUNDAY; i < meeting_days.length; i++) {
 				if (meeting_days[i]) {
 					curr_room.add_event(i, event);
 				}
@@ -293,22 +299,9 @@ final class RoomList {
 			// add it to this.list
 
 			int room_capacity = 0;
-			
-			/* TODO: get rid of the ugly loop */
-			boolean valid_capacity = true;
-			for (int i = 0; i < capacity.length(); i++) {
-				if (!Character.isDigit(capacity.charAt(i))) {
-					valid_capacity = false;
-					break;
-				}
-			}
 
-			if (valid_capacity) {
-				room_capacity = Integer.parseInt(capacity);
-			}
-	
-//			capacity = Utilities.regex_replace(capacity, "[A-Za-z]+", "");
-//			room_capacity = Integer.parseInt(capacity);
+			capacity = Utilities.regex_replace(capacity, "[^\\d]", "");
+			room_capacity = Integer.parseInt(capacity);
 			
 			Room to_add;
 			
@@ -401,6 +394,28 @@ final class RoomList {
 		
 		return days;
 	}
+	
+	/* USE THIS METHOD FOR TESTING ONLY */
+	protected int get_num_events_all_rooms() {
+		if (this.list == null) {
+			throw new IllegalStateException("RoomList's backing Map is null, RoomList.get_num_events_all_rooms()");
+		}
+		
+		int total = 0;
+		
+		Room curr_room;
+		Map<Integer, Set<Event>> curr_room_events;
+		for (Map.Entry<Location, Room> entry : this.list.entrySet()) {
+			curr_room = entry.getValue();
+			curr_room_events = curr_room.get_room_events();
+			
+			for (int i = Constants.SUNDAY; i <= Constants.SATURDAY; i++) {
+				total += curr_room_events.get(i).size();
+			}
+		}
+		
+		return total;
+	}
 			
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -413,7 +428,7 @@ final class RoomList {
 		for (Map.Entry<Location, Room> entry : temp.entrySet()) {
 			out.append(entry.getValue().toString() + "\n");
 //			out.append("# events: " + entry.getValue().get_num_events() + "\n");
-			out.append("\n");
+//			out.append("\n");
 		}
 		
 		return (out.toString());

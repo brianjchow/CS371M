@@ -71,7 +71,7 @@ final class Room implements Comparable<Room> {
 		return true;
 	}
 	
-	protected final Set<Event> get_events(int day_of_week) {
+	protected final Set<Event> get_room_events(int day_of_week) {
 		if (!Utilities.valid_day_of_week(day_of_week)) {
 			return null;
 		}
@@ -80,7 +80,7 @@ final class Room implements Comparable<Room> {
 	
 	protected final int get_num_events() {
 		int total_size = 0;
-		for (int i = Constants.MONDAY; i <= Constants.SUNDAY; i++) {
+		for (int i = Constants.SUNDAY; i <= Constants.SATURDAY; i++) {
 			total_size += this.course_schedule.get(i).size();
 		}
 		return total_size;
@@ -207,9 +207,9 @@ final class Room implements Comparable<Room> {
 		out.append("Type:\t" + this.type + "\n");
 		out.append("Size:\t" + this.capacity + "\n");
 		out.append("Power:\t" + this.has_power + "\n");
-		out.append("Schedule:\n");
+		out.append("Schedule:\n" + TAB + this.get_num_events() + " weekly class(es)\n");
 		
-		for (int i = Constants.MONDAY; i <= Constants.SUNDAY; i++) {
+		for (int i = Constants.SUNDAY; i <= Constants.SATURDAY; i++) {
 			out.append(TAB + Constants.DAYS_OF_WEEK_SHORT[i] + ": ");
 			
 			Set<Event> temp = this.course_schedule.get(i);

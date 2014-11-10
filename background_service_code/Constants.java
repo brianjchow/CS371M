@@ -41,7 +41,7 @@ final class Constants {
 	public static final 	String 		GDC;
 	public static final 	Location 	GDC_ATRIUM;
 	public static final 	Location 	GDC_GATESHENGE;
-	public static final 	String 		GO_HOME;
+	public static final 	String 		GO_HOME_MSG;
 	protected static final 	String[] 	IGNORE_ROOMS;
 	public static final 	String 		LOCATION;
 	
@@ -60,6 +60,11 @@ final class Constants {
 	public static final 	int 		MINUTES_IN_HOUR;
 	public static final 	int 		MINUTES_IN_DAY;
 	public static final 	int 		HOURS_IN_DAY;
+	public static final		int			LAST_TIME_OF_DAY;
+	public static final		int			LAST_TIME_OF_NIGHT;
+	
+	public static final		String		SEARCH_GDC_ONLY;
+	public static final		String		SEARCH_FOR_BUILDING;
 	
 	public static final 	String 		UTCS_CSV_FEED_FORMAT;
 	public static final 	String 		US_DATE_24H_TIME_FORMAT;
@@ -87,14 +92,24 @@ final class Constants {
 		CAMPUS_BUILDINGS			=	initialise_campus_buildings();
 			
 		CAPACITY					=	"capacity";
-		MONDAY						=	0;
-		TUESDAY						=	1;
-		WEDNESDAY					=	2;
-		THURSDAY					=	3;
-		FRIDAY						=	4;
-		SATURDAY					=	5;
-		SUNDAY						=	6;
-		NUM_DAYS_IN_WEEK			=	7;
+//		MONDAY						=	0;
+//		TUESDAY						=	1;
+//		WEDNESDAY					=	2;
+//		THURSDAY					=	3;
+//		FRIDAY						=	4;
+//		SATURDAY					=	5;
+//		SUNDAY						=	6;
+//		NUM_DAYS_IN_WEEK			=	7;
+		
+		SUNDAY						=	1;
+		MONDAY						=	2;
+		TUESDAY						=	3;
+		WEDNESDAY					=	4;
+		THURSDAY					=	5;
+		FRIDAY						=	6;
+		SATURDAY					=	7;
+		NUM_DAYS_IN_WEEK			=	8;
+		
 		
 		DAYS_IN_MONTH				=	initialise_days_in_month();
 		DAYS_OF_WEEK_LONG			=	initialise_days_of_week_long();
@@ -106,7 +121,7 @@ final class Constants {
 		GDC							=	"GDC";
 		GDC_ATRIUM					=	new Location(GDC + " " + ATRIUM);
 		GDC_GATESHENGE				=	new Location(GDC + " " + DEFAULT_GDC_LOCATION);
-		GO_HOME						=	"Go home and sleep, you're gonna fail that exam tomorrow anyway";
+		GO_HOME_MSG					=	"Go home and sleep, you procrastinator";
 		
 		DEPARTMENTS					=	initialise_departments();
 		
@@ -119,7 +134,7 @@ final class Constants {
 		POWER						=	"power";
 		START_DATE					=	"start_date";	
 		
-		DEFAULT_EVENT_DURATION		=	90;		// minutes	
+		DEFAULT_EVENT_DURATION		=	90;		// minutes
 		DEFAULT_QUERY_DURATION		=	60;
 		DEFAULT_ROOM_CAPACITY		=	25;
 		YAM							=	DEFAULT_ROOM_CAPACITY;	// 25 in Cantonese
@@ -130,6 +145,11 @@ final class Constants {
 		MINUTES_IN_HOUR				=	60;
 		MINUTES_IN_DAY				=	1440;
 		HOURS_IN_DAY				=	24;
+		LAST_TIME_OF_DAY			=	2200;
+		LAST_TIME_OF_NIGHT			=	800;
+		
+		SEARCH_GDC_ONLY				=	"search_gdc_only";
+		SEARCH_FOR_BUILDING			=	"search_for_building";
 		
 		UTCS_CSV_FEED_FORMAT		=	"EEE dd MMM yyyy HHmm";
 		US_DATE_24H_TIME_FORMAT		=	"MMM dd yyyy HHmm";
@@ -159,7 +179,7 @@ final class Constants {
 //		CSV_FEEDS_MASTER			=	CSVReader.read_csv();
 //		CSV_FEEDS_CLEANED			=	get_events_cleaned();
 
-		DAYBREAK					=	Utilities.get_date(1, 1, 2014, 745);
+		DAYBREAK					=	Utilities.get_date(1, 2, 2014, 800);
 		NIGHTFALL					=	Utilities.get_date(1, 1, 2014, 2200);
 
 	}
@@ -259,12 +279,14 @@ final class Constants {
 	}
 	
 	private static final String[] initialise_days_of_week_long() {
-		final String[] DAYS_OF_WEEK_LONG = { "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" };
+//		final String[] DAYS_OF_WEEK_LONG = { "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" };
+		final String[] DAYS_OF_WEEK_LONG = { "", "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY" };
 		return DAYS_OF_WEEK_LONG;
 	}
 	
 	private static final String[] initialise_days_of_week_short() {
-		final String[] DAYS_OF_WEEK_SHORT =	{ "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN" };
+//		final String[] DAYS_OF_WEEK_SHORT =	{ "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN" };
+		final String[] DAYS_OF_WEEK_SHORT =	{ "", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
 		return DAYS_OF_WEEK_SHORT;
 	}
 	

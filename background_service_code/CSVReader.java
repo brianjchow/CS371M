@@ -65,7 +65,7 @@ final class CSVReader {
 		if (str == null) {
 			return false;
 		}
-		for (int i = 0; i < Constants.DAYS_OF_WEEK_LONG.length; i++) {
+		for (int i = Constants.SUNDAY; i <= Constants.SATURDAY; i++) {
 			if (containsIgnoreCase(str, Constants.DAYS_OF_WEEK_SHORT[i]) ||
 				containsIgnoreCase(str, Constants.DAYS_OF_WEEK_LONG[i])) {
 				
@@ -331,13 +331,19 @@ final class CSVReader {
 	 * - add "limit searches to GDC only" button
 	 * - holidays?
 	 * - keep separate databases for each semester; change database according to query
+	 * - remove the boolean option for gdc_only in Query
+	 * - fix Query.search_is_at_night() (before fixing bug in next step)
+	 * - fix Utilities.time_schedules_overlap() to match Query.search_is_at_night()
+	 * - fix Query.set_option_search_for_building() to reject invalid building codes
+	 * - add set_standard_option() method to Query
 	 */
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		Constants.init();
 		
 		int current_month = 10;
 		int current_day = 31;
 
+		// 17, 17, 5, 2, 6, 16, 16, 17, none
 		test(Utilities.get_date(current_month, current_day, 2014, 400), 61);
 		test(Utilities.get_date(current_month, current_day, 2014, 800), 61);
 		test(Utilities.get_date(current_month, current_day, 2014, 1030), 61);
@@ -363,7 +369,7 @@ final class CSVReader {
 //			all_rooms.add(curr_room.get_location().toString());
 //			
 //			System.out.print(curr_room.get_location().toString() + "\n   ");
-//			for (int i = Constants.MONDAY; i <= Constants.SUNDAY; i++) {
+//			for (int i = Constants.MONDAY; i <= Constants.FRIDAY; i++) {
 //				System.out.print(Constants.DAYS_OF_WEEK_SHORT[i] + ": ");
 //				
 //				for (Event event : curr_room_events.get(i)) {
@@ -382,18 +388,16 @@ final class CSVReader {
 //		System.out.println("Total events in RoomList: " + total_num_courses);
 //		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.VALID_GDC_ROOMS_ROOMLIST.get_size());
 		
-		System.out.println(Constants.VALID_GDC_ROOMS_ROOMLIST.toString());
-		
-//		Event one = new Event("C S 302 - COMPUTER FLUENCY", Utilities.get_date(11, 9, 2014, 1600), Utilities.get_date(11, 9, 2014, 1700), new Location("WEL 3.502"));
-//		Event two = new Event("C S 302 - COMPUTER FLUENCY", Utilities.get_date(11, 9, 2014, 1600), Utilities.get_date(11, 9, 2014, 1700), new Location("WEL 3.502"));
+//		System.out.println(Constants.VALID_GDC_ROOMS_ROOMLIST.toString());
+		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.VALID_GDC_ROOMS_ROOMLIST.get_size());
+		System.out.println("Total number events in RoomList: " + Constants.VALID_GDC_ROOMS_ROOMLIST.get_num_events_all_rooms());
 //
-//		System.out.println(one.hashCode());
-//		System.out.println(two.hashCode());
-//		
-//		Set<Event> test = new HashSet<Event>();
-//		test.add(one);
-//		System.out.println("Test contains two: " + test.contains(two));
-//		System.out.println("One and two are equal: " + one.equals(two) + " " + two.equals(one));
+//		Calendar calendar = Calendar.getInstance();
+//		Date blah = Utilities.get_date(11, 8, 2014, 1100);
+//		calendar.setTime(blah);
+////		int temp = 7 - Math.abs(calendar.get(Calendar.DAY_OF_WEEK) - 2);
+////		String day = Constants.DAYS_OF_WEEK_LONG[temp - (temp % 6)];
+//		System.out.println("\t" + Constants.DAYS_OF_WEEK_LONG[calendar.get(Calendar.DAY_OF_WEEK)]);
 		
 	}
 	
@@ -425,8 +429,12 @@ final class CSVReader {
 		
 		query.set_duration(duration);
 		query.set_option_power(false);
-//		query.set_option_capacity(0);
-		query.set_option(Constants.CAPACITY, new Integer(0));
+		query.set_option_capacity(0);
+//		query.set_option_capacity(new Integer(0));
+		
+//		query.set_option_search_gdc_only(false);	// DEPRECATE THIS
+		
+		query.set_option_search_for_building("cal");
 
 		String random_room = query.search();
 

@@ -18,7 +18,7 @@ public class Query {
 	private Date start_date;				// must have date and time at minimum
 	private Date end_date;					// automatically set
 	private int duration;					// how long the user needs the room to be available, in minutes; default 60
-	private Map<String, Object> options;	// [capacity, power plugs] for now
+	private Map<String, Object> options;	// [search GDC only, building, capacity, power plugs] for now
 	
 	/**
 	 * Default constructor. Uses the current system time.
@@ -46,6 +46,8 @@ public class Query {
 		this.options = new HashMap<String, Object>(10);
 		this.options.put(Constants.CAPACITY, new Integer(0));
 		this.options.put(Constants.POWER, new Boolean(false));
+		this.options.put(Constants.SEARCH_GDC_ONLY, new Boolean(true));
+		this.options.put(Constants.SEARCH_FOR_BUILDING, Constants.GDC);
 	}
 
 	/**
@@ -68,8 +70,9 @@ public class Query {
 		boolean wanted_power = this.get_option_power();
 
 		Room curr_room;
-		boolean is_valid = true;
+		boolean is_valid = true;		
 		for (Location location : other_set) {
+//			curr_room = Constants.VALID_GDC_ROOMS_ROOMLIST.get_room(location);
 			if ((curr_room = Constants.VALID_GDC_ROOMS_ROOMLIST.get_room(location)) == null) {
 				continue;
 			}
@@ -81,7 +84,7 @@ public class Query {
 			if (curr_room.get_capacity() < wanted_capacity) {
 				is_valid = false;
 			}
-			
+
 			/*
 			 * Add current location to list of valid locations only
 			 * if all reqs as specified by the options are met; add
@@ -95,7 +98,7 @@ public class Query {
 			else {
 				invalid.add(location);
 			}
-			
+						
 			is_valid = true;
 		}
 		
@@ -115,6 +118,8 @@ public class Query {
 		int wanted_capacity = this.get_option_capacity();
 		boolean wanted_power = this.get_option_power();
 
+		int today = this.get_this_day_of_week();
+		
 		Iterator<Map.Entry<Location, Room>> itr = Constants.VALID_GDC_ROOMS_ROOMLIST.get_iterator();
 		Map.Entry<Location, Room> curr_entry;
 		Location curr_loc;
@@ -140,6 +145,17 @@ public class Query {
 				}
 				if (curr_room.get_capacity() < wanted_capacity) {
 					is_valid = false;
+				}
+
+				if (!this.get_option_search_gdc_only() && !Utilities.containsIgnoreCase(curr_loc.get_building(), Constants.GDC) && is_valid) {
+					Set<Event> todays_classes = curr_room.get_room_events(today);
+					for (Event course : todays_classes) {
+						
+						if (Utilities.time_schedules_overlap(this.start_date, this.end_date, course.get_start_date(), course.get_end_date())) {
+							is_valid = false;
+							break;
+						}
+					}
 				}
 				
 				/*
@@ -367,6 +383,14 @@ public class Query {
 		return ((Boolean) this.options.get(Constants.POWER));
 	}
 	
+	protected Boolean get_option_search_gdc_only() {
+		return ((Boolean) this.options.get(Constants.SEARCH_GDC_ONLY));
+	}
+	
+	protected String get_option_search_for_building() {
+		return ((String) this.options.get(Constants.SEARCH_FOR_BUILDING));
+	}
+	
 	/**
 	 * @return A List of Strings representing the keyset
 	 * 		   of this Query's options map.
@@ -395,12 +419,38 @@ public class Query {
 	 * 		   and duration when searching for a room, false otherwise.
 	 */
 	private boolean has_standard_options() {
-		if (this.get_option_power() || this.get_option_capacity() > 0) {
+		if (this.get_option_power() || this.get_option_capacity() > 0 || 
+				!this.get_option_search_for_building().equals(Constants.GDC)
+//				!this.get_option_search_gdc_only()
+				) {
+			
 			return false;
 		}
 		return true;
 	}
 
+	private boolean search_is_at_night() {
+		int this_start_time = Utilities.get_time_from_date(this.start_date);
+		int this_end_time = Utilities.get_time_from_date(this.end_date);
+		
+		if (this_start_time == Constants.LAST_TIME_OF_DAY) {
+			return true;
+		}
+		
+		Date this_start, this_end;
+		
+		this_start = Utilities.get_date(1, 1, 2014, this_start_time);
+		if (this_end_time > this_start_time) {
+			this_end = Utilities.get_date(1, 1, 2014, this_end_time);
+		}
+		else {
+			this_end = Utilities.get_date(1, 2, 2014, this_end_time);
+		}
+		// note: the times will never be the same; query duration must be >= 1 minute
+		
+		return Utilities.times_overlap(this_start, this_end, Constants.NIGHTFALL, Constants.DAYBREAK);
+	}
+	
 	/**
 	 * @return A String representing a Location if a
 	 * 		   room is found by the search algorithm.
@@ -419,24 +469,36 @@ public class Query {
 		if (eolist == null) {
 			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
 		}
+		
 		if (eolist.get_size() == 0) {
 			return Constants.NO_ROOMS_AVAIL_MSG;
 		}
-
-		/* Reduce search space by eliminating Event dates not within range of this Query. */
-		EventList reduced = get_events_by_date(eolist);
-		if (reduced.get_size() <= 0) {
-			return Constants.NO_ROOMS_AVAIL_MSG;
-		}
-
-		/* Continue reducing search space by eliminating Event times not within range of this Query. */
-		Set<Location> valid_rooms = this.filter_by_time(reduced);
-		
-		/* Apply any selected options. */
-		if (!this.has_standard_options() && valid_rooms.size() > 0) {
-			valid_rooms = this.filter_by_query(valid_rooms);
+		else if (search_is_at_night()) {
+			return Constants.GO_HOME_MSG;
 		}
 		
+		Set<Location> valid_rooms;
+		
+		if (!this.get_option_search_for_building().equalsIgnoreCase(Constants.GDC)) {
+			valid_rooms = search_for_non_gdc_rooms();
+		}
+		else {
+			/* Reduce search space by eliminating Event dates not within range of this Query. */
+			EventList reduced = get_events_by_date(eolist);
+			if (reduced.get_size() <= 0) {
+				return Constants.NO_ROOMS_AVAIL_MSG;
+			}
+
+			/* Continue reducing search space by eliminating Event times not within range of this Query. */
+			valid_rooms = this.filter_by_time(reduced);
+			
+			/* Apply any selected options. */
+			if (!this.has_standard_options() && valid_rooms.size() > 0) {
+				valid_rooms = this.filter_by_query(valid_rooms);
+			}
+			
+		}
+
 		if (valid_rooms.size() <= 0) {
 			return Constants.NO_ROOMS_AVAIL_MSG;
 		}
@@ -453,6 +515,107 @@ public class Query {
 		
 		return random_room;
 	}
+	
+	private Set<Location> search_for_non_gdc_rooms() {
+		if (Constants.VALID_GDC_ROOMS_ROOMLIST.get_size() <= 0) {
+			throw new IllegalStateException();
+		}
+		
+		Set<Location> valid_rooms = new HashSet<Location>();
+		
+		String search_for = this.get_option_search_for_building();
+		int today = this.get_this_day_of_week();
+		
+		boolean is_valid = true;
+		
+		Iterator<Map.Entry<Location, Room>> itr = Constants.VALID_GDC_ROOMS_ROOMLIST.get_sorted_map_iterator();
+		Map.Entry<Location, Room> curr_entry;
+		Location curr_loc;
+		Room curr_room;
+		while (itr.hasNext()) {
+			curr_entry = itr.next();
+			curr_loc = curr_entry.getKey();
+			curr_room = curr_entry.getValue();
+			
+			if (curr_loc.get_building().toLowerCase().compareTo(search_for.toLowerCase()) > 0) {
+				break;
+			}
+			else if (curr_loc.get_building().toLowerCase().compareTo(search_for.toLowerCase()) < 0) {
+				continue;
+			}
+			
+			Set<Event> todays_classes = curr_room.get_room_events(today);
+			for (Event course : todays_classes) {
+				if (Utilities.time_schedules_overlap(this.start_date, this.end_date, course.get_start_date(), course.get_end_date())) {
+					is_valid = false;
+					break;
+				}
+			}
+			
+			/* Note: the RoomList only contains unique Rooms, so there will never be any duplicates in valid. */
+			if (is_valid) {
+				valid_rooms.add(curr_loc);
+			}
+			
+			is_valid = true;
+		}
+		
+		return valid_rooms;
+	}
+	
+	private int get_this_day_of_week() {
+		final Calendar calendar = Calendar.getInstance();
+		calendar.setTime(this.start_date);
+		int today = calendar.get(Calendar.DAY_OF_WEEK);
+		
+		return today;
+	}
+	
+//	protected List<Location> search_get_all_available_rooms() {
+//		return (search_get_all_available_rooms(Constants.CSV_FEEDS_CLEANED));
+//	}
+//	
+//	protected List<Location> search_get_all_available_rooms(EventList eolist) {
+//		if (eolist == null) {
+//			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
+//		}
+//		
+//		List<Location> out = new ArrayList<Location>();
+//		
+//		if (eolist.get_size() == 0) {
+//			return out;
+//		}
+//		
+//		if (search_is_at_night()) {
+//			Iterator<Event> itr = eolist.get_iterator();
+//			while (itr.hasNext()) {
+//				out.add(itr.next().get_location());
+//			}
+//			return out;
+//		}
+//
+//		/* Reduce search space by eliminating Event dates not within range of this Query. */
+//		EventList reduced = get_events_by_date(eolist);
+//		if (reduced.get_size() <= 0) {
+//			return out;
+//		}
+//
+//		/* Continue reducing search space by eliminating Event times not within range of this Query. */
+//		Set<Location> valid_rooms = this.filter_by_time(reduced);
+//		
+//		/* Apply any selected options. */
+//		if (!this.has_standard_options() && valid_rooms.size() > 0) {
+//			valid_rooms = this.filter_by_query(valid_rooms);
+//		}
+//		
+//		if (valid_rooms.size() <= 0) {
+//			return out;
+//		}
+//		
+//		out = new ArrayList<Location>(valid_rooms);
+//		
+//		return out;
+//	}
 
 	/**
 	 * @param duration
@@ -482,27 +645,27 @@ public class Query {
 	 * @return True if this.options was successfully updated
 	 * 		   with the provided arguments, false otherwise.
 	 */
-	protected boolean set_option(String option, Object value) {
-		if (option == null || value == null) {
-//			return false;
-			throw new IllegalArgumentException("Error: one or more arguments is null, set_option()");
-		}
-		
-		if (option.equals(Constants.CAPACITY)) {
-			if (!(value instanceof Integer)) {
-				return false;
-			}
-			return (set_option_capacity((Integer) value));
-		}
-		else if (option.equals(Constants.POWER)) {
-			if (!(value instanceof Boolean)) {
-				return false;
-			}
-			return (set_option_power((Boolean) value));
-		}
-
-		return false;
-	}
+//	protected boolean set_option(String option, Object value) {
+//		if (option == null || value == null) {
+////			return false;
+//			throw new IllegalArgumentException("Error: one or more arguments is null, set_option()");
+//		}
+//		
+//		if (option.equals(Constants.CAPACITY)) {
+//			if (!(value instanceof Integer)) {
+//				return false;
+//			}
+//			return (set_option_capacity((Integer) value));
+//		}
+//		else if (option.equals(Constants.POWER)) {
+//			if (!(value instanceof Boolean)) {
+//				return false;
+//			}
+//			return (set_option_power((Boolean) value));
+//		}
+//
+//		return false;
+//	}
 
 	/**
 	 * @param capacity
@@ -534,6 +697,31 @@ public class Query {
 		}
 		this.options.put(Constants.POWER, power);
 		return true;
+	}
+	
+	protected boolean set_option_search_gdc_only(Boolean yes) {
+		if (yes == null) {
+//			return false;
+			throw new IllegalArgumentException("Error: argument cannot be null, set_option_search_gdc_only()");
+		}
+		this.options.put(Constants.SEARCH_GDC_ONLY, yes);
+		return true;
+	}
+	
+	protected boolean set_option_search_for_building(String building_code) {
+		if (building_code == null) {
+//			return false;
+			throw new IllegalArgumentException("Error: argument cannot be null, set_option_search_for_building()");		
+		}
+		this.options.put(Constants.SEARCH_FOR_BUILDING, building_code);
+		return true;		
+	}
+	
+	protected void set_standard_options() {
+		this.set_option_capacity(0);
+		this.set_option_power(false);
+//		this.set_option_search_gdc_only(true);
+		this.set_option_search_for_building(Constants.GDC);
 	}
 			
 	/**
