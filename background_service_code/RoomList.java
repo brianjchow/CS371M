@@ -75,7 +75,7 @@ final class RoomList {
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.start();
 		
-		this.read_course_schedules(FULL_COURSE_SCHEDULE_F14);
+		this.read_course_schedules(FULL_COURSE_SCHEDULE_F14);	// FULL_COURSE_SCHEDULE_F14, FULL_COURSE_SCHEDULE_S15
 		
 		stopwatch.stop();
 		if (Constants.DEBUG) {
@@ -257,7 +257,7 @@ final class RoomList {
 			
 			if (lab_start_time != null && lab_end_time != null) {
 				lab_event = new Event(lab_name, lab_start_time, lab_end_time, lab_location);
-				this.add_event(lab_meeting_days, lab_location, tokens.get(41), lab_event);
+				this.add_event(lab_meeting_days, lab_location, tokens.get(INDEX_LAB_ROOM_CAPACITY), lab_event);
 				
 //				System.out.println(lab_event.toString() + "\n");
 			}
@@ -265,7 +265,7 @@ final class RoomList {
 		
 		if (class_start_time != null && class_end_time != null) {
 			class_event = new Event(class_name, class_start_time, class_end_time, class_location);
-			this.add_event(class_meeting_days, class_location, "0", class_event);
+			this.add_event(class_meeting_days, class_location, tokens.get(INDEX_CLASS_ROOM_CAPACITY), class_event);
 			
 //			System.out.println(class_event.toString() + "\n");
 		}
@@ -407,7 +407,7 @@ final class RoomList {
 		Map<Integer, Set<Event>> curr_room_events;
 		for (Map.Entry<Location, Room> entry : this.list.entrySet()) {
 			curr_room = entry.getValue();
-			curr_room_events = curr_room.get_room_events();
+			curr_room_events = curr_room.get_events();
 			
 			for (int i = Constants.SUNDAY; i <= Constants.SATURDAY; i++) {
 				total += curr_room_events.get(i).size();

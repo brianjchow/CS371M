@@ -35,7 +35,7 @@ final class Room implements Comparable<Room> {
 	 * @param has_power
 	 */
 	protected Room(Location location, String type, int capacity, boolean has_power) {
-		if (location == null || type == null || capacity < 0) {
+		if (location == null || type == null || capacity < Constants.DEFAULT_ROOM_CAPACITY) {
 			throw new IllegalArgumentException("Error: one or more arguments is null, Room constructor");
 		}
 
@@ -46,13 +46,13 @@ final class Room implements Comparable<Room> {
 		
 		// loopify?
 		this.course_schedule = new HashMap<Integer, Set<Event>>();
+		this.course_schedule.put(Constants.SUNDAY, new HashSet<Event>());
 		this.course_schedule.put(Constants.MONDAY, new HashSet<Event>());
 		this.course_schedule.put(Constants.TUESDAY, new HashSet<Event>());
 		this.course_schedule.put(Constants.WEDNESDAY, new HashSet<Event>());
 		this.course_schedule.put(Constants.THURSDAY, new HashSet<Event>());
 		this.course_schedule.put(Constants.FRIDAY, new HashSet<Event>());
 		this.course_schedule.put(Constants.SATURDAY, new HashSet<Event>());
-		this.course_schedule.put(Constants.SUNDAY, new HashSet<Event>());
 	}
 
 	// use the Constants provided for the day; will fail otherwise
@@ -71,7 +71,7 @@ final class Room implements Comparable<Room> {
 		return true;
 	}
 	
-	protected final Set<Event> get_room_events(int day_of_week) {
+	protected final Set<Event> get_events(int day_of_week) {
 		if (!Utilities.valid_day_of_week(day_of_week)) {
 			return null;
 		}
@@ -86,7 +86,7 @@ final class Room implements Comparable<Room> {
 		return total_size;
 	}
 	
-	protected final Map<Integer, Set<Event>> get_room_events() {
+	protected final Map<Integer, Set<Event>> get_events() {
 		return this.course_schedule;
 	}
 

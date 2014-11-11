@@ -3,7 +3,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,7 @@ import java.util.Stack;
  * @author Fatass
  *
  */
+@SuppressWarnings("unused")
 final class CSVReader {
 	
 	private static final String ALL_EVENTS_SCHEDULE		= "https://www.cs.utexas.edu/calendar/touch/feed";			// events
@@ -105,8 +105,8 @@ final class CSVReader {
 		List<HashMap<String, String>> event_strings;
 		EventList events = new EventList();
 		
-		Stopwatch stopwatch = new Stopwatch();
-		stopwatch.start();
+//		Stopwatch stopwatch = new Stopwatch();
+//		stopwatch.start();
 
 		if (!Constants.DEBUG) {
 			event_strings = reader.read_csv_from_url(ALL_EVENTS_SCHEDULE);
@@ -129,11 +129,11 @@ final class CSVReader {
 			events.add(event_strings);	
 		}
 		
-		stopwatch.stop();
+//		stopwatch.stop();
 		
-		if (Constants.DEBUG) {
-			System.out.println("Took " + stopwatch.time() + " seconds to read\n");
-		}
+//		if (Constants.DEBUG) {
+//			System.out.println("Took " + stopwatch.time() + " seconds to read\n");
+//		}
 
 		return events;		
 	}
@@ -343,61 +343,25 @@ final class CSVReader {
 		int current_month = 10;
 		int current_day = 31;
 
-		// 17, 17, 5, 2, 6, 16, 16, 17, none
-		test(Utilities.get_date(current_month, current_day, 2014, 400), 61);
-		test(Utilities.get_date(current_month, current_day, 2014, 800), 61);
-		test(Utilities.get_date(current_month, current_day, 2014, 1030), 61);
-		test(Utilities.get_date(current_month, current_day, 2014, 1300), 61);
-		test(Utilities.get_date(current_month, current_day, 2014, 1300), 1);
-		test(Utilities.get_date(current_month, current_day, 2014, 1630), 61);
-		test(Utilities.get_date(current_month, current_day, 2014, 1656), 60);
-		test(Utilities.get_date(current_month, current_day, 2014, 2300), 61);
-		test(Utilities.get_date(current_month, current_day, 2014, 0000), Constants.MINUTES_IN_DAY);
+//		test(Utilities.get_date(current_month, current_day, 2014, 400), 61);
+//		test(Utilities.get_date(current_month, current_day, 2014, 800), 61);
+//		test(Utilities.get_date(current_month, current_day, 2014, 1030), 61);
+//		test(Utilities.get_date(current_month, current_day, 2014, 1300), 61);
+//		test(Utilities.get_date(current_month, current_day, 2014, 1300), 1);
+//		test(Utilities.get_date(current_month, current_day, 2014, 1630), 61);
+//		test(Utilities.get_date(current_month, current_day, 2014, 1656), 60);
+//		test(Utilities.get_date(current_month, current_day, 2014, 2159), 1);
+//		test(Utilities.get_date(current_month, current_day, 2014, 2300), 61);
+//		test(Utilities.get_date(current_month, current_day, 2014, 759), 1);
+//		test(Utilities.get_date(current_month, current_day, 2014, 759), 2);
+//		test(Utilities.get_date(current_month, current_day, 2014, 0000), Constants.MINUTES_IN_DAY);
 		
-//		System.out.println(Constants.VALID_GDC_ROOMS_ROOMLIST.toString());
+		test_all_buildings(Utilities.get_date(current_month, current_day, 2014, 1300), 1);
+				
+		System.out.println(Constants.VALID_GDC_ROOMS_ROOMLIST.toString());
 		
-//		int total_num_courses = 0;
-//		List<String> all_rooms = new ArrayList<String>(2000);
-//		Iterator<Map.Entry<Location, Room>> itr = Constants.VALID_GDC_ROOMS_ROOMLIST.get_iterator();
-//		Map.Entry<Location, Room> curr_entry;
-//		Room curr_room;
-//		while (itr.hasNext()) {
-//			curr_entry = itr.next();
-//			curr_room = curr_entry.getValue();
-//			Map<Integer, Set<Event>> curr_room_events = curr_room.get_room_events();
-//			
-//			all_rooms.add(curr_room.get_location().toString());
-//			
-//			System.out.print(curr_room.get_location().toString() + "\n   ");
-//			for (int i = Constants.MONDAY; i <= Constants.FRIDAY; i++) {
-//				System.out.print(Constants.DAYS_OF_WEEK_SHORT[i] + ": ");
-//				
-//				for (Event event : curr_room_events.get(i)) {
-//					System.out.printf("%s (%s), ", event.get_event_name(), Utilities.get_time(event.get_start_date()));
-//				}
-//				
-//				System.out.print("\n   ");
-//			}
-//			
-//			System.out.println("\n");
-//			
-//			total_num_courses += curr_room.get_num_events();
-//		}
-//		Collections.sort(all_rooms);
-//		System.out.println(all_rooms.toString() + "\n");
-//		System.out.println("Total events in RoomList: " + total_num_courses);
-//		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.VALID_GDC_ROOMS_ROOMLIST.get_size());
-		
-//		System.out.println(Constants.VALID_GDC_ROOMS_ROOMLIST.toString());
 		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.VALID_GDC_ROOMS_ROOMLIST.get_size());
 		System.out.println("Total number events in RoomList: " + Constants.VALID_GDC_ROOMS_ROOMLIST.get_num_events_all_rooms());
-//
-//		Calendar calendar = Calendar.getInstance();
-//		Date blah = Utilities.get_date(11, 8, 2014, 1100);
-//		calendar.setTime(blah);
-////		int temp = 7 - Math.abs(calendar.get(Calendar.DAY_OF_WEEK) - 2);
-////		String day = Constants.DAYS_OF_WEEK_LONG[temp - (temp % 6)];
-//		System.out.println("\t" + Constants.DAYS_OF_WEEK_LONG[calendar.get(Calendar.DAY_OF_WEEK)]);
 		
 	}
 	
@@ -407,16 +371,13 @@ final class CSVReader {
 			date = calendar.getTime();
 		}
 		Stopwatch stopwatch = new Stopwatch();
-		double time_to_read, time_to_exec;
+		double time_to_exec;
 		int num_events_in_raw_feeds;	//, num_events_available;
 		
 		EventList events = new EventList();
 
-		stopwatch.start();
 //		events = read_csv();
 		events = Constants.CSV_FEEDS_MASTER;
-		stopwatch.stop();
-		time_to_read = stopwatch.time();
 		num_events_in_raw_feeds = events.get_size();
 
 		events.sort_by_event_name(true);
@@ -432,8 +393,6 @@ final class CSVReader {
 		query.set_option_capacity(0);
 //		query.set_option_capacity(new Integer(0));
 		
-//		query.set_option_search_gdc_only(false);	// DEPRECATE THIS
-		
 		query.set_option_search_for_building("cal");
 
 		String random_room = query.search();
@@ -448,13 +407,104 @@ final class CSVReader {
 		System.out.println("Num events, raw feeds:\t" + num_events_in_raw_feeds);
 		System.out.println("Num events, cleaned:\t" + Constants.CSV_FEEDS_CLEANED.get_size());
 //		System.out.println("Num events avail at\n    " + query + ":\t" + num_events_available);
-		System.out.println("Time to read feeds:\t" + time_to_read + " seconds");
-		System.out.println("Time to process:\t" + time_to_exec + " seconds");
-		System.out.println("Total time elapsed:\t" + (time_to_read + time_to_exec) + " seconds\n");
+		System.out.println("Time to search:\t\t" + time_to_exec + " seconds\n");
+//		System.out.println("Total time elapsed:\t" + time_to_exec + " seconds\n");
 		System.out.println("##########################################################################\n");
 	}
 	
+	public static void test_all_buildings(Date date, int duration) {
+		if (date == null) {
+			Calendar calendar = Calendar.getInstance();
+			date = calendar.getTime();
+		}
+		
+		int total_buildings = 0;
+		
+		Stopwatch stopwatch = new Stopwatch();
+		double time_to_exec = 0;
+		double total_time_all_searches = 0;
+		
+		Query query = new Query(date);
+		
+		query.set_duration(duration);
+		query.set_option_power(false);
+		query.set_option_capacity(0);
+		
+		String random_room;
+		
+		for (String building : Constants.CAMPUS_BUILDINGS) {
+			query.set_option_search_for_building(building);
+			
+			stopwatch.start();
+			random_room = query.search();
+			stopwatch.stop();
+			total_time_all_searches += stopwatch.time();
+			
+			time_to_exec = stopwatch.time();
+			
+			System.out.println("Random room chosen:\t" + random_room + "\n");
+			System.out.println("Query:\n" + query.toString() + "\n");
+			
+			System.out.println("Done.\n");
+//			System.out.println("Num events avail at\n    " + query + ":\t" + num_events_available);
+			System.out.println("Time to search:\t\t" + time_to_exec + " seconds\n");
+//			System.out.println("Total time elapsed:\t" + time_to_exec + " seconds\n");
+			System.out.println("##########################################################################\n");
+			
+			total_buildings++;
+		}
+		
+		System.out.printf("Searched %d buildings in %f seconds (avg %f seconds).\n\n", total_buildings, total_time_all_searches, (total_time_all_searches / total_buildings));
+		
+	}
+	
+	public static void print_rooms_read_from_schedule() {
+		int total_num_courses = 0;
+		List<String> all_rooms = new ArrayList<String>(2000);
+		Iterator<Map.Entry<Location, Room>> itr = Constants.VALID_GDC_ROOMS_ROOMLIST.get_iterator();
+		Map.Entry<Location, Room> curr_entry;
+		Room curr_room;
+		while (itr.hasNext()) {
+			curr_entry = itr.next();
+			curr_room = curr_entry.getValue();
+			Map<Integer, Set<Event>> curr_room_events = curr_room.get_events();
+			
+			all_rooms.add(curr_room.get_location().toString());
+			
+			System.out.print(curr_room.get_location().toString() + "\n   ");
+			for (int i = Constants.MONDAY; i <= Constants.FRIDAY; i++) {
+				System.out.print(Constants.DAYS_OF_WEEK_SHORT[i] + ": ");
+				
+				for (Event event : curr_room_events.get(i)) {
+					System.out.printf("%s (%s), ", event.get_event_name(), Utilities.get_time(event.get_start_date()));
+				}
+				
+				System.out.print("\n   ");
+			}
+			
+			System.out.println("\n");
+			
+			total_num_courses += curr_room.get_num_events();
+		}
+		Collections.sort(all_rooms);
+		System.out.println(all_rooms.toString() + "\n");
+		System.out.println("Total events in RoomList: " + total_num_courses);
+		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.VALID_GDC_ROOMS_ROOMLIST.get_size());
+	}
+	
+	
+	
 }		// end of file
+
+
+
+
+
+
+
+
+
+
 
 
 

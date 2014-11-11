@@ -46,8 +46,8 @@ public class Query {
 		this.options = new HashMap<String, Object>(10);
 		this.options.put(Constants.CAPACITY, new Integer(0));
 		this.options.put(Constants.POWER, new Boolean(false));
-		this.options.put(Constants.SEARCH_GDC_ONLY, new Boolean(true));
-		this.options.put(Constants.SEARCH_FOR_BUILDING, Constants.GDC);
+//		this.options.put(Constants.SEARCH_GDC_ONLY, new Boolean(true));
+		this.options.put(Constants.SEARCH_BUILDING, Constants.GDC);
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class Query {
 		int wanted_capacity = this.get_option_capacity();
 		boolean wanted_power = this.get_option_power();
 
-		int today = this.get_this_day_of_week();
+//		int today = this.get_this_day_of_week();
 		
 		Iterator<Map.Entry<Location, Room>> itr = Constants.VALID_GDC_ROOMS_ROOMLIST.get_iterator();
 		Map.Entry<Location, Room> curr_entry;
@@ -147,16 +147,16 @@ public class Query {
 					is_valid = false;
 				}
 
-				if (!this.get_option_search_gdc_only() && !Utilities.containsIgnoreCase(curr_loc.get_building(), Constants.GDC) && is_valid) {
-					Set<Event> todays_classes = curr_room.get_room_events(today);
-					for (Event course : todays_classes) {
-						
-						if (Utilities.time_schedules_overlap(this.start_date, this.end_date, course.get_start_date(), course.get_end_date())) {
-							is_valid = false;
-							break;
-						}
-					}
-				}
+//				if (!this.get_option_search_gdc_only() && !Utilities.containsIgnoreCase(curr_loc.get_building(), Constants.GDC) && is_valid) {
+//					Set<Event> todays_classes = curr_room.get_events(today);
+//					for (Event course : todays_classes) {
+//						
+//						if (Utilities.time_schedules_overlap(this.start_date, this.end_date, course.get_start_date(), course.get_end_date())) {
+//							is_valid = false;
+//							break;
+//						}
+//					}
+//				}
 				
 				/*
 				 * Add current location to list of valid locations only
@@ -383,12 +383,12 @@ public class Query {
 		return ((Boolean) this.options.get(Constants.POWER));
 	}
 	
-	protected Boolean get_option_search_gdc_only() {
-		return ((Boolean) this.options.get(Constants.SEARCH_GDC_ONLY));
-	}
+//	protected Boolean get_option_search_gdc_only() {
+//		return ((Boolean) this.options.get(Constants.SEARCH_GDC_ONLY));
+//	}
 	
 	protected String get_option_search_for_building() {
-		return ((String) this.options.get(Constants.SEARCH_FOR_BUILDING));
+		return ((String) this.options.get(Constants.SEARCH_BUILDING));
 	}
 	
 	/**
@@ -420,7 +420,7 @@ public class Query {
 	 */
 	private boolean has_standard_options() {
 		if (this.get_option_power() || this.get_option_capacity() > 0 || 
-				!this.get_option_search_for_building().equals(Constants.GDC)
+				!this.get_option_search_for_building().equalsIgnoreCase(Constants.GDC)
 //				!this.get_option_search_gdc_only()
 				) {
 			
@@ -433,7 +433,10 @@ public class Query {
 		int this_start_time = Utilities.get_time_from_date(this.start_date);
 		int this_end_time = Utilities.get_time_from_date(this.end_date);
 		
-		if (this_start_time == Constants.LAST_TIME_OF_DAY) {
+		if (this_start_time >= Constants.LAST_TIME_OF_DAY && this_start_time < 2359) {
+			return true;
+		}
+		else if (this_start_time >= 0 && this_start_time < Constants.LAST_TIME_OF_NIGHT - 1 && this_end_time < Constants.LAST_TIME_OF_NIGHT) {
 			return true;
 		}
 		
@@ -516,6 +519,7 @@ public class Query {
 		return random_room;
 	}
 	
+	/* Don't forget to disable checkbox for setting has_power */
 	private Set<Location> search_for_non_gdc_rooms() {
 		if (Constants.VALID_GDC_ROOMS_ROOMLIST.get_size() <= 0) {
 			throw new IllegalStateException();
@@ -526,6 +530,7 @@ public class Query {
 		String search_for = this.get_option_search_for_building();
 		int today = this.get_this_day_of_week();
 		
+		int wanted_capacity = this.get_option_capacity();
 		boolean is_valid = true;
 		
 		Iterator<Map.Entry<Location, Room>> itr = Constants.VALID_GDC_ROOMS_ROOMLIST.get_sorted_map_iterator();
@@ -537,6 +542,10 @@ public class Query {
 			curr_loc = curr_entry.getKey();
 			curr_room = curr_entry.getValue();
 			
+			if (curr_room.get_capacity() < wanted_capacity) {
+				continue;
+			}
+			
 			if (curr_loc.get_building().toLowerCase().compareTo(search_for.toLowerCase()) > 0) {
 				break;
 			}
@@ -544,7 +553,7 @@ public class Query {
 				continue;
 			}
 			
-			Set<Event> todays_classes = curr_room.get_room_events(today);
+			Set<Event> todays_classes = curr_room.get_events(today);
 			for (Event course : todays_classes) {
 				if (Utilities.time_schedules_overlap(this.start_date, this.end_date, course.get_start_date(), course.get_end_date())) {
 					is_valid = false;
@@ -581,8 +590,8 @@ public class Query {
 //		}
 //		
 //		List<Location> out = new ArrayList<Location>();
-//		
-//		if (eolist.get_size() == 0) {
+//
+//		if (eolist.get_size() == 0 || search_is_at_night()) {
 //			return out;
 //		}
 //		
@@ -699,21 +708,21 @@ public class Query {
 		return true;
 	}
 	
-	protected boolean set_option_search_gdc_only(Boolean yes) {
-		if (yes == null) {
-//			return false;
-			throw new IllegalArgumentException("Error: argument cannot be null, set_option_search_gdc_only()");
-		}
-		this.options.put(Constants.SEARCH_GDC_ONLY, yes);
-		return true;
-	}
+//	protected boolean set_option_search_gdc_only(Boolean yes) {
+//		if (yes == null) {
+////			return false;
+//			throw new IllegalArgumentException("Error: argument cannot be null, set_option_search_gdc_only()");
+//		}
+//		this.options.put(Constants.SEARCH_GDC_ONLY, yes);
+//		return true;
+//	}
 	
 	protected boolean set_option_search_for_building(String building_code) {
 		if (building_code == null) {
 //			return false;
 			throw new IllegalArgumentException("Error: argument cannot be null, set_option_search_for_building()");		
 		}
-		this.options.put(Constants.SEARCH_FOR_BUILDING, building_code);
+		this.options.put(Constants.SEARCH_BUILDING, building_code);
 		return true;		
 	}
 	
@@ -842,7 +851,8 @@ public class Query {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		return (37 * this.start_date.hashCode() * this.end_date.hashCode() * 17);
+		return (37 * Integer.parseInt(Utilities.get_time(this.start_date).replaceAll(":", "")) * 
+				Integer.parseInt(Utilities.get_time(this.end_date).replaceAll(":", "")) * 17);
 	}
 	
 	/* (non-Javadoc)

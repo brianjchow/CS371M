@@ -302,7 +302,8 @@ public class Event implements Comparable<Event> {
 
 //		return ((int) result);
 		
-		return (Utilities.stringHashCode(this.event_name) * this.location.hashCode());
+		int start_time = Integer.parseInt(Utilities.get_time(this.start_date).replaceAll(":", ""));
+		return (Utilities.stringHashCode(this.event_name) * start_time * this.location.hashCode());
 	}
 	
 	/* (non-Javadoc)
