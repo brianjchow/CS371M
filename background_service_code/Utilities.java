@@ -9,6 +9,61 @@ import java.util.regex.PatternSyntaxException;
 
 public class Utilities {
 	
+	protected static boolean date_is_in_range(Date what, Date start, Date end) {
+		if (what == null || start == null || end == null) {
+			throw new IllegalArgumentException("Null argument.");
+		}
+		return (!what.before(start) && !what.after(end));
+	}
+	
+	protected static boolean date_is_during_spring(Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException("Null argument.");
+		}
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		
+		int year = calendar.get(Calendar.YEAR);
+		Date start = get_date(Constants.SPRING_START_MONTH, Constants.SPRING_START_DAY, year, 0);
+		Date end = get_date(Constants.SPRING_END_MONTH, Constants.SPRING_END_DAY, year, 2359);
+		
+		boolean result = date_is_in_range(date, start, end);		
+		return result;
+	}
+	
+	protected static boolean date_is_during_summer(Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException("Null argument.");
+		}
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		
+		int year = calendar.get(Calendar.YEAR);
+		Date start = get_date(Constants.SUMMER_START_MONTH, Constants.SUMMER_START_DAY, year, 0);
+		Date end = get_date(Constants.SUMMER_END_MONTH, Constants.SUMMER_END_DAY, year, 2359);
+		
+		boolean result = date_is_in_range(date, start, end);		
+		return result;
+	}
+	
+	protected static boolean date_is_during_fall(Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException("Null argument.");
+		}
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		
+		int year = calendar.get(Calendar.YEAR);
+		Date start = get_date(Constants.FALL_START_MONTH, Constants.FALL_START_DAY, year, 0);
+		Date end = get_date(Constants.FALL_END_MONTH, Constants.FALL_END_DAY, year, 2359);
+		
+		boolean result = date_is_in_range(date, start, end);		
+		return result;
+	}
+
 	protected static boolean dates_are_equal(Date date1, Date date2) {
 		if (date1 == null || date2 == null) {
 			throw new IllegalArgumentException();

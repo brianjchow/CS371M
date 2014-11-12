@@ -13,7 +13,7 @@ import java.util.Stack;
  * @author Fatass
  *
  */
-@SuppressWarnings("unused")
+// @SuppressWarnings("unused")
 final class CSVReader {
 	
 	private static final String ALL_EVENTS_SCHEDULE		= "https://www.cs.utexas.edu/calendar/touch/feed";			// events
@@ -329,13 +329,16 @@ final class CSVReader {
 
 	/* TODO
 	 * - add "limit searches to GDC only" button
-	 * - holidays?
+	 * - holidays? would be handled in Query.determine_which_schedule_to_use()
+	 * - change DatePicker in Android to allow this and next semester only
+	 * - change TimePicker in Android to only allow searches up to a day in length
 	 * - keep separate databases for each semester; change database according to query
 	 * - remove the boolean option for gdc_only in Query
 	 * - fix Query.search_is_at_night() (before fixing bug in next step)
 	 * - fix Utilities.time_schedules_overlap() to match Query.search_is_at_night()
 	 * - fix Query.set_option_search_for_building() to reject invalid building codes
 	 * - add set_standard_option() method to Query
+	 * - change RoomList's backing Map to a Map<String, Room> (Room objects already have a Location field)
 	 */
 	public static void main(String[] args) {
 		Constants.init();
@@ -358,10 +361,10 @@ final class CSVReader {
 		
 		test_all_buildings(Utilities.get_date(current_month, current_day, 2014, 1300), 1);
 				
-		System.out.println(Constants.VALID_GDC_ROOMS_ROOMLIST.toString());
+//		System.out.println(Constants.USED_ROOMS_THIS_SEMESTER.toString());
 		
-		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.VALID_GDC_ROOMS_ROOMLIST.get_size());
-		System.out.println("Total number events in RoomList: " + Constants.VALID_GDC_ROOMS_ROOMLIST.get_num_events_all_rooms());
+		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.USED_ROOMS_THIS_SEMESTER.get_size());
+		System.out.println("Total number events in RoomList: " + Constants.USED_ROOMS_THIS_SEMESTER.get_num_events_all_rooms());
 		
 	}
 	
@@ -393,7 +396,7 @@ final class CSVReader {
 		query.set_option_capacity(0);
 //		query.set_option_capacity(new Integer(0));
 		
-		query.set_option_search_for_building("cal");
+		query.set_option_search_building("cal");
 
 		String random_room = query.search();
 
@@ -433,7 +436,7 @@ final class CSVReader {
 		String random_room;
 		
 		for (String building : Constants.CAMPUS_BUILDINGS) {
-			query.set_option_search_for_building(building);
+			query.set_option_search_building(building);
 			
 			stopwatch.start();
 			random_room = query.search();
@@ -461,7 +464,7 @@ final class CSVReader {
 	public static void print_rooms_read_from_schedule() {
 		int total_num_courses = 0;
 		List<String> all_rooms = new ArrayList<String>(2000);
-		Iterator<Map.Entry<Location, Room>> itr = Constants.VALID_GDC_ROOMS_ROOMLIST.get_iterator();
+		Iterator<Map.Entry<Location, Room>> itr = Constants.USED_ROOMS_THIS_SEMESTER.get_iterator();
 		Map.Entry<Location, Room> curr_entry;
 		Room curr_room;
 		while (itr.hasNext()) {
@@ -489,7 +492,7 @@ final class CSVReader {
 		Collections.sort(all_rooms);
 		System.out.println(all_rooms.toString() + "\n");
 		System.out.println("Total events in RoomList: " + total_num_courses);
-		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.VALID_GDC_ROOMS_ROOMLIST.get_size());
+		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.USED_ROOMS_THIS_SEMESTER.get_size());
 	}
 	
 	

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /*
  * A class to chain multiple Room objects together.
@@ -14,12 +15,12 @@ import java.util.TreeMap;
  * identical, even if Constants.java is modified.
  */
 
-@SuppressWarnings("unused")
+// @SuppressWarnings("unused")
 final class RoomList {
 
 //	private static final String CS_COURSE_SCHEDULE_S15 = "course_schedules/cs_course_schedule_s15.csv";
-	private static final String FULL_COURSE_SCHEDULE_S15 = "course_schedules/master_course_schedule_s15.csv";
-	private static final String FULL_COURSE_SCHEDULE_F14 = "course_schedules/master_course_schedule_f14.csv";
+//	private static final String FULL_COURSE_SCHEDULE_S15 = "course_schedules/master_course_schedule_s15.csv";
+//	private static final String FULL_COURSE_SCHEDULE_F14 = "course_schedules/master_course_schedule_f14.csv";
 	
 	private static final boolean READ_ONLY_GDC = false;
 	
@@ -27,34 +28,61 @@ final class RoomList {
 	private static final int EOL = (int) '#';
 	private static final int MAX_ROOM_LENGTH = 4;
 	
-	/* If reading from master list, change OFFSET to 1; otherwise, keep at 0 (not sure why this happens) */
-	private static final int OFFSET = 1;
-	private static final int STD_LINE_SIZE = 74 + OFFSET;
+	private static final int	STD_LINE_SIZE				=	75;
 	
-	private static final int INDEX_CLASS_MEETING_DAYS = 28 + OFFSET;
-	private static final int INDEX_CLASS_START_DATE = 29 + OFFSET;
-	private static final int INDEX_CLASS_END_DATE = 30 + OFFSET;
-	private static final int INDEX_CLASS_BUILDING = 31 + OFFSET;
-	private static final int INDEX_CLASS_ROOM = 32 + OFFSET;
-	private static final int INDEX_CLASS_ROOM_CAPACITY = 33 + OFFSET;
+	private static final int	INDEX_CLASS_DEPT			=	4;
+	private static final int	INDEX_CLASS_NUM				=	5;
+	private static final int	INDEX_CLASS_NAME			=	7;
 	
-	private static final int INDEX_LAB_MEETING_DAYS = 36 + OFFSET;
-	private static final int INDEX_LAB_START_TIME = 37 + OFFSET;
-	private static final int INDEX_LAB_END_TIME = 38 + OFFSET;
-	private static final int INDEX_LAB_BUILDING = 39 + OFFSET;
-	private static final int INDEX_LAB_ROOM = 40 + OFFSET;
-	private static final int INDEX_LAB_ROOM_CAPACITY = 41 + OFFSET;
+	private static final int	INDEX_CLASS_MEETING_DAYS	=	29;
+	private static final int	INDEX_CLASS_START_DATE		=	30;
+	private static final int 	INDEX_CLASS_END_DATE		=	31;
+	private static final int 	INDEX_CLASS_BUILDING		=	32;
+	private static final int 	INDEX_CLASS_ROOM			=	33;
+	private static final int 	INDEX_CLASS_ROOM_CAPACITY	=	34;
 	
-	private static int line_counter = 0;
+	private static final int 	INDEX_LAB_MEETING_DAYS		=	37;
+	private static final int 	INDEX_LAB_START_TIME		=	38;
+	private static final int 	INDEX_LAB_END_TIME			=	39;
+	private static final int 	INDEX_LAB_BUILDING			=	40;
+	private static final int 	INDEX_LAB_ROOM				=	41;
+	private static final int 	INDEX_LAB_ROOM_CAPACITY		=	42;
+	
+	private static int line_counter;
 	
 	private Map<Location, Room> list;
 	
 	/**
 	 * Default constructor.
 	 */
+//	protected RoomList() {
+//		this.list = new HashMap<Location, Room>(Constants.VALID_GDC_ROOMS.length * 2);
+//		initialise(Constants.COURSE_SCHEDULE_THIS_SEMESTER);
+//	}
+	
 	protected RoomList() {
 		this.list = new HashMap<Location, Room>(Constants.VALID_GDC_ROOMS.length * 2);
 		initialise();
+	}
+	
+	protected RoomList(String course_schedule_file_name) {
+		if (course_schedule_file_name == null || course_schedule_file_name.length() <= 0) {
+			throw new IllegalArgumentException("Invalid String argument, RoomList constructor.");
+		}
+		
+		this.list = new HashMap<Location, Room>(25000);		// F14: 16710 buckets; S15: 15001 buckets		
+		initialise();
+		
+		line_counter = 0;
+		Stopwatch stopwatch = new Stopwatch();
+		stopwatch.start();
+		
+		this.read_course_schedules(course_schedule_file_name);	// FULL_COURSE_SCHEDULE_F14, FULL_COURSE_SCHEDULE_S15
+		
+		stopwatch.stop();
+		if (Constants.DEBUG) {
+			System.out.printf("Took %f seconds to read %d lines from schedule \"%s\"\n\n", stopwatch.time(), line_counter, course_schedule_file_name);
+		}
 	}
 	
 	/**
@@ -70,16 +98,6 @@ final class RoomList {
 		for (int i = 0; i < Constants.VALID_GDC_ROOMS.length; i++) {
 			room = new Room(new Location(gdc_str + Constants.VALID_GDC_ROOMS[i]), room_types[i], room_capacities[i], room_powers[i]);
 			this.add(room);
-		}
-		
-		Stopwatch stopwatch = new Stopwatch();
-		stopwatch.start();
-		
-		this.read_course_schedules(FULL_COURSE_SCHEDULE_F14);	// FULL_COURSE_SCHEDULE_F14, FULL_COURSE_SCHEDULE_S15
-		
-		stopwatch.stop();
-		if (Constants.DEBUG) {
-			System.out.printf("\nTook %f seconds to read %d lines from schedule\n", stopwatch.time(), line_counter);
 		}
 	}
 
@@ -111,6 +129,46 @@ final class RoomList {
 		return true;
 	}
 	
+	protected final RoomList get_gdc_rooms() {
+		if (this.list == null) {
+			throw new IllegalStateException("This RoomList's backing Map cannot be null.");
+		}
+		
+//		String gdc_str = "GDC ";
+		RoomList out = new RoomList();
+		
+		Room temp;
+		for (Location location : this.list.keySet()) {
+			temp = this.list.get(location);
+			if (temp != null) {
+				out.add(temp);
+			}
+		}
+		
+//		for (int i = 0; i < Constants.VALID_GDC_ROOMS.length; i++) {
+//			temp = this.list.get(new Location(gdc_str + Constants.VALID_GDC_ROOMS[i]));
+//			out.add(temp);
+//		}
+		
+		return out;
+	}
+	
+	protected final Set<Location> get_keyset() {
+		if (this.list == null) {
+			throw new IllegalStateException("This RoomList's backing Map cannot be null.");
+		}
+		
+		return (this.list.keySet());
+	}
+	
+	protected final Set<Room> get_valueset() {
+		if (this.list == null) {
+			throw new IllegalStateException("This RoomList's backing Map cannot be null.");
+		}
+		
+		return (new TreeSet<Room>(this.list.values()));
+	}
+	
 	/**
 	 * @param location
 	 * @return Null if location is null or could not be found
@@ -127,11 +185,11 @@ final class RoomList {
 	/**
 	 * @return An iterator over this RoomList's backing Map.
 	 */
-	protected Iterator<Map.Entry<Location, Room>> get_iterator() {
+	protected final Iterator<Map.Entry<Location, Room>> get_iterator() {
 		return (this.list.entrySet().iterator());
 	}
 	
-	protected Iterator<Map.Entry<Location, Room>> get_sorted_map_iterator() {
+	protected final Iterator<Map.Entry<Location, Room>> get_sorted_map_iterator() {
 		Map<Location, Room> temp = this.get_sorted_map();
 		return (temp.entrySet().iterator());
 	}
@@ -153,7 +211,8 @@ final class RoomList {
 			throw new IllegalArgumentException();
 		}
 		if (this.list == null) {
-			this.list = new RoomList().list;
+//			this.list = new RoomList().list;
+			throw new IllegalStateException("This RoomList's backing Map cannot be null.");
 		}
 		
 //		final String WHICH_SCHEDULE = FULL_COURSE_SCHEDULE_S15;	// CS_COURSE_SCHEDULE_S15, FULL_COURSE_SCHEDULE_S15
@@ -219,7 +278,7 @@ final class RoomList {
 		}
 
 		Event class_event = null;
-		String class_name = tokens.get(3 + OFFSET) + tokens.get(4 + OFFSET) + " - " + tokens.get(6 + OFFSET);
+		String class_name = tokens.get(INDEX_CLASS_DEPT) + tokens.get(INDEX_CLASS_NUM) + " - " + tokens.get(INDEX_CLASS_NAME);
 		boolean[] class_meeting_days = set_meeting_days(tokens.get(INDEX_CLASS_MEETING_DAYS));
 		Date class_start_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_CLASS_START_DATE))));
 		Date class_end_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_CLASS_END_DATE))));
