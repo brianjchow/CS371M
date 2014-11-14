@@ -31,6 +31,7 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 		if (getIntent().getBooleanExtra("EXIT",  false)) {
 			Log.d(TAG, "Now exiting");
 			finish();
+			return;
 		}
 	}
 
@@ -75,6 +76,9 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 				findRoomLater();
 				break;
 		}
+		
+		finish();
+		return;
 	}
 
 }		// end of file

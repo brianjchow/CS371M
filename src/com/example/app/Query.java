@@ -28,6 +28,9 @@ public class Query implements Parcelable {
 	private int duration;					// how long the user needs the room to be available, in minutes; default 60
 	private Map<String, Object> options;	// [capacity, power plugs] for now
 	
+	private static int MESSAGE_STATUS_FLAG = -1;
+	private static RoomList USE_THIS_ROOMLIST = null;
+	
 	/**
 	 * Default constructor. Uses the current system time.
 	 */
@@ -51,6 +54,7 @@ public class Query implements Parcelable {
 		this.options = new HashMap<String, Object>(10);
 		this.options.put(Constants.CAPACITY, Integer.valueOf(0));
 		this.options.put(Constants.POWER, Boolean.valueOf(false));
+		this.options.put(Constants.SEARCH_BUILDING, Constants.GDC);
 	}
 
 	/**
@@ -59,6 +63,10 @@ public class Query implements Parcelable {
 	 * 		   specified by the search options in this Query.
 	 */
 	private Set<Location> filter_by_query(Set<Location> other_set) {
+		if (USE_THIS_ROOMLIST == null) {
+			throw new IllegalStateException("Don't call this method from anywhere but Query.search().");
+		}
+		
 		if (other_set == null) {
 			throw new IllegalArgumentException("Error: other_set cannot be null, filter_by_query()");
 		}
@@ -75,7 +83,7 @@ public class Query implements Parcelable {
 		Room curr_room;
 		boolean is_valid = true;
 		for (Location location : other_set) {
-			if ((curr_room = Constants.VALID_GDC_ROOMS_ROOMLIST.get_room(location)) == null) {
+			if ((curr_room = USE_THIS_ROOMLIST.get_room(location)) == null) {
 				continue;
 			}
 			
@@ -110,6 +118,10 @@ public class Query implements Parcelable {
 	}
 	
 	private Set<Location> filter_by_query_get_all_other_rooms(Set<Location> valid, Set<Location> invalid) {
+		if (USE_THIS_ROOMLIST == null) {
+			throw new IllegalStateException("Don't call this method from anywhere but Query.search().");
+		}
+		
 //		if (invalid == null) {
 //			throw new IllegalArgumentException("Error: other_set cannot be null, filter_by_query_get_all_other_rooms()");
 //		}
@@ -120,7 +132,7 @@ public class Query implements Parcelable {
 		int wanted_capacity = this.get_option_capacity();
 		boolean wanted_power = this.get_option_power();
 
-		Iterator<Map.Entry<Location, Room>> itr = Constants.VALID_GDC_ROOMS_ROOMLIST.get_iterator();
+		Iterator<Map.Entry<Location, Room>> itr = USE_THIS_ROOMLIST.get_iterator();
 		Map.Entry<Location, Room> curr_entry;
 		Location curr_loc;
 		Room curr_room;
@@ -360,7 +372,7 @@ public class Query implements Parcelable {
 	 * @return How many seats the user requires
 	 * 		   in any room chosen by the app.
 	 */
-	protected Integer get_option_capacity() {
+	protected final Integer get_option_capacity() {
 		return ((Integer) this.options.get(Constants.CAPACITY));
 	}
 	
@@ -370,8 +382,12 @@ public class Query implements Parcelable {
 	 * 		   occupants of any room chosen by the app.
 	 * 		   False otherwise.
 	 */
-	protected Boolean get_option_power() {
+	protected final Boolean get_option_power() {
 		return ((Boolean) this.options.get(Constants.POWER));
+	}
+	
+	protected final String get_option_search_building() {
+		return ((String) this.options.get(Constants.SEARCH_BUILDING));
 	}
 	
 	/**
@@ -397,17 +413,50 @@ public class Query implements Parcelable {
 		return (this.start_date);
 	}
 	
+	private int get_this_day_of_week() {
+		final Calendar calendar = Calendar.getInstance();
+		calendar.setTime(this.start_date);
+		int today = calendar.get(Calendar.DAY_OF_WEEK);
+		
+		return today;
+	}
+		
 	/**
 	 * @return True if the user only specified a starting date
 	 * 		   and duration when searching for a room, false otherwise.
 	 */
 	private boolean has_standard_options() {
-		if (this.get_option_power() || this.get_option_capacity() > 0) {
+		if (this.get_option_power() || this.get_option_capacity() > 0 || !this.get_option_search_building().equalsIgnoreCase(Constants.GDC)) {
 			return false;
 		}
 		return true;
 	}
 
+	private boolean search_is_at_night() {
+		int this_start_time = Utilities.get_time_from_date(this.start_date);
+		int this_end_time = Utilities.get_time_from_date(this.end_date);
+		
+		if (this_start_time >= Constants.LAST_TIME_OF_DAY && this_start_time < 2359) {
+			return true;
+		}
+		else if (this_start_time >= 0 && this_start_time < Constants.LAST_TIME_OF_NIGHT - 1 && this_end_time < Constants.LAST_TIME_OF_NIGHT) {
+			return true;
+		}
+		
+		Date this_start, this_end;
+		
+		this_start = Utilities.get_date(1, 1, 2014, this_start_time);
+		if (this_end_time > this_start_time) {
+			this_end = Utilities.get_date(1, 1, 2014, this_end_time);
+		}
+		else {
+			this_end = Utilities.get_date(1, 2, 2014, this_end_time);
+		}
+		// note: the times will never be the same; query duration must be >= 1 minute
+		
+		return Utilities.times_overlap(this_start, this_end, Constants.NIGHTFALL, Constants.DAYBREAK);
+	}
+	
 	/**
 	 * @return A String representing a Location if a
 	 * 		   room is found by the search algorithm.
@@ -426,32 +475,19 @@ public class Query implements Parcelable {
 		if (eolist == null) {
 			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
 		}
-		if (eolist.get_size() == 0) {
-			return Constants.NO_ROOMS_AVAIL_MSG;
-		}
-
-		/* Reduce search space by eliminating Event dates not within range of this Query. */
-		EventList reduced = get_events_by_date(eolist);
-		if (reduced.get_size() <= 0) {
-			return Constants.NO_ROOMS_AVAIL_MSG;
-		}
-
-		/* Continue reducing search space by eliminating Event times not within range of this Query. */
-		Set<Location> valid_rooms = this.filter_by_time(reduced);
 		
-		/* Apply any selected options. */
-		if (!this.has_standard_options() && valid_rooms.size() > 0) {
-			valid_rooms = this.filter_by_query(valid_rooms);
-		}
-		
+		List<Location> valid_rooms = this.search_get_all_available_rooms(eolist);
+
 		if (valid_rooms.size() <= 0) {
-			return Constants.NO_ROOMS_AVAIL_MSG;
+			if (MESSAGE_STATUS_FLAG >= 0 && MESSAGE_STATUS_FLAG < Constants.MESSAGE_STATUS_FLAGS.length) {
+				return Constants.MESSAGE_STATUS_FLAGS[MESSAGE_STATUS_FLAG];
+			}
+			return Constants.MESSAGE_STATUS_FLAGS[Constants.SEARCH_ERROR];
 		}
 
 		/* Get a random room. */
-		List<Location> random = new ArrayList<Location>(valid_rooms);
 		int random_index = new Random().nextInt(valid_rooms.size());
-		String random_room = random.get(random_index).toString();
+		String random_room = valid_rooms.get(random_index).toString();
 		
 		if (Constants.DEBUG) {
 //			Log.d(TAG, "Avail rooms as found in feeds:\n");
@@ -462,13 +498,233 @@ public class Query implements Parcelable {
 //				Log.d(TAG, temp.get_location().toString());
 //			}
 			
-			Collections.sort(random);
+			Collections.sort(valid_rooms);
 //			Log.d(TAG, this.toString() + "\n" + random.size() + " " + random.toString() + "\n");
-			Log.d(TAG, "All rooms found:\n" + random.size() + " " + random.toString() + "\n");
+			Log.d(TAG, "All rooms found:\n" + valid_rooms.size() + " " + valid_rooms.toString() + "\n");
 //			System.out.println(random.size() + " " + random.toString() + "\n");			
 		}
 		
 		return random_room;
+	}
+	
+	protected List<Location> search_get_all_available_rooms() {
+		return (search_get_all_available_rooms(Constants.CSV_FEEDS_CLEANED));
+	}
+	
+	protected List<Location> search_get_all_available_rooms(EventList eolist) {
+		if (eolist == null) {
+			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
+		}
+		
+		List<Location> out = new ArrayList<Location>();
+		Set<Location> valid_rooms;
+
+		if (eolist.get_size() <= 0) {
+			MESSAGE_STATUS_FLAG = Constants.NO_ROOMS_AVAIL;
+			return out;
+		}
+		else if (search_is_at_night()) {
+			MESSAGE_STATUS_FLAG = Constants.GO_HOME;
+			return out;
+		}
+
+		reset_using_roomlist_message_status_flag();
+		USE_THIS_ROOMLIST = determine_which_schedule_to_use();
+		if (USE_THIS_ROOMLIST == null) {
+			if (MESSAGE_STATUS_FLAG < 0 && MESSAGE_STATUS_FLAG >= Constants.MESSAGE_STATUS_FLAGS.length) {
+				MESSAGE_STATUS_FLAG = Constants.SEARCH_ERROR;
+			}
+			return out;
+		}
+
+		if (!this.get_option_search_building().equalsIgnoreCase(Constants.GDC)) {
+			valid_rooms = search_for_non_gdc_rooms();
+		}
+		else {
+			/* Reduce search space by eliminating Event dates not within range of this Query. */
+			EventList reduced = get_events_by_date(eolist);
+			if (reduced.get_size() <= 0) {
+				MESSAGE_STATUS_FLAG = Constants.NO_ROOMS_AVAIL;
+				return out;
+			}
+
+			/* Continue reducing search space by eliminating Event times not within range of this Query. */
+			valid_rooms = this.filter_by_time(reduced);
+			
+			/* Apply any selected options. */
+			if (!this.has_standard_options() && valid_rooms.size() > 0) {
+				valid_rooms = this.filter_by_query(valid_rooms);
+			}
+		}
+		
+		if (valid_rooms.size() <= 0) {
+			MESSAGE_STATUS_FLAG = Constants.NO_ROOMS_AVAIL;
+			return out;
+		}
+		
+		out = new ArrayList<Location>(valid_rooms);
+//		Collections.sort(out);
+		
+		return out;
+	}
+	
+	/* Don't forget to disable checkbox for setting has_power */
+	private Set<Location> search_for_non_gdc_rooms() {
+		if (USE_THIS_ROOMLIST == null) {
+			throw new IllegalStateException("Don't call this method from anywhere but Query.search().");
+		}
+		
+		Set<Location> valid_rooms = new HashSet<Location>();
+		
+		if (USE_THIS_ROOMLIST.get_size() <= 0) {
+			return valid_rooms;
+		}
+		
+		String search_for = this.get_option_search_building();
+		int today = this.get_this_day_of_week();
+		
+		int wanted_capacity = this.get_option_capacity();
+		boolean is_valid = true;
+		
+		Iterator<Map.Entry<Location, Room>> itr = USE_THIS_ROOMLIST.get_sorted_map_iterator();
+		Map.Entry<Location, Room> curr_entry;
+		Location curr_loc;
+		Room curr_room;
+		while (itr.hasNext()) {
+			curr_entry = itr.next();
+			curr_loc = curr_entry.getKey();
+			curr_room = curr_entry.getValue();
+			
+			if (curr_room.get_capacity() < wanted_capacity) {
+				continue;
+			}
+			
+			if (curr_loc.get_building().toLowerCase(Locale.US).compareTo(search_for.toLowerCase(Locale.US)) > 0) {
+				break;
+			}
+			else if (curr_loc.get_building().toLowerCase(Locale.US).compareTo(search_for.toLowerCase(Locale.US)) < 0) {
+				continue;
+			}
+			
+			Set<Event> todays_classes = curr_room.get_events(today);
+			for (Event course : todays_classes) {
+				if (Utilities.time_schedules_overlap(this.start_date, this.end_date, course.get_start_date(), course.get_end_date())) {
+					is_valid = false;
+					break;
+				}
+			}
+			
+			/* Note: the RoomList only contains unique Rooms, so there will never be any duplicates in valid. */
+			if (is_valid) {
+				valid_rooms.add(curr_loc);
+			}
+			
+			is_valid = true;
+		}
+		
+		return valid_rooms;
+	}
+	
+	private void reset_using_roomlist_message_status_flag() {
+		USE_THIS_ROOMLIST = null;
+		MESSAGE_STATUS_FLAG = -1;
+	}
+	
+	private RoomList determine_which_schedule_to_use() {
+
+		boolean searching_for_gdc = this.get_option_search_building().equalsIgnoreCase(Constants.GDC);
+		Date now = Calendar.getInstance().getTime();
+		
+		if (Utilities.date_is_during_spring(this.start_date)) {
+			if (Utilities.date_is_during_spring(now)) {
+				if (searching_for_gdc) {
+					return Constants.GDC_ROOMS_THIS_SEMESTER;
+				}
+				else {
+					return Constants.USED_ROOMS_THIS_SEMESTER;
+				}
+			}
+			else if (Utilities.date_is_during_summer(now)) {
+				if (searching_for_gdc) {
+					return Constants.GDC_ROOMS_NEXT_SEMESTER;
+				}
+				else {
+					if (Constants.USED_ROOMS_NEXT_SEMESTER != null) {
+						return Constants.GDC_ROOMS_NEXT_SEMESTER;
+					}
+					else {
+						MESSAGE_STATUS_FLAG = Constants.NO_INFO;
+						return null;
+					}
+				}
+			}
+			else if (Utilities.date_is_during_fall(now)) {
+				if (searching_for_gdc) {
+					return Constants.GDC_ROOMS_NEXT_SEMESTER;
+				}
+				else {
+					if (Constants.USED_ROOMS_NEXT_SEMESTER != null) {
+						return Constants.GDC_ROOMS_NEXT_SEMESTER;
+					}
+					else {
+						MESSAGE_STATUS_FLAG = Constants.NO_INFO;
+						return null;
+					}
+				}
+			}
+			else {
+				MESSAGE_STATUS_FLAG = Constants.HOLIDAY;
+				return null;
+			}
+		}
+		
+		else if (Utilities.date_is_during_summer(this.start_date)) {
+			MESSAGE_STATUS_FLAG = Constants.SUMMER;
+			return null;
+		}
+		
+		else if (Utilities.date_is_during_fall(this.start_date)) {
+			if (Utilities.date_is_during_spring(now)) {
+				if (searching_for_gdc) {
+					return Constants.GDC_ROOMS_NEXT_SEMESTER;
+				}
+				else {
+					if (Constants.USED_ROOMS_NEXT_SEMESTER != null) {
+						return Constants.GDC_ROOMS_NEXT_SEMESTER;
+					}
+					else {
+						MESSAGE_STATUS_FLAG = Constants.NO_INFO;
+						return null;
+					}
+				}
+			}
+			else if (Utilities.date_is_during_summer(now)) {
+				if (searching_for_gdc) {
+					return Constants.GDC_ROOMS_THIS_SEMESTER;
+				}
+				else {
+					return Constants.USED_ROOMS_THIS_SEMESTER;
+				}
+			}
+			else if (Utilities.date_is_during_fall(now)) {
+				if (searching_for_gdc) {
+					return Constants.GDC_ROOMS_THIS_SEMESTER;
+				}
+				else {
+					return Constants.USED_ROOMS_THIS_SEMESTER;
+				}
+			}
+			else {
+				MESSAGE_STATUS_FLAG = Constants.HOLIDAY;
+				return null;
+			}
+		}
+		
+		else {
+			MESSAGE_STATUS_FLAG = Constants.HOLIDAY;
+			return null;
+		}
+		
 	}
 
 	/**
@@ -511,8 +767,16 @@ public class Query implements Parcelable {
 			}
 			return (set_option_power((Boolean) value));
 		}
+		else if (option.equals(Constants.SEARCH_BUILDING)) {
+			if (!(value instanceof String)) {
+				return false;
+			}
+			return (set_option_search_building((String) value));
+		}
+		else {
+			return false;
+		}
 
-		return false;
 	}
 
 	/**
@@ -546,7 +810,22 @@ public class Query implements Parcelable {
 		this.options.put(Constants.POWER, power);
 		return true;
 	}
-			
+	
+	protected boolean set_option_search_building(String building_code) {
+		if (building_code == null) {
+//			return false;
+			throw new IllegalArgumentException("Error: argument cannot be null, set_option_search_building()");		
+		}
+		this.options.put(Constants.SEARCH_BUILDING, building_code);
+		return true;		
+	}
+	
+	protected void set_standard_options() {
+		this.set_option_capacity(0);
+		this.set_option_power(false);
+		this.set_option_search_building(Constants.GDC);
+	}
+		
 	/**
 	 * @param start_date
 	 * @return True if this.start_date was successfully updated
@@ -636,7 +915,7 @@ public class Query implements Parcelable {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object other) {
-		if (this == other) {
+		if (other == this) {
 			return true;
 		}
 		if (!(other instanceof Query)) {
@@ -644,8 +923,8 @@ public class Query implements Parcelable {
 		}
 		
 		Query other_query = (Query) other;
-		if (this.start_date.equals(other_query.start_date) &&
-			this.end_date.equals(other_query.end_date) &&
+		if (Utilities.dates_are_equal(this.start_date, other_query.start_date) &&
+			Utilities.dates_are_equal(this.end_date, other_query.end_date) &&
 			this.duration == other_query.duration &&
 			this.options.equals(other_query.options)) {
 			
@@ -658,7 +937,9 @@ public class Query implements Parcelable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		return (37 * this.start_date.hashCode() * this.end_date.hashCode() * 17);
+//		return (37 * this.start_date.hashCode() * this.end_date.hashCode() * 17);
+		return (37 * Integer.parseInt(Utilities.get_time(this.start_date).replaceAll(":", "")) * 
+				Integer.parseInt(Utilities.get_time(this.end_date).replaceAll(":", "")) * 17);
 	}
 	
 	/* (non-Javadoc)
@@ -722,6 +1003,55 @@ public class Query implements Parcelable {
 	
 }		// end of file
 
+/*
+	protected String search(EventList eolist) {
+		if (eolist == null) {
+			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
+		}
+		if (eolist.get_size() == 0) {
+			return Constants.NO_ROOMS_AVAIL_MSG;
+		}
 
+		Reduce search space by eliminating Event dates not within range of this Query.
+		EventList reduced = get_events_by_date(eolist);
+		if (reduced.get_size() <= 0) {
+			return Constants.NO_ROOMS_AVAIL_MSG;
+		}
+
+		Continue reducing search space by eliminating Event times not within range of this Query.
+		Set<Location> valid_rooms = this.filter_by_time(reduced);
+		
+		Apply any selected options.
+		if (!this.has_standard_options() && valid_rooms.size() > 0) {
+			valid_rooms = this.filter_by_query(valid_rooms);
+		}
+		
+		if (valid_rooms.size() <= 0) {
+			return Constants.NO_ROOMS_AVAIL_MSG;
+		}
+
+		Get a random room.
+		List<Location> random = new ArrayList<Location>(valid_rooms);
+		int random_index = new Random().nextInt(valid_rooms.size());
+		String random_room = random.get(random_index).toString();
+		
+		if (Constants.DEBUG) {
+//			Log.d(TAG, "Avail rooms as found in feeds:\n");
+//			Iterator<Event> itr = reduced.get_iterator();
+//			Event temp;
+//			while (itr.hasNext()) {
+//				temp = itr.next();
+//				Log.d(TAG, temp.get_location().toString());
+//			}
+			
+			Collections.sort(random);
+//			Log.d(TAG, this.toString() + "\n" + random.size() + " " + random.toString() + "\n");
+			Log.d(TAG, "All rooms found:\n" + random.size() + " " + random.toString() + "\n");
+//			System.out.println(random.size() + " " + random.toString() + "\n");			
+		}
+		
+		return random_room;
+	}
+ */
 
 

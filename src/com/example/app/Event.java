@@ -54,13 +54,17 @@ public class Event implements Comparable<Event> {
 	 * @param location
 	 */
 	protected Event(String event_name, Date start_date, Date end_date, String location) {
+		this(event_name, start_date, end_date, new Location(location));
+	}
+	
+	protected Event(String event_name, Date start_date, Date end_date, Location location) {
 		if (event_name == null || start_date == null || location == null) {
 			throw new IllegalArgumentException("Error: one or more arguments is null, Event constructor");
 		}
 		
 		this.event_name = event_name;
 		this.start_date = start_date;
-		this.location = new Location(location);
+		this.location = location;
 		
 		if (end_date == null) {
 			Calendar calendar = Calendar.getInstance();
@@ -227,12 +231,13 @@ public class Event implements Comparable<Event> {
 			.result();
 		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object other) {
-		if (this == other) {
+		if (other == this) {
 			return true;
 		}
 		else if (!(other instanceof Event)) {
@@ -240,31 +245,31 @@ public class Event implements Comparable<Event> {
 		}
 
 		Event other_eo = (Event) other;
-		
-		Calendar this_cal_start = Calendar.getInstance();
-		this_cal_start.setTime(this.start_date);
-		Calendar this_cal_end = Calendar.getInstance();
-		this_cal_end.setTime(this.end_date);
-		Calendar other_cal_start = Calendar.getInstance();
-		other_cal_start.setTime(other_eo.start_date);
-		Calendar other_cal_end = Calendar.getInstance();
-		other_cal_end.setTime(other_eo.end_date);
-		
+
 		if (this.event_name.equals(other_eo.event_name) &&
-			this_cal_start.equals(other_cal_start) &&
-			other_cal_start.equals(other_cal_start) &&
+			Utilities.dates_are_equal(this.start_date, other_eo.start_date) &&
+			Utilities.dates_are_equal(this.end_date, other_eo.end_date) &&
 			this.get_location().equals(other_eo.get_location())) {
 			return true;
 		}
-		
+
 		return false;
 	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
-		return (Utilities.stringHashCode(this.event_name) * 37 * Utilities.stringHashCode(this.location.toString()));
+//		long result = Utilities.stringHashCode(this.event_name) * Utilities.dateHashCode(this.start_date) *
+//					  Utilities.dateHashCode(this.end_date) * this.location.hashCode() * 37;
+		
+//		long result = Utilities.stringHashCode(this.event_name) * this.location.hashCode();
+
+//		return ((int) result);
+		
+		int start_time = Integer.parseInt(Utilities.get_time(this.start_date).replaceAll(":", ""));
+		return (Utilities.stringHashCode(this.event_name) * start_time * this.location.hashCode());
 	}
 	
 	/* (non-Javadoc)

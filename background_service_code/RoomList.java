@@ -1,3 +1,8 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,6 +26,8 @@ final class RoomList {
 //	private static final String CS_COURSE_SCHEDULE_S15 = "course_schedules/cs_course_schedule_s15.csv";
 //	private static final String FULL_COURSE_SCHEDULE_S15 = "course_schedules/master_course_schedule_s15.csv";
 //	private static final String FULL_COURSE_SCHEDULE_F14 = "course_schedules/master_course_schedule_f14.csv";
+	
+	private static final boolean WRITE_TO_DB = false;
 	
 	private static final boolean READ_ONLY_GDC = false;
 	
@@ -52,6 +59,10 @@ final class RoomList {
 	
 	private Map<Location, Room> list;
 	
+	private String db_name = null;
+	private Connection connection = null;
+	private Statement statement = null;
+	
 	/**
 	 * Default constructor.
 	 */
@@ -73,15 +84,51 @@ final class RoomList {
 		this.list = new HashMap<Location, Room>(25000);		// F14: 16710 buckets; S15: 15001 buckets		
 		initialise();
 		
-		line_counter = 0;
+		try {
+			db_name = course_schedule_file_name.substring(17, 43);
+			
+			Class.forName("org.sqlite.JDBC");
+			connection = DriverManager.getConnection("jdbc:sqlite:" + db_name + ".db");
+			statement = connection.createStatement();
+			
+			if (WRITE_TO_DB) {
+				statement.executeUpdate("drop table if exists " + db_name);
+				statement.executeUpdate("create table " + db_name + " ("
+						+ "dept string, num string, name string, meeting_days string, start_time INTEGER, end_time INTEGER, building string, room string, capacity INTEGER)");
+			}
+		}
+		catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.start();
 		
-		this.read_course_schedules(course_schedule_file_name);	// FULL_COURSE_SCHEDULE_F14, FULL_COURSE_SCHEDULE_S15
+		if (WRITE_TO_DB) {
+			this.read_course_schedules(course_schedule_file_name);	// FULL_COURSE_SCHEDULE_F14, FULL_COURSE_SCHEDULE_S15
+		}
+		else {
+			read_course_schedule_from_db();
+		}
 		
 		stopwatch.stop();
 		if (Constants.DEBUG) {
 			System.out.printf("Took %f seconds to read %d lines from schedule \"%s\"\n\n", stopwatch.time(), line_counter, course_schedule_file_name);
+		}
+		
+		try {
+			if (connection != null) {
+				connection.close();
+			}
+		}			
+		catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException();
 		}
 	}
 	
@@ -99,6 +146,8 @@ final class RoomList {
 			room = new Room(new Location(gdc_str + Constants.VALID_GDC_ROOMS[i]), room_types[i], room_capacities[i], room_powers[i]);
 			this.add(room);
 		}
+		
+		line_counter = 0;
 	}
 
 	/**
@@ -206,6 +255,48 @@ final class RoomList {
 		return out;
 	}
 	
+	private void read_course_schedule_from_db() {
+		if (this.list == null) {
+//			this.list = new RoomList().list;
+			throw new IllegalStateException("This RoomList's backing Map cannot be null.");
+		}
+		
+		if (db_name == null || connection == null || statement == null) {
+			return;
+		}
+		
+		try {
+			ResultSet rs = statement.executeQuery("select * from " + db_name);
+			
+			Event event = null;
+			String name;
+			boolean[] meeting_days;
+			Date start_time, end_time;
+			Location location;
+			int capacity;
+			
+			while (rs.next()) {
+				name = rs.getString("dept") + " " + rs.getString("num") + " - " + rs.getString("name");
+				meeting_days = set_meeting_days(rs.getString("meeting_days"));
+				start_time = Utilities.get_date(rs.getInt("start_time"));
+				end_time = Utilities.get_date(rs.getInt("end_time"));
+				location = new Location(rs.getString("building") + " " + rs.getString("room"));
+				capacity = rs.getInt("capacity");
+				
+				if (start_time != null && end_time != null) {
+					event = new Event(name, start_time, end_time, location);
+					this.add_event(meeting_days, location, Integer.toString(capacity), event);		// INEFFICIENT! (for Integer.toString())
+				}
+				
+				line_counter++;
+			}
+		}
+		catch (SQLException e) {
+			throw new RuntimeException();
+		}
+		
+	}
+	
 	private void read_course_schedules(String schedule_file) {
 		if (schedule_file == null || schedule_file.length() <= 0) {
 			throw new IllegalArgumentException();
@@ -277,19 +368,39 @@ final class RoomList {
 			return;
 		}
 
+		String dept = tokens.get(INDEX_CLASS_DEPT);
+		String num = Utilities.regex_replace(tokens.get(INDEX_CLASS_NUM), " ", "");
+		String name = Utilities.regex_replace(tokens.get(INDEX_CLASS_NAME), "[,']", "");
+		String meeting_days = tokens.get(INDEX_CLASS_MEETING_DAYS);
+		int start_time = Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_CLASS_START_DATE)));
+		int end_time = Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_CLASS_END_DATE)));
+		String building = tokens.get(INDEX_CLASS_BUILDING);
+		String room = tokens.get(INDEX_CLASS_ROOM);
+		int capacity = Integer.parseInt(Utilities.regex_replace(tokens.get(INDEX_CLASS_ROOM_CAPACITY), "[^\\d]", ""));
+		
 		Event class_event = null;
-		String class_name = tokens.get(INDEX_CLASS_DEPT) + tokens.get(INDEX_CLASS_NUM) + " - " + tokens.get(INDEX_CLASS_NAME);
-		boolean[] class_meeting_days = set_meeting_days(tokens.get(INDEX_CLASS_MEETING_DAYS));
-		Date class_start_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_CLASS_START_DATE))));
-		Date class_end_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_CLASS_END_DATE))));
+		String class_name = dept + num + " - " + name;
+		boolean[] class_meeting_days = set_meeting_days(meeting_days);
+		Date class_start_time = Utilities.get_date(start_time);
+		Date class_end_time = Utilities.get_date(end_time);
 		
 		String class_room = tokens.get(INDEX_CLASS_ROOM);
 		if (class_room.length() < MAX_ROOM_LENGTH && Utilities.containsIgnoreCase(class_room, "\\.")) {
 			class_room = pad_trailing_zeroes(class_room, MAX_ROOM_LENGTH);
 		}
 		
-		Location class_location = new Location(tokens.get(INDEX_CLASS_BUILDING) + " " + class_room);
-
+		Location class_location = new Location(building + " " + class_room);
+		
+		if (class_start_time != null && class_end_time != null) {
+			class_event = new Event(class_name, class_start_time, class_end_time, class_location);
+			this.add_event(class_meeting_days, class_location, tokens.get(INDEX_CLASS_ROOM_CAPACITY), class_event);
+			
+			if (WRITE_TO_DB) {
+				insert_into_db(dept, num, name, meeting_days, start_time, end_time, building, room, capacity);
+			}
+			
+//			System.out.println(class_event.toString() + "\n");
+		}
 //System.out.println(class_name + "\n" + Arrays.toString(class_meeting_days) + "\n" + Utilities.time_to_24h(tokens.get(29)) + "\n" + Utilities.time_to_24h(tokens.get(30)));
 		
 		Event lab_event = null;
@@ -300,17 +411,25 @@ final class RoomList {
 		
 		/* TODO: is the precondition check sufficient to determine whether or not the class has a lab? */
 		if (tokens.get(INDEX_LAB_MEETING_DAYS).length() > 0 && tokens.get(INDEX_LAB_START_TIME).length() > 0 && tokens.get(INDEX_LAB_END_TIME).length() > 0 && tokens.get(INDEX_LAB_BUILDING).length() > 0 && tokens.get(INDEX_LAB_ROOM).length() > 0) {
+			name = name + " (Lab)";
+			meeting_days = tokens.get(INDEX_LAB_MEETING_DAYS);
+			start_time = Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_LAB_START_TIME)));
+			end_time = Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_LAB_END_TIME)));
+			building = tokens.get(INDEX_LAB_BUILDING);
+			room = tokens.get(INDEX_LAB_ROOM);
+			capacity = Integer.parseInt(Utilities.regex_replace(tokens.get(INDEX_LAB_ROOM_CAPACITY), "[^\\d]", ""));
+			
 			lab_name = class_name + " (Lab)";
-			lab_meeting_days = set_meeting_days(tokens.get(INDEX_LAB_MEETING_DAYS));
-			lab_start_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_LAB_START_TIME))));
-			lab_end_time = Utilities.get_date(Integer.parseInt(Utilities.time_to_24h(tokens.get(INDEX_LAB_END_TIME))));
+			lab_meeting_days = set_meeting_days(meeting_days);
+			lab_start_time = Utilities.get_date(start_time);
+			lab_end_time = Utilities.get_date(end_time);
 			
 			String lab_room = tokens.get(INDEX_LAB_ROOM);
 			if (lab_room.length() < MAX_ROOM_LENGTH && Utilities.containsIgnoreCase(lab_room, ".")) {
 				lab_room = pad_trailing_zeroes(lab_room, MAX_ROOM_LENGTH);
 			}
 			
-			lab_location = new Location(tokens.get(INDEX_LAB_BUILDING) + " " + lab_room);
+			lab_location = new Location(building + " " + lab_room);
 			
 //System.out.println(lab_name + "\n" + Arrays.toString(lab_meeting_days) + "\n" + Utilities.time_to_24h(tokens.get(37)) + "\n" + Utilities.time_to_24h(tokens.get(38)));
 			
@@ -318,15 +437,32 @@ final class RoomList {
 				lab_event = new Event(lab_name, lab_start_time, lab_end_time, lab_location);
 				this.add_event(lab_meeting_days, lab_location, tokens.get(INDEX_LAB_ROOM_CAPACITY), lab_event);
 				
+				if (WRITE_TO_DB) {
+					insert_into_db(dept, num, name, meeting_days, start_time, end_time, building, room, capacity);
+				}
+				
 //				System.out.println(lab_event.toString() + "\n");
 			}
 		}
+
+	}
+	
+	private void insert_into_db(String dept, String num, String name, String meeting_days, int start_time, int end_time, String building, String room, int capacity) {
+		if (db_name == null || connection == null || statement == null) {
+			return;
+		}
 		
-		if (class_start_time != null && class_end_time != null) {
-			class_event = new Event(class_name, class_start_time, class_end_time, class_location);
-			this.add_event(class_meeting_days, class_location, tokens.get(INDEX_CLASS_ROOM_CAPACITY), class_event);
-			
-//			System.out.println(class_event.toString() + "\n");
+		try {
+			String to_insert;
+//			to_insert = String.format("INSERT INTO %s VALUES(%s, %s, %s, %s, %s, %d, %d, %s, %s, %d)", db_name, dept, num, name, meeting_days, start_time, end_time, building, room, capacity);
+			to_insert = "'" + dept + "', '" + num + "', '" + name + "', '" + meeting_days + "', " + start_time + ", " + end_time + ", '" + building + "', '" + room + "', " + capacity;
+//			System.out.println(to_insert);
+			statement.executeUpdate("INSERT INTO " + db_name + " VALUES(" + to_insert + ")");
+		}
+		catch (SQLException e) {
+			System.out.println("*** ERROR: " + e.getMessage());
+			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 	

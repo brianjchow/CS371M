@@ -41,10 +41,7 @@ public class Query {
 		this.start_date = start_date;
 		this.duration = Constants.DEFAULT_QUERY_DURATION;
 
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(start_date);
-		calendar.add(Calendar.MINUTE, this.duration);
-		this.end_date = calendar.getTime();
+		set_end_date();		// set this.end_date
 		
 		this.options = new HashMap<String, Object>(10);
 		this.options.put(Constants.CAPACITY, new Integer(0));
@@ -380,7 +377,7 @@ public class Query {
 	 * @return How many seats the user requires
 	 * 		   in any room chosen by the app.
 	 */
-	protected Integer get_option_capacity() {
+	protected final Integer get_option_capacity() {
 		return ((Integer) this.options.get(Constants.CAPACITY));
 	}
 	
@@ -390,15 +387,15 @@ public class Query {
 	 * 		   occupants of any room chosen by the app.
 	 * 		   False otherwise.
 	 */
-	protected Boolean get_option_power() {
+	protected final Boolean get_option_power() {
 		return ((Boolean) this.options.get(Constants.POWER));
 	}
 	
-//	protected Boolean get_option_search_gdc_only() {
+//	protected final Boolean get_option_search_gdc_only() {
 //		return ((Boolean) this.options.get(Constants.SEARCH_GDC_ONLY));
 //	}
 	
-	protected String get_option_search_for_building() {
+	protected final String get_option_search_for_building() {
 		return ((String) this.options.get(Constants.SEARCH_BUILDING));
 	}
 	
@@ -498,7 +495,7 @@ public class Query {
 		String random_room = valid_rooms.get(random_index).toString();
 		
 		if (Constants.DEBUG) {
-//			Collections.sort(valid_rooms);
+			Collections.sort(valid_rooms);
 			System.out.println(valid_rooms.size() + " " + valid_rooms.toString() + "\n");			
 		}
 		
@@ -561,7 +558,7 @@ public class Query {
 		}
 		
 		out = new ArrayList<Location>(valid_rooms);
-		Collections.sort(out);
+//		Collections.sort(out);
 		
 		return out;
 	}
@@ -823,13 +820,7 @@ public class Query {
 		}
 		
 		this.duration = duration;
-		
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(this.start_date);
-		calendar.add(Calendar.MINUTE, duration);
-		
-		// automatically set new end date according to new duration
-		this.end_date = calendar.getTime();
+		set_end_date();		// automatically set new end date according to new duration
 		
 		return true;
 	}
@@ -945,14 +936,10 @@ public class Query {
 		}
 		
 		this.start_date = start_date;
-		
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(start_date);
-		calendar.add(Calendar.MINUTE, this.duration);
-		
+				
 		// automatically set new end date according to
 		// start_date and specified duration
-		this.end_date = calendar.getTime();
+		set_end_date();
 		
 		return true;
 	}
@@ -1029,7 +1016,7 @@ public class Query {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object other) {
-		if (this == other) {
+		if (other == this) {
 			return true;
 		}
 		if (!(other instanceof Query)) {

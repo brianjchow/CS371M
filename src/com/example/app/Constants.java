@@ -1,92 +1,135 @@
 package com.example.app;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.Iterator;
 
 import android.content.Context;
+import android.util.Log;
+
+import com.example.uis.R;
 
 final class Constants {
 	
-//	public static Context main_context = null;
+	private static final	String		TAG								=	"Constants";
 
-	protected static EventList CSV_FEEDS_MASTER = null;
-	protected static EventList CSV_FEEDS_CLEANED = null;
-	
-//	public static final 	EventList 	CSV_FEEDS_MASTER;
-//	public static final		EventList	CSV_FEEDS_CLEANED;
+	protected static		EventList 	CSV_FEEDS_MASTER				=	null;
+	protected static		EventList	CSV_FEEDS_CLEANED				=	null;
 	private static 			boolean 	has_feed_been_read;
+
+	protected static	 	RoomList 	GDC_ROOMS_THIS_SEMESTER			=	null;
+	protected static		RoomList	GDC_ROOMS_NEXT_SEMESTER			=	null;
+	protected static		RoomList	USED_ROOMS_THIS_SEMESTER		=	null;
+	protected static		RoomList	USED_ROOMS_NEXT_SEMESTER		=	null;
+//	protected static final	int			COURSE_SCHEDULE_THIS_SEMESTER	=	R.raw.master_course_schedule_f14;
+//	protected static final	int			COURSE_SCHEDULE_NEXT_SEMESTER	=	R.raw.master_course_schedule_s15;
+	protected static final	String		COURSE_SCHEDULE_THIS_SEMESTER	=	null; // "master_course_schedule_f14";
+	protected static final	String		COURSE_SCHEDULE_NEXT_SEMESTER	=	null; // "master_course_schedule_s15";
+
+	protected static final	int			SPRING_START_MONTH				=	1;
+	protected static final	int			SPRING_START_DAY				=	10;
+	protected static final	int			SPRING_END_MONTH				=	5;
+	protected static final	int			SPRING_END_DAY					=	20;
+	protected static final	int			SUMMER_START_MONTH				=	5;
+	protected static final	int			SUMMER_START_DAY				=	25;
+	protected static final	int			SUMMER_END_MONTH				=	8;
+	protected static final	int			SUMMER_END_DAY					=	19;
+	protected static final	int			FALL_START_MONTH				=	8;
+	protected static final	int			FALL_START_DAY					=	20;
+	protected static final	int			FALL_END_MONTH					=	12;
+	protected static final	int			FALL_END_DAY					=	20;
 	
 	protected static final 	boolean 	DEBUG;
 	
-	public static final 	Date 		DAYBREAK;
-	public static final 	Date 		NIGHTFALL;
+	protected static final 	Date 		DAYBREAK;
+	protected static final 	Date 		NIGHTFALL;
 	
-	public static final 	String 		ALL_DAY;
-	public static final 	String 		ATRIUM;
-	public static final 	String[] 	CAMPUS_BUILDINGS;
-	public static final 	String 		CAPACITY;
+	protected static final 	String 		ALL_DAY;
+	protected static final 	String 		ATRIUM;
+	protected static final 	String[] 	CAMPUS_BUILDINGS;
+	protected static final	int			CAMPUS_BUILDINGS_GDC_POSITION	=	60;
 	
-	public static final 	int[] 		DAYS_IN_MONTH;
-	public static final 	String[] 	DAYS_OF_WEEK_LONG;
-	public static final 	String[] 	DAYS_OF_WEEK_SHORT;
-	public static final 	int 		MONDAY;
-	public static final 	int 		TUESDAY;
-	public static final 	int 		WEDNESDAY;
-	public static final 	int 		THURSDAY;
-	public static final 	int 		FRIDAY;
-	public static final 	int 		SATURDAY;
-	public static final 	int 		SUNDAY;
-	public static final 	int 		NUM_DAYS_IN_WEEK;
+	protected static final 	String 		CAPACITY;
+	protected static final 	String 		POWER;
+	protected static final	String		SEARCH_GDC_ONLY;
+	protected static final	String		SEARCH_BUILDING;
 	
-	public static final		String[]	DEPARTMENTS;
+	protected static final 	String 		NO_ROOMS_AVAIL_MSG;
+	protected static final 	String 		GO_HOME_MSG;
+	protected static final	String		SUMMER_MSG;
+	protected static final	String		HOLIDAY_MSG;
+	protected static final	String		NO_INFO_AVAIL_MSG;
+	protected static final	String		SEARCH_ERROR_MSG;
+	protected static final	int			NO_ROOMS_AVAIL					=	0;
+	protected static final	int			GO_HOME							=	1;
+	protected static final	int			SUMMER							=	2;
+	protected static final	int			HOLIDAY							=	3;
+	protected static final	int			NO_INFO							=	4;
+	protected static final	int			SEARCH_ERROR					=	5;
+	protected static final	String[]	MESSAGE_STATUS_FLAGS;
+		
+	protected static final 	int[] 		DAYS_IN_MONTH;
+	protected static final 	String[] 	DAYS_OF_WEEK_LONG;
+	protected static final 	String[] 	DAYS_OF_WEEK_SHORT;
+	protected static final 	int 		MONDAY;
+	protected static final 	int 		TUESDAY;
+	protected static final 	int 		WEDNESDAY;
+	protected static final 	int 		THURSDAY;
+	protected static final 	int 		FRIDAY;
+	protected static final 	int 		SATURDAY;
+	protected static final 	int 		SUNDAY;
+	protected static final 	int 		NUM_DAYS_IN_WEEK;
 	
-	public static final 	int 		DEFAULT_EVENT_DURATION;		// minutes	
-	public static final 	int 		DEFAULT_QUERY_DURATION;
-	public static final 	int 		DEFAULT_ROOM_CAPACITY;
-	public static final 	String 		DEFAULT_GDC_LOCATION;
-	public static final 	String 		END_DATE;
-	public static final 	String 		EVENT_NAME;
-	public static final 	String 		GDC;
-	public static final 	Location 	GDC_ATRIUM;
-	public static final 	Location 	GDC_GATESHENGE;
-	public static final 	String 		GO_HOME;
+	protected static final	String[]	DEPARTMENTS;
+	
+	protected static final 	int 		DEFAULT_EVENT_DURATION;		// minutes
+	protected static final 	int 		DEFAULT_QUERY_DURATION;
+	protected static final	boolean		DEFAULT_ROOM_HAS_POWER;
+	protected static final 	int 		DEFAULT_ROOM_CAPACITY;
+	protected static final	String		DEFAULT_ROOM_TYPE;
+	protected static final 	String 		DEFAULT_GDC_LOCATION;
+	protected static final 	String 		END_DATE;
+	protected static final 	String 		EVENT_NAME;
+	protected static final 	String 		GDC;
+	protected static final 	Location 	GDC_ATRIUM;
+	protected static final 	Location 	GDC_GATESHENGE;
 	protected static final 	String[] 	IGNORE_ROOMS;
-	public static final 	String 		LOCATION;
+	protected static final 	String 		LOCATION;
 	
-	public static final 	String[] 	MONTHS_LONG;
-	public static final 	String[] 	MONTHS_SHORT;
+	protected static final 	String[] 	MONTHS_LONG;
+	protected static final 	String[] 	MONTHS_SHORT;
 
-	public static final 	String 		NO_ROOMS_AVAIL_MSG;
-	public static final 	String 		POWER;
-	public static final 	String 		START_DATE;
+	protected static final 	String 		START_DATE;
 
-	private static final	int 		YAM;		// 25 in Cantonese
-	public static final 	int 		MIN_YEAR;
-	public static final 	int 		MAX_YEAR;
-	public static final 	int 		MAX_TIME;
-	public static final 	int 		MIN_TIME;
-	public static final 	int 		MINUTES_IN_HOUR;
-	public static final 	int 		MINUTES_IN_DAY;
-	public static final 	int 		HOURS_IN_DAY;
+	protected static final	int 		YAM;		// 25 in Cantonese
+	protected static final 	int 		MIN_YEAR;
+	protected static final 	int 		MAX_YEAR;
+	protected static final 	int 		MAX_TIME;
+	protected static final 	int 		MIN_TIME;
+	protected static final 	int 		MINUTES_IN_HOUR;
+	protected static final 	int 		MINUTES_IN_DAY;
+	protected static final 	int 		HOURS_IN_DAY;
+	protected static final	int			LAST_TIME_OF_DAY;
+	protected static final	int			LAST_TIME_OF_NIGHT;
 	
-	public static final 	String 		UTCS_CSV_FEED_FORMAT;
-	public static final 	String 		US_DATE_24H_TIME_FORMAT;
-	public static final 	String 		US_DATE_NO_TIME_FORMAT;
+	protected static final 	String 		UTCS_CSV_FEED_FORMAT;
+	protected static final 	String 		US_DATE_24H_TIME_FORMAT;
+	protected static final 	String 		US_DATE_NO_TIME_FORMAT;
 
-	public static final		String[]	VALID_GDC_ROOMS;
-	public static final		String[]	VALID_GDC_ROOMS_TYPES;
-	public static final 	int[] 		VALID_GDC_ROOMS_CAPACITIES;
-	public static final 	boolean[] 	VALID_GDC_ROOMS_POWERS;
-	public static final 	RoomList 	VALID_GDC_ROOMS_ROOMLIST;
-	public static final		String		CLASS;
-	public static final		String		CONFERENCE;
-	public static final		String		LAB;
-	public static final		String		LECTURE_HALL;
-	public static final		String		LOBBY;
-	public static final		String		LOUNGE;
-	public static final		String		SEMINAR;
+	protected static final	String[]	VALID_GDC_ROOMS;
+	protected static final	String[]	VALID_GDC_ROOMS_TYPES;
+	protected static final 	int[] 		VALID_GDC_ROOMS_CAPACITIES;
+	protected static final 	boolean[] 	VALID_GDC_ROOMS_POWERS;
+	protected static final	String		CLASS;
+	protected static final	String		CONFERENCE;
+	protected static final	String		LAB;
+	protected static final	String		LECTURE_HALL;
+	protected static final	String		LOBBY;
+	protected static final	String		LOUNGE;
+	protected static final	String		SEMINAR;
 	
 	static {
+		
 		DEBUG						=	true;
 		
 		ALL_DAY						=	"all day";
@@ -95,15 +138,36 @@ final class Constants {
 		CAMPUS_BUILDINGS			=	initialise_campus_buildings();
 			
 		CAPACITY					=	"capacity";
-		MONDAY						=	0;
-		TUESDAY						=	1;
-		WEDNESDAY					=	2;
-		THURSDAY					=	3;
-		FRIDAY						=	4;
-		SATURDAY					=	5;
-		SUNDAY						=	6;
-		NUM_DAYS_IN_WEEK			=	7;
+		POWER						=	"power";
+		SEARCH_GDC_ONLY				=	"search_gdc_only";
+		SEARCH_BUILDING				=	"search_building";
 		
+		NO_ROOMS_AVAIL_MSG			=	"No rooms available; please try again.";
+		GO_HOME_MSG					=	"Go home and sleep, you procrastinator";
+		SUMMER_MSG					=	"Some rooms available (summer hours; check course schedules).";
+		HOLIDAY_MSG					=	"All rooms available (campus closed for holidays).";
+		NO_INFO_AVAIL_MSG			=	"Not enough info available for search; please try again.";
+		SEARCH_ERROR_MSG			=	"Unknown search error; please try again.";
+		MESSAGE_STATUS_FLAGS		=	initialise_message_status_flags();
+		
+//		MONDAY						=	0;
+//		TUESDAY						=	1;
+//		WEDNESDAY					=	2;
+//		THURSDAY					=	3;
+//		FRIDAY						=	4;
+//		SATURDAY					=	5;
+//		SUNDAY						=	6;
+//		NUM_DAYS_IN_WEEK			=	7;
+		
+		SUNDAY						=	1;
+		MONDAY						=	2;
+		TUESDAY						=	3;
+		WEDNESDAY					=	4;
+		THURSDAY					=	5;
+		FRIDAY						=	6;
+		SATURDAY					=	7;
+		NUM_DAYS_IN_WEEK			=	8;
+				
 		DAYS_IN_MONTH				=	initialise_days_in_month();
 		DAYS_OF_WEEK_LONG			=	initialise_days_of_week_long();
 		DAYS_OF_WEEK_SHORT			=	initialise_days_of_week_short();
@@ -114,7 +178,6 @@ final class Constants {
 		GDC							=	"GDC";
 		GDC_ATRIUM					=	new Location(GDC + " " + ATRIUM);
 		GDC_GATESHENGE				=	new Location(GDC + " " + DEFAULT_GDC_LOCATION);
-		GO_HOME						=	"Go home and sleep, you're gonna fail that exam tomorrow anyway";
 		
 		DEPARTMENTS					=	initialise_departments();
 		
@@ -123,13 +186,11 @@ final class Constants {
 		MONTHS_LONG					=	initialise_months_long();
 		MONTHS_SHORT				=	initialise_months_short();
 
-		NO_ROOMS_AVAIL_MSG			=	"No rooms available; please try again.";
-		POWER						=	"power";
 		START_DATE					=	"start_date";	
 		
-		DEFAULT_EVENT_DURATION		=	90;		// minutes	
+		DEFAULT_EVENT_DURATION		=	90;		// minutes
 		DEFAULT_QUERY_DURATION		=	60;
-		DEFAULT_ROOM_CAPACITY		=	25;
+		DEFAULT_ROOM_CAPACITY		=	-1;
 		YAM							=	DEFAULT_ROOM_CAPACITY;	// 25 in Cantonese
 		MIN_YEAR					=	2014;
 		MAX_YEAR					=	2099;
@@ -138,6 +199,8 @@ final class Constants {
 		MINUTES_IN_HOUR				=	60;
 		MINUTES_IN_DAY				=	1440;
 		HOURS_IN_DAY				=	24;
+		LAST_TIME_OF_DAY			=	2200;
+		LAST_TIME_OF_NIGHT			=	800;
 		
 		UTCS_CSV_FEED_FORMAT		=	"EEE dd MMM yyyy HHmm";
 		US_DATE_24H_TIME_FORMAT		=	"MMM dd yyyy HHmm";
@@ -154,39 +217,168 @@ final class Constants {
 		VALID_GDC_ROOMS_TYPES		=	initialise_valid_gdc_rooms_types();
 		VALID_GDC_ROOMS_CAPACITIES	=	initialise_valid_gdc_rooms_capacities();
 		VALID_GDC_ROOMS_POWERS		=	initialise_valid_gdc_rooms_powers();
+		
+		DEFAULT_ROOM_HAS_POWER		=	false;
+		DEFAULT_ROOM_TYPE			=	CLASS;
 
-		VALID_GDC_ROOMS_ROOMLIST	=	new RoomList();
-
+//		VALID_GDC_ROOMS_ROOMLIST	=	new RoomList();
+//		VALID_ROOMS_THIS_SEMESTER	=	new RoomList();
+//		VALID_ROOMS_NEXT_SEMESTER	=	new RoomList();
+		
 		has_feed_been_read			=	false;
 
 		/* ################################# DO NOT MOVE ANYTHING BELOW THIS LINE ABOVE IT ################################# */
-
+		
 //		CSV_FEEDS_MASTER			=	CSVReader.read_csv();
 //		CSV_FEEDS_CLEANED			=	get_events_cleaned();
 
-		DAYBREAK					=	Utilities.get_date(1, 1, 2014, 745);
+		DAYBREAK					=	Utilities.get_date(1, 2, 2014, 800);
 		NIGHTFALL					=	Utilities.get_date(1, 1, 2014, 2200);
-
 	}
 	
 	protected static void init(Context context) {
 		if (context == null) {
 			throw new IllegalArgumentException();
 		}
+
+		if (CSV_FEEDS_MASTER == null) {
+			has_feed_been_read = false;
+			CSV_FEEDS_CLEANED = null;
+		}
 		
 		CSV_FEEDS_MASTER = CSVReader.read_csv(context);
+		
+		if (CSV_FEEDS_MASTER == null) {
+			throw new IllegalStateException("Unknown error occurred while reading CSV feeds.");
+		}
+		
 		CSV_FEEDS_CLEANED = get_events_cleaned();
+		
+		Log.d(TAG, "Now finished reading CSV feeds");
+		
+		if (COURSE_SCHEDULE_THIS_SEMESTER == null) {
+			USED_ROOMS_THIS_SEMESTER = null;
+		}
+		else {
+			USED_ROOMS_THIS_SEMESTER = new RoomList(context, COURSE_SCHEDULE_THIS_SEMESTER);
+			
+//			int res_id = getResId(COURSE_SCHEDULE_THIS_SEMESTER, R.raw.class);
+//			if (res_id != -1) {
+//				USED_ROOMS_THIS_SEMESTER = new RoomList(context, res_id);
+//			}
+//			else {
+//				USED_ROOMS_THIS_SEMESTER = null;
+//			}
+		}
+		
+		if (COURSE_SCHEDULE_NEXT_SEMESTER == null) {
+			USED_ROOMS_NEXT_SEMESTER = null;
+		}
+		else {
+			USED_ROOMS_THIS_SEMESTER = new RoomList(context, COURSE_SCHEDULE_NEXT_SEMESTER);
+			
+//			int res_id = getResId(COURSE_SCHEDULE_NEXT_SEMESTER, R.raw.class);
+//			if (res_id != -1) {
+//				USED_ROOMS_THIS_SEMESTER = new RoomList(context, res_id);
+//			}
+//			else {
+//				USED_ROOMS_THIS_SEMESTER = null;
+//			}
+		}
+		
+		if (USED_ROOMS_THIS_SEMESTER == null) {
+			GDC_ROOMS_THIS_SEMESTER = new RoomList();
+		}
+		else {
+			GDC_ROOMS_THIS_SEMESTER = USED_ROOMS_THIS_SEMESTER.get_gdc_rooms();
+		}
+		
+		if (USED_ROOMS_NEXT_SEMESTER == null) {
+			GDC_ROOMS_NEXT_SEMESTER = new RoomList();
+		}
+		else {
+			GDC_ROOMS_NEXT_SEMESTER = USED_ROOMS_NEXT_SEMESTER.get_gdc_rooms();
+		}
+	
 	}
 	
 	protected static void init(Context context, boolean read_from_local_feeds) {
 		if (context == null) {
 			throw new IllegalArgumentException();
 		}
+
+		if (CSV_FEEDS_MASTER == null) {
+			has_feed_been_read = false;
+			CSV_FEEDS_CLEANED = null;
+		}
 		
-		CSV_FEEDS_MASTER = CSVReader.read_csv(context, read_from_local_feeds);
-		CSV_FEEDS_CLEANED = get_events_cleaned();	
-	}
+		CSV_FEEDS_MASTER = CSVReader.read_csv(context, read_from_local_feeds);		
+		if (CSV_FEEDS_MASTER == null) {
+			throw new IllegalStateException("Unknown error occurred while reading CSV feeds.");
+		}
+		
+		CSV_FEEDS_CLEANED = get_events_cleaned();
+		
+		if (COURSE_SCHEDULE_THIS_SEMESTER == null) {
+			USED_ROOMS_THIS_SEMESTER = null;
+		}
+		else {
+			USED_ROOMS_THIS_SEMESTER = new RoomList(context, COURSE_SCHEDULE_THIS_SEMESTER);
+			
+//			int res_id = getResId(COURSE_SCHEDULE_THIS_SEMESTER, R.raw.class);
+//			if (res_id != -1) {
+//				USED_ROOMS_THIS_SEMESTER = new RoomList(context, res_id);
+//			}
+//			else {
+//				USED_ROOMS_THIS_SEMESTER = null;
+//			}
+		}
+		
+		if (COURSE_SCHEDULE_NEXT_SEMESTER == null) {
+			USED_ROOMS_NEXT_SEMESTER = null;
+		}
+		else {
+			USED_ROOMS_THIS_SEMESTER = new RoomList(context, COURSE_SCHEDULE_NEXT_SEMESTER);
+			
+//			int res_id = getResId(COURSE_SCHEDULE_NEXT_SEMESTER, R.raw.class);
+//			if (res_id != -1) {
+//				USED_ROOMS_THIS_SEMESTER = new RoomList(context, res_id);
+//			}
+//			else {
+//				USED_ROOMS_THIS_SEMESTER = null;
+//			}
+		}
+		
+		if (USED_ROOMS_THIS_SEMESTER == null) {
+			GDC_ROOMS_THIS_SEMESTER = new RoomList();
+		}
+		else {
+			GDC_ROOMS_THIS_SEMESTER = USED_ROOMS_THIS_SEMESTER.get_gdc_rooms();
+		}
+		
+		if (USED_ROOMS_NEXT_SEMESTER == null) {
+			GDC_ROOMS_NEXT_SEMESTER = new RoomList();
+		}
+		else {
+			GDC_ROOMS_NEXT_SEMESTER = USED_ROOMS_NEXT_SEMESTER.get_gdc_rooms();
+		}
 	
+	}
+
+//	// http://stackoverflow.com/questions/4427608/android-getting-resource-id-from-string
+//	private static int getResId(String var_name, Class<?> c) {
+//		int id = -1;
+//		try {
+//			Field id_field = c.getDeclaredField(var_name);
+//			id = id_field.getInt(id_field);
+//		}
+//		catch (Exception e) {
+//			id = -1;
+//		}
+//		
+//		return id;
+//	}
+
 	/*
 	 * Ignored rooms (room num, room type, capacity)
 	 * 	1.210	Telepresence Room	10
@@ -247,7 +439,7 @@ final class Constants {
 				"CAL", "CBA", "CCG", "CCJ", "CDA", "CDL", "CEE", "CCF", "CLA", "CLK", "CMA", "CMB", "CML", "COM", "CPE", "CRB", "CRD", "CRH", "CSA", "CS3", "CS4", "CS5", "CTR",
 				"DEV", "DCP", "DFA", "DFF",
 				"EAS", "ECJ", "ENS", "EPS", "ERC", "ETC",
-				"FAC", "FC1", "FC2", "FC3", "FC4", "FC5", "FC6", "FC7", "FC8", "FDF", "FDH", "FNT", "FPC",
+				"FAC", "FDF", "FDH", "FNT", "FPC",			// , "FC1", "FC2", "FC3", "FC4", "FC5", "FC6", "FC7", "FC8" (facilities complex)
 				"GAR", "GDC", "GEA", "GEB", "GOL", "GRE", "GRG", "GSB", "GUG",
 				"HMA", "HRC", "HRH", "HSM",
 				"INT", "IPF",
@@ -272,12 +464,14 @@ final class Constants {
 	}
 	
 	private static final String[] initialise_days_of_week_long() {
-		final String[] DAYS_OF_WEEK_LONG = { "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" };
+//		final String[] DAYS_OF_WEEK_LONG = { "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" };
+		final String[] DAYS_OF_WEEK_LONG = { "", "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY" };
 		return DAYS_OF_WEEK_LONG;
 	}
 	
 	private static final String[] initialise_days_of_week_short() {
-		final String[] DAYS_OF_WEEK_SHORT =	{ "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN" };
+//		final String[] DAYS_OF_WEEK_SHORT =	{ "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN" };
+		final String[] DAYS_OF_WEEK_SHORT =	{ "", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
 		return DAYS_OF_WEEK_SHORT;
 	}
 	
@@ -315,6 +509,13 @@ final class Constants {
 				"UTCS", "AI", "Alumni", "Ambassador", "Holiday", "Party", "Tailgate", "Colloquia", "Colloquium"
 		};
 		return IGNORE_ROOMS;
+	}
+	
+	private static final String[] initialise_message_status_flags() {
+		final String[] FLAGS = {
+				NO_ROOMS_AVAIL_MSG, GO_HOME_MSG, SUMMER_MSG, HOLIDAY_MSG, SEARCH_ERROR_MSG
+		};
+		return FLAGS;
 	}
 	
 	private static final String[] initialise_months_long() {
@@ -369,15 +570,20 @@ final class Constants {
 		return VALID_GDC_ROOMS_TYPES;
 	}
 	
+	/* UNKNOWN:
+	 * 	- 4.202
+	 * 	- 4.314
+	 * 	- 7.514
+	 * 	- 7.808 */
 	private static final int[] initialise_valid_gdc_rooms_capacities() {
 		final int[] VALID_GDC_ROOMS_CAPACITIES = { 
 				81, 34,
 				20, 34, 198, 20, 28, 24, 27, 10, 12,
 				8, 18, 14, 8,
-				YAM, 48, 48, YAM, 8, 18, 14, 8,
+				35, 48, 48, 8, 8, 18, 14, 8,
 				62, 24, 8, 18, 14, 8,
 				35, 70, 8, 18, 18, 8,
-				YAM, YAM, 8
+				8, 8, 8
 		};
 		return VALID_GDC_ROOMS_CAPACITIES;
 	}

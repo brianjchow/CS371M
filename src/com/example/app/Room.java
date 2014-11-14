@@ -1,13 +1,24 @@
 package com.example.app;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
+import android.util.SparseArray;
+
 import com.google.common.collect.ComparisonChain;
 
 final class Room implements Comparable<Room> {
 
+	private static final String TAB = "    ";
+	
 	private Location location;
 	private String type;
 	private int capacity;
 	private boolean has_power;
+	
+//	private Map<Integer, Set<Event>> course_schedule;
+	private SparseArray<Set<Event>> course_schedule;
 
 	/**
 	 * @param location
@@ -16,7 +27,7 @@ final class Room implements Comparable<Room> {
 	 * with default values.
 	 */
 	protected Room(Location location) {
-		this(location, Constants.CONFERENCE, Constants.DEFAULT_ROOM_CAPACITY, false);
+		this(location, Constants.DEFAULT_ROOM_TYPE, Constants.DEFAULT_ROOM_CAPACITY, false);
 	}
 
 	/**
@@ -26,7 +37,7 @@ final class Room implements Comparable<Room> {
 	 * @param has_power
 	 */
 	protected Room(Location location, String type, int capacity, boolean has_power) {
-		if (location == null || type == null || capacity < 0) {
+		if (location == null || type == null || capacity < Constants.DEFAULT_ROOM_CAPACITY) {
 			throw new IllegalArgumentException("Error: one or more arguments is null, Room constructor");
 		}
 
@@ -34,8 +45,55 @@ final class Room implements Comparable<Room> {
 		this.type = type;
 		this.capacity = capacity;
 		this.has_power = has_power;
+		
+		// loopify?
+//		this.course_schedule = new HashMap<Integer, Set<Event>>();
+		this.course_schedule = new SparseArray<Set<Event>>();
+		this.course_schedule.put(Constants.SUNDAY, new HashSet<Event>());
+		this.course_schedule.put(Constants.MONDAY, new HashSet<Event>());
+		this.course_schedule.put(Constants.TUESDAY, new HashSet<Event>());
+		this.course_schedule.put(Constants.WEDNESDAY, new HashSet<Event>());
+		this.course_schedule.put(Constants.THURSDAY, new HashSet<Event>());
+		this.course_schedule.put(Constants.FRIDAY, new HashSet<Event>());
+		this.course_schedule.put(Constants.SATURDAY, new HashSet<Event>());
 	}
 
+	// use the Constants provided for the day; will fail otherwise
+	protected boolean add_event(int day_of_week, Event event) {
+		if (!Utilities.valid_day_of_week(day_of_week) || event == null) {
+			return false;
+		}
+		
+		Set<Event> events = this.course_schedule.get(day_of_week);
+		if (events.contains(event)) {
+			return false;
+		}
+		
+		events.add(event);
+		this.course_schedule.put(day_of_week, events);
+		return true;
+	}
+	
+//	protected final Map<Integer, Set<Event>> get_events() {
+	protected final SparseArray<Set<Event>> get_events() {
+		return this.course_schedule;
+	}
+	
+	protected final Set<Event> get_events(int day_of_week) {
+		if (!Utilities.valid_day_of_week(day_of_week)) {
+			return null;
+		}
+		return (this.course_schedule.get(day_of_week));
+	}
+	
+	protected final int get_num_events() {
+		int total_size = 0;
+		for (int i = Constants.SUNDAY; i <= Constants.SATURDAY; i++) {
+			total_size += this.course_schedule.get(i).size();
+		}
+		return total_size;
+	}
+	
 	/**
 	 * @return The Location of this Room.
 	 */
@@ -152,7 +210,26 @@ final class Room implements Comparable<Room> {
 		out.append("Room:\t" + this.location.toString() + "\n");
 		out.append("Type:\t" + this.type + "\n");
 		out.append("Size:\t" + this.capacity + "\n");
-		out.append("Power:\t" + this.has_power);
+		out.append("Power:\t" + this.has_power + "\n");
+		out.append("Schedule:\n" + TAB + this.get_num_events() + " weekly class(es)\n");
+		
+		for (int i = Constants.SUNDAY; i <= Constants.SATURDAY; i++) {
+			out.append(TAB + Constants.DAYS_OF_WEEK_SHORT[i] + ": ");
+			
+			Set<Event> temp = this.course_schedule.get(i);
+			Set<Event> sorted_by_time = new TreeSet<Event>(temp);
+			
+			int counter = 0;
+			for (Event event : sorted_by_time) {
+				if (counter > 0) {
+					out.append(", ");
+				}			
+				out.append(event.get_event_name() + " (" + Utilities.get_time(event.get_start_date()) + ")");
+				counter++;
+			}
+			
+			out.append("\n");
+		}
 
 		return (out.toString());
 	}

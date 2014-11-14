@@ -184,11 +184,15 @@ public class ActivityRoomRec extends ActionBarActivity {
 	public void exit() {
 //		startActivityForResult(new Intent(this, ActivityExit.class), 0);
 		startActivity(new Intent(ActivityRoomRec.this, ActivityExit.class));
+		finish();
+		return;
 	}
 
 	public void getRoomRec() {
 //		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
 		startActivity(new Intent(ActivityRoomRec.this, ActivityFindRoomLater.class));
+		finish();
+		return;
 	}
 	
 	private void find_room_later() {
@@ -196,6 +200,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 		intent.putExtra("this_query", this_query);
 		startActivity(intent);
 		finish();
+		return;
 	}
 
 //	@Override

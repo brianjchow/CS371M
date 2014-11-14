@@ -1,8 +1,7 @@
 package com.example.app;
 
 import java.util.Calendar;
-
-import com.example.uis.R;
+import java.util.Date;
 
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -17,13 +16,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.NumberPicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+import com.example.uis.R;
 
 //public class FindRoomLaterActivity extends ActionBarActivity implements View.OnClickListener {
 public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnDateSetListener, TimePickerDialog.OnTimeSetListener
@@ -74,6 +79,21 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 //				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityFindRoomLater.this, datepicker_dialog_listener, selected_year, selected_month - 1, selected_day);
 				if (!Constants.DEBUG) {
 					datepicker_dialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+					
+					Calendar temp = Calendar.getInstance();
+					Date date = calendar.getTime();
+					int year = calendar.get(Calendar.YEAR);
+					if (Utilities.date_is_during_spring(date)) {
+						date = Utilities.get_date(Constants.FALL_END_MONTH, Constants.FALL_END_DAY, year, 2359);
+						temp.setTime(date);
+						datepicker_dialog.getDatePicker().setMaxDate(temp.getTimeInMillis());
+					}
+					else {
+						date = Utilities.get_date(Constants.SPRING_END_MONTH, Constants.SPRING_END_DAY, year + 1, 2359);
+						temp.setTime(date);
+						datepicker_dialog.getDatePicker().setMaxDate(temp.getTimeInMillis());
+					}
+					
 				}
 				datepicker_dialog.show();
 			}
@@ -120,7 +140,36 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				show_capacity_picker();
 			}
 		});
-
+		
+		final Spinner spinner = (Spinner) findViewById(R.id.choose_building_spinner);
+		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.campus_buildings, android.R.layout.simple_spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(adapter);
+		spinner.setSelection(Constants.CAMPUS_BUILDINGS_GDC_POSITION);
+		findViewById(R.id.choose_building).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				spinner.performClick();
+				
+				spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+					
+					@Override
+					public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+						Log.d(TAG, "In onItemSelected(); selected " + spinner.getSelectedItem());
+						
+						this_query.set_option_search_building(spinner.getSelectedItem().toString());
+						update_query_textview();
+					}
+					
+					@Override
+					public void onNothingSelected(AdapterView<?> parentView) {
+						Log.d(TAG, "In onNothingSelected(); nothing selected in spinner");
+					}
+				});
+			}
+		});
+		
 		// http://stackoverflow.com/questions/8386832/android-checkbox-listener
 		CheckBox has_power = (CheckBox) findViewById(R.id.has_power);
 		has_power.setChecked(this_query.get_option_power());
@@ -190,6 +239,9 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		startActivity(intent);
 //		startActivityForResult(intent, 0);
 //		startActivityForResult(new Intent(this, RoomRecActivity.class), 0);
+		
+		finish();
+		return;
 	}
 	
 	// http://stackoverflow.com/questions/17805040/how-to-create-a-number-picker-dialog

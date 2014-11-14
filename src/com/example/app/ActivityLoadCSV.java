@@ -80,8 +80,8 @@ public class ActivityLoadCSV extends ActionBarActivity {
 	
 	// MUST CALL return AFTER CALLING THIS METHOD
 	private void goto_wait_for_cxn() {
-		Constants.CSV_FEEDS_MASTER = null;
-		Constants.CSV_FEEDS_CLEANED = null;
+//		Constants.CSV_FEEDS_MASTER = null;
+//		Constants.CSV_FEEDS_CLEANED = null;
 		
 		startActivity(new Intent(ActivityLoadCSV.this, ActivityWaitForCxn.class));
 		finish();

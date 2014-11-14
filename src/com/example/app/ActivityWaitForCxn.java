@@ -221,7 +221,9 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 				show_failure_dialog();
 			}
 			else {
-				start_loading_csv();
+				startActivity(new Intent(ActivityWaitForCxn.this, ActivityLoadCSV.class));
+				finish();
+				return;
 			}
 		}
 		
@@ -232,11 +234,14 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 				show_failure_dialog();
 			}
 			else {
-				start_loading_csv();
+				startActivity(new Intent(ActivityWaitForCxn.this, ActivityLoadCSV.class));
+				finish();
+				return;
 			}
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void start_loading_csv() {
 		startActivity(new Intent(ActivityWaitForCxn.this, ActivityLoadCSV.class));
 		finish();

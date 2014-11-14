@@ -1,3 +1,8 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -345,6 +350,8 @@ final class CSVReader {
 		
 		int current_month = 10;
 		int current_day = 31;
+		
+		String db_file = "master_course_schedule_f14";
 
 //		test(Utilities.get_date(current_month, current_day, 2014, 400), 61);
 //		test(Utilities.get_date(current_month, current_day, 2014, 800), 61);
@@ -359,12 +366,47 @@ final class CSVReader {
 //		test(Utilities.get_date(current_month, current_day, 2014, 759), 2);
 //		test(Utilities.get_date(current_month, current_day, 2014, 0000), Constants.MINUTES_IN_DAY);
 		
-		test_all_buildings(Utilities.get_date(current_month, current_day, 2014, 1300), 1);
+//		test_all_buildings(Utilities.get_date(current_month, current_day, 2014, 1300), 1);
 				
 //		System.out.println(Constants.USED_ROOMS_THIS_SEMESTER.toString());
 		
 		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.USED_ROOMS_THIS_SEMESTER.get_size());
 		System.out.println("Total number events in RoomList: " + Constants.USED_ROOMS_THIS_SEMESTER.get_num_events_all_rooms());
+		
+//		for (int i = 0; i < Constants.CAMPUS_BUILDINGS.length; i++) {
+////			System.out.printf("<string name = \"%s\">%s</string>\n", Constants.CAMPUS_BUILDINGS[i], Constants.CAMPUS_BUILDINGS[i]);
+////			System.out.printf("<item>@string/%s</item>\n", Constants.CAMPUS_BUILDINGS[i]);
+//			
+////			if (Constants.CAMPUS_BUILDINGS[i].equalsIgnoreCase(Constants.GDC)) {
+////				System.out.println(i);
+////			}
+//		}
+		
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection("jdbc:sqlite:" + db_file + ".db");
+			Statement statement = connection.createStatement();
+			
+			ResultSet rs = statement.executeQuery("select * from " + db_file);
+			
+			while (rs.next()) {
+				System.out.printf("%s, %s, %s, %s, %d, %d, %s, %s, %d\n", rs.getString("dept"), rs.getString("num"), rs.getString("name"),
+						rs.getString("meeting_days"), rs.getInt("start_time"), rs.getInt("end_time"), rs.getString("building"), rs.getString("room"), rs.getInt("capacity"));
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		
 	}
 	

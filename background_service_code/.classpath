@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry excluding="deprecated/" kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="C:/Users/Fatass/Dropbox/CS371M/guava-18.0.jar"/>
+	<classpathentry kind="lib" path="D:/System/Dropbox/CS371M/guava-18.0.jar"/>
+	<classpathentry kind="lib" path="D:/System/Dropbox/CS371M/sqlite-jdbc-3.8.6.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
