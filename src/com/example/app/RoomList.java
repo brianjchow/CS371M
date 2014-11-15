@@ -1,11 +1,6 @@
 package com.example.app;
 
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,10 +58,6 @@ final class RoomList {
 	
 	private Map<Location, Room> list;
 
-	private String db_name = null;
-	private Connection connection = null;
-	private Statement statement = null;
-	
 	/**
 	 * Default constructor.
 	 */
@@ -81,51 +72,25 @@ final class RoomList {
 		}
 		
 		this.list = new HashMap<Location, Room>(25000);		// F14: 16710 buckets; S15: 15001 buckets
-		this.db_name = schedule_file;
 		initialise();
 		
 		int res_id = getResId(schedule_file, R.raw.class);
 		if (res_id == -1) {
-			throw new IllegalStateException("Database file missing!");
+			throw new IllegalStateException("Course schedule file missing!");
 		}
-		
-		try {			
-			Class.forName("org.sqlite.JDBC");
-			connection = DriverManager.getConnection("jdbc:sqlite:" + db_name + ".db");
-			statement = connection.createStatement();
-		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-		
+
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.start();
 		
 		Log.d(TAG, "Now reading course schedule from res ID " + res_id);
 		
-//		this.read_course_schedules(context, res_id);	// FULL_COURSE_SCHEDULE_F14, FULL_COURSE_SCHEDULE_S15
-		read_course_schedule_from_db();
+		this.read_course_schedules(context, res_id);	// FULL_COURSE_SCHEDULE_F14, FULL_COURSE_SCHEDULE_S15
 		
 		stopwatch.stop();
 		if (Constants.DEBUG) {
-			System.out.printf("Took %f seconds to read %d lines from schedule \"%s\"\n\n", stopwatch.time(), line_counter, db_name);
+			System.out.printf("Took %f seconds to read %d lines from schedule \"%s\"\n\n", stopwatch.time(), line_counter, schedule_file);
 		}
-		
-		try {
-			if (connection != null) {
-				connection.close();
-			}
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-			throw new RuntimeException();
-		}
-		
+				
 		Log.d(TAG, "Finished reading course schedule from res ID " + res_id);
 		Log.d(TAG, "Took " + stopwatch.time() + "s to read " + line_counter + " lines from schedule");
 	}
@@ -245,17 +210,28 @@ final class RoomList {
 		
 		RoomList out = new RoomList();
 		
-		Room temp;
-		for (Location location : this.list.keySet()) {
-			temp = this.list.get(location);
-			if (temp != null) {
-				out.add(temp);
+		Location curr_loc;
+		Room curr_room;
+//		for (Location location : this.list.keySet()) {
+//			curr_room = this.list.get(location);
+//			if (curr_room != null) {
+//				out.add(curr_room);
+//			}
+//		}
+
+		String gdc_str = "GDC ";
+		for (int i = 0; i < Constants.VALID_GDC_ROOMS.length; i++) {
+			curr_loc = new Location(gdc_str + Constants.VALID_GDC_ROOMS[i]);
+			curr_room = this.list.get(curr_loc);
+			if (curr_room != null) {
+//				System.out.println(curr_room.toString() + "\n");
+				out.list.put(curr_loc, curr_room.clone());
 			}
 		}
 		
 		return out;
 	}
-
+	
 	/**
 	 * @return An iterator over this RoomList's backing Map.
 	 */
@@ -285,8 +261,8 @@ final class RoomList {
 		int total = 0;
 		
 		Room curr_room;
-//		Map<Integer, Set<Event>> curr_room_events;
-		SparseArray<Set<Event>> curr_room_events;
+		Map<Integer, Set<Event>> curr_room_events;
+//		SparseArray<Set<Event>> curr_room_events;
 		for (Map.Entry<Location, Room> entry : this.list.entrySet()) {
 			curr_room = entry.getValue();
 			curr_room_events = curr_room.get_events();
@@ -450,48 +426,6 @@ final class RoomList {
 				curr_line.append((char) curr_char);
 			}			
 		}
-	}
-	
-	private void read_course_schedule_from_db() {
-		if (this.list == null) {
-//			this.list = new RoomList().list;
-			throw new IllegalStateException("This RoomList's backing Map cannot be null.");
-		}
-		
-		if (db_name == null || connection == null || statement == null) {
-			return;
-		}
-		
-		try {
-			ResultSet rs = statement.executeQuery("select * from " + db_name);
-			
-			Event event = null;
-			String name;
-			boolean[] meeting_days;
-			Date start_time, end_time;
-			Location location;
-			int capacity;
-			
-			while (rs.next()) {
-				name = rs.getString("dept") + " " + rs.getString("num") + " - " + rs.getString("name");
-				meeting_days = set_meeting_days(rs.getString("meeting_days"));
-				start_time = Utilities.get_date(rs.getInt("start_time"));
-				end_time = Utilities.get_date(rs.getInt("end_time"));
-				location = new Location(rs.getString("building") + " " + rs.getString("room"));
-				capacity = rs.getInt("capacity");
-				
-				if (start_time != null && end_time != null) {
-					event = new Event(name, start_time, end_time, location);
-					this.add_event(meeting_days, location, Integer.toString(capacity), event);		// INEFFICIENT! (for Integer.toString())
-				}
-				
-				line_counter++;
-			}
-		}
-		catch (SQLException e) {
-			throw new RuntimeException();
-		}
-		
 	}
 	
 	// IGNORES SATURDAY AND SUNDAY (not that they're likely to appear)

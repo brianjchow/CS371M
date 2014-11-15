@@ -150,6 +150,20 @@ final class Room implements Comparable<Room> {
 		out.type = this.type;
 		out.capacity = this.capacity;
 		out.has_power = this.has_power;
+		
+		out.course_schedule = new HashMap<Integer, Set<Event>>(this.course_schedule.size() * 2);
+		
+		Integer curr_key;
+		Set<Event> curr_val;
+		for (Map.Entry<Integer, Set<Event>> entry : this.course_schedule.entrySet()) {
+			curr_key = Integer.valueOf(entry.getKey());
+			curr_val = new HashSet<Event>(entry.getValue().size() * 2);
+			for (Event event : entry.getValue()) {
+				curr_val.add(event.clone());
+			}
+			out.course_schedule.put(curr_key, curr_val);
+		}
+		
 		return out;
 	}
 

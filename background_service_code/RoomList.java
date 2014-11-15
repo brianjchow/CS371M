@@ -84,6 +84,7 @@ final class RoomList {
 		this.list = new HashMap<Location, Room>(25000);		// F14: 16710 buckets; S15: 15001 buckets		
 		initialise();
 		
+		// https://bitbucket.org/xerial/sqlite-jdbc
 		try {
 			db_name = course_schedule_file_name.substring(17, 43);
 			
@@ -183,21 +184,26 @@ final class RoomList {
 			throw new IllegalStateException("This RoomList's backing Map cannot be null.");
 		}
 		
-//		String gdc_str = "GDC ";
 		RoomList out = new RoomList();
 		
-		Room temp;
-		for (Location location : this.list.keySet()) {
-			temp = this.list.get(location);
-			if (temp != null) {
-				out.add(temp);
+		Location curr_loc;
+		Room curr_room;
+//		for (Location location : this.list.keySet()) {
+//			curr_room = this.list.get(location);
+//			if (curr_room != null) {
+//				out.add(curr_room);
+//			}
+//		}
+
+		String gdc_str = "GDC ";
+		for (int i = 0; i < Constants.VALID_GDC_ROOMS.length; i++) {
+			curr_loc = new Location(gdc_str + Constants.VALID_GDC_ROOMS[i]);
+			curr_room = this.list.get(curr_loc);
+			if (curr_room != null) {
+//				System.out.println(curr_room.toString() + "\n");
+				out.list.put(curr_loc, curr_room.clone());
 			}
 		}
-		
-//		for (int i = 0; i < Constants.VALID_GDC_ROOMS.length; i++) {
-//			temp = this.list.get(new Location(gdc_str + Constants.VALID_GDC_ROOMS[i]));
-//			out.add(temp);
-//		}
 		
 		return out;
 	}

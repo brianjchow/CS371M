@@ -49,14 +49,71 @@ public class Query implements Parcelable {
 		this.start_date = start_date;
 		this.duration = Constants.DEFAULT_QUERY_DURATION;
 
-		set_end_date();		// set this.end_date
+		set_end_date();
 		
 		this.options = new HashMap<String, Object>(10);
 		this.options.put(Constants.CAPACITY, Integer.valueOf(0));
 		this.options.put(Constants.POWER, Boolean.valueOf(false));
 		this.options.put(Constants.SEARCH_BUILDING, Constants.GDC);
 	}
-
+	
+	private Set<Location> filter_by_course_schedule(Set<Location> valid_rooms) {
+		if (USE_THIS_ROOMLIST == null) {
+			throw new IllegalStateException("Don't call this method from anywhere but Query.search().");
+		}
+		else if (valid_rooms == null) {
+			throw new IllegalArgumentException("Argument cannot be null!");
+		}
+		
+		Set<Location> out = new HashSet<Location>();
+		
+		RoomList gdc_rooms;
+		if (USE_THIS_ROOMLIST.get_size() == Constants.USED_ROOMS_THIS_SEMESTER.get_size()) {
+			gdc_rooms = Constants.GDC_ROOMS_THIS_SEMESTER;
+		}
+		else {
+			gdc_rooms = Constants.GDC_ROOMS_NEXT_SEMESTER;
+		}
+		
+		if (gdc_rooms.get_num_events_all_rooms() <= 0) {
+			MESSAGE_STATUS_FLAG = Constants.NO_INFO;
+			return out;
+		}
+		
+		int today = this.get_this_day_of_week();
+		boolean is_valid = true;
+		
+		Map.Entry<Location, Room> curr_entry;
+		Location curr_loc;
+		Room curr_room;
+		Iterator<Map.Entry<Location, Room>> itr = gdc_rooms.get_iterator();
+		while (itr.hasNext()) {
+			curr_entry = itr.next();
+			curr_loc = curr_entry.getKey();
+			curr_room = curr_entry.getValue();
+			
+			if (valid_rooms.contains(curr_loc)) {
+				continue;
+			}
+			
+			Set<Event> curr_events = curr_room.get_events(today);
+			for (Event event : curr_events) {
+				if (Utilities.times_overlap(this.start_date, this.end_date, event.get_start_date(), event.get_end_date())) {
+					is_valid = false;
+					break;
+				}
+			}
+			
+			if (is_valid) {
+				valid_rooms.add(curr_loc);
+			}
+			
+			is_valid = true;
+		}
+		
+		return valid_rooms;
+	}
+	
 	/**
 	 * @param other_set
 	 * @return A copy of other_set, with elements removed as
@@ -480,6 +537,7 @@ public class Query implements Parcelable {
 
 		if (valid_rooms.size() <= 0) {
 			if (MESSAGE_STATUS_FLAG >= 0 && MESSAGE_STATUS_FLAG < Constants.MESSAGE_STATUS_FLAGS.length) {
+				Log.d(TAG, "Returning w/ msg: " + Constants.MESSAGE_STATUS_FLAGS[MESSAGE_STATUS_FLAG]);
 				return Constants.MESSAGE_STATUS_FLAGS[MESSAGE_STATUS_FLAG];
 			}
 			return Constants.MESSAGE_STATUS_FLAGS[Constants.SEARCH_ERROR];
@@ -525,6 +583,7 @@ public class Query implements Parcelable {
 		}
 		else if (search_is_at_night()) {
 			MESSAGE_STATUS_FLAG = Constants.GO_HOME;
+			Log.d(TAG, "EFJIOWEJFIWE");
 			return out;
 		}
 
@@ -543,13 +602,15 @@ public class Query implements Parcelable {
 		else {
 			/* Reduce search space by eliminating Event dates not within range of this Query. */
 			EventList reduced = get_events_by_date(eolist);
-			if (reduced.get_size() <= 0) {
-				MESSAGE_STATUS_FLAG = Constants.NO_ROOMS_AVAIL;
-				return out;
-			}
+//			if (reduced.get_size() <= 0) {
+//				MESSAGE_STATUS_FLAG = Constants.NO_ROOMS_AVAIL;
+//				return out;
+//			}
 
 			/* Continue reducing search space by eliminating Event times not within range of this Query. */
 			valid_rooms = this.filter_by_time(reduced);
+			
+			valid_rooms = this.filter_by_course_schedule(valid_rooms);
 			
 			/* Apply any selected options. */
 			if (!this.has_standard_options() && valid_rooms.size() > 0) {
@@ -558,7 +619,9 @@ public class Query implements Parcelable {
 		}
 		
 		if (valid_rooms.size() <= 0) {
-			MESSAGE_STATUS_FLAG = Constants.NO_ROOMS_AVAIL;
+			if (MESSAGE_STATUS_FLAG != -1) {
+				MESSAGE_STATUS_FLAG = Constants.NO_ROOMS_AVAIL;
+			}
 			return out;
 		}
 		
@@ -623,6 +686,16 @@ public class Query implements Parcelable {
 		}
 		
 		return valid_rooms;
+	}
+	
+	protected void reset() {
+		Date start_date = Calendar.getInstance().getTime();
+		this.start_date = start_date;
+		this.duration = Constants.DEFAULT_QUERY_DURATION;
+
+		set_end_date();
+		
+		this.set_standard_options();
 	}
 	
 	private void reset_using_roomlist_message_status_flag() {
@@ -815,6 +888,9 @@ public class Query implements Parcelable {
 		if (building_code == null) {
 //			return false;
 			throw new IllegalArgumentException("Error: argument cannot be null, set_option_search_building()");		
+		}
+		if (!building_code.equalsIgnoreCase(Constants.GDC)) {
+			this.set_option_power(false);
 		}
 		this.options.put(Constants.SEARCH_BUILDING, building_code);
 		return true;		

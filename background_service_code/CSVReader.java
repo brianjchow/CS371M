@@ -124,13 +124,13 @@ final class CSVReader {
 			events.add(event_strings);
 		}
 		else {
-			event_strings = reader.read_csv_from_file("feeds/calendar_events_feed_3110.csv");
+			event_strings = reader.read_csv_from_file("feeds/calendar_events_feed_1411.csv");
 			events.add(event_strings);
 			
-			event_strings = reader.read_csv_from_file("feeds/calendar_events_today_feed_3110.csv");
+			event_strings = reader.read_csv_from_file("feeds/calendar_events_today_feed_1411.csv");
 			events.add(event_strings);
 			
-			event_strings = reader.read_csv_from_file("feeds/calendar_rooms_feed_3110.csv");
+			event_strings = reader.read_csv_from_file("feeds/calendar_rooms_feed_1411.csv");
 			events.add(event_strings);	
 		}
 		
@@ -345,11 +345,12 @@ final class CSVReader {
 	 * - add set_standard_option() method to Query
 	 * - change RoomList's backing Map to a Map<String, Room> (Room objects already have a Location field)
 	 */
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		Constants.init();
 		
-		int current_month = 10;
-		int current_day = 31;
+		int current_month = 11;
+		int current_day = 14;
 		
 		String db_file = "master_course_schedule_f14";
 
@@ -365,13 +366,17 @@ final class CSVReader {
 //		test(Utilities.get_date(current_month, current_day, 2014, 759), 1);
 //		test(Utilities.get_date(current_month, current_day, 2014, 759), 2);
 //		test(Utilities.get_date(current_month, current_day, 2014, 0000), Constants.MINUTES_IN_DAY);
+//		test(Utilities.get_date(current_month, current_day, 2014, 2317), 60);
 		
 //		test_all_buildings(Utilities.get_date(current_month, current_day, 2014, 1300), 1);
-				
+		
 //		System.out.println(Constants.USED_ROOMS_THIS_SEMESTER.toString());
 		
+		RoomList gdc_rooms = Constants.USED_ROOMS_THIS_SEMESTER.get_gdc_rooms();
+		System.out.println(gdc_rooms.toString());
+		
 		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.USED_ROOMS_THIS_SEMESTER.get_size());
-		System.out.println("Total number events in RoomList: " + Constants.USED_ROOMS_THIS_SEMESTER.get_num_events_all_rooms());
+		System.out.println("Total number events in RoomList: " + Constants.USED_ROOMS_THIS_SEMESTER.get_num_events_all_rooms() + "\n");
 		
 //		for (int i = 0; i < Constants.CAMPUS_BUILDINGS.length; i++) {
 ////			System.out.printf("<string name = \"%s\">%s</string>\n", Constants.CAMPUS_BUILDINGS[i], Constants.CAMPUS_BUILDINGS[i]);
@@ -382,31 +387,31 @@ final class CSVReader {
 ////			}
 //		}
 		
-		Connection connection = null;
-		try {
-			connection = DriverManager.getConnection("jdbc:sqlite:" + db_file + ".db");
-			Statement statement = connection.createStatement();
-			
-			ResultSet rs = statement.executeQuery("select * from " + db_file);
-			
-			while (rs.next()) {
-				System.out.printf("%s, %s, %s, %s, %d, %d, %s, %s, %d\n", rs.getString("dept"), rs.getString("num"), rs.getString("name"),
-						rs.getString("meeting_days"), rs.getInt("start_time"), rs.getInt("end_time"), rs.getString("building"), rs.getString("room"), rs.getInt("capacity"));
-			}
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		finally {
-			try {
-				if (connection != null) {
-					connection.close();
-				}
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+//		Connection connection = null;
+//		try {
+//			connection = DriverManager.getConnection("jdbc:sqlite:" + db_file + ".db");
+//			Statement statement = connection.createStatement();
+//			
+//			ResultSet rs = statement.executeQuery("select * from " + db_file);
+//			
+//			while (rs.next()) {
+//				System.out.printf("%s, %s, %s, %s, %d, %d, %s, %s, %d\n", rs.getString("dept"), rs.getString("num"), rs.getString("name"),
+//						rs.getString("meeting_days"), rs.getInt("start_time"), rs.getInt("end_time"), rs.getString("building"), rs.getString("room"), rs.getInt("capacity"));
+//			}
+//		}
+//		catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		finally {
+//			try {
+//				if (connection != null) {
+//					connection.close();
+//				}
+//			}
+//			catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
 		
 	}
 	
@@ -438,7 +443,7 @@ final class CSVReader {
 		query.set_option_capacity(0);
 //		query.set_option_capacity(new Integer(0));
 		
-		query.set_option_search_building("cal");
+//		query.set_option_search_building("cal");
 
 		String random_room = query.search();
 

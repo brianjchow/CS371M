@@ -2,6 +2,7 @@ package com.example.app;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -67,6 +68,202 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		
 		update_query_textview();
 		
+		setDateButtonOnClickListener();
+		
+		setTimeButtonOnClickListener();
+
+		setMinDurationOnClickListener();
+		
+		setMinCapacityOnClickListener();
+		
+		setSearchBuildingButtonSpinnerOnItemSelectedListener();
+		
+		setCheckBoxOnCheckedChangeListener();
+		
+//        if (savedInstanceState != null) {
+//            DatePickerDialog dpd = (DatePickerDialog) getSupportFragmentManager().findFragmentByTag(DATEPICKER_TAG);
+//            if (dpd != null) {
+//                dpd.setOnDateSetListener(this);
+//            }
+//
+//            TimePickerDialog tpd = (TimePickerDialog) getSupportFragmentManager().findFragmentByTag(TIMEPICKER_TAG);
+//            if (tpd != null) {
+//                tpd.setOnTimeSetListener(this);
+//            }
+//        }
+		
+		findViewById(R.id.get_Room).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				getRoomRec();
+			}
+		});
+		
+	}		// end onCreate()
+
+
+
+
+	private void setMinDurationOnClickListener() {
+		findViewById(R.id.min_duration).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				show_duration_picker();
+			}
+		});		
+	}
+
+	private void setMinCapacityOnClickListener() {
+		findViewById(R.id.min_capacity).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				show_capacity_picker();
+			}
+		});
+	}
+
+	private void setCheckBoxOnCheckedChangeListener() {
+
+		// http://stackoverflow.com/questions/8386832/android-checkbox-listener
+		CheckBox has_power = (CheckBox) findViewById(R.id.has_power);
+		if (this_query.get_option_search_building().equalsIgnoreCase(Constants.GDC)) {
+			has_power.setChecked(this_query.get_option_power());
+		}
+		else {
+			has_power.setVisibility(View.GONE);
+		}
+		has_power.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (isChecked) {
+					this_query.set_option_power(Boolean.valueOf(true));
+				}
+				else {
+					this_query.set_option_power(Boolean.valueOf(false));
+				}
+//				Toast.makeText(FindRoomLaterActivity.this, "Selected power option: " + selected_power, Toast.LENGTH_SHORT).show();
+				update_query_textview();
+			}
+		});
+	}
+	
+	private int get_search_building_index(String building) {
+		if (building == null) {
+			throw new IllegalArgumentException();
+		}
+		else if (building.length() != 3) {
+			return -1;
+		}
+		
+		int out = -1;
+		int i = 0;
+		int stop = Constants.CAMPUS_BUILDINGS_GDC_POSITION;
+		if (building.toLowerCase(Locale.ENGLISH).compareTo(Constants.GDC.toLowerCase(Locale.ENGLISH)) > 0) {
+			i = Constants.CAMPUS_BUILDINGS_GDC_POSITION + 1;
+			stop = Constants.CAMPUS_BUILDINGS.length;
+		}
+		for (; i < stop; i++) {
+			if (Constants.CAMPUS_BUILDINGS[i].equalsIgnoreCase(building)) {
+				out = i;
+				break;
+			}
+		}
+		
+		return out;
+	}
+
+	private void setSearchBuildingButtonSpinnerOnItemSelectedListener() {
+
+
+		final Spinner spinner = (Spinner) findViewById(R.id.choose_building_spinner);
+		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ActivityFindRoomLater.this, R.array.campus_buildings, android.R.layout.simple_spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(adapter);
+		
+		String search_building = this_query.get_option_search_building();
+		if (search_building.equalsIgnoreCase(Constants.GDC)) {
+			spinner.setSelection(Constants.CAMPUS_BUILDINGS_GDC_POSITION);
+		}
+		else {
+			int index = get_search_building_index(search_building);
+			if (index >= 0) {
+				spinner.setSelection(index);
+				Log.d(TAG, "Found index " + index + " for search bldg " + search_building + "; CAMPUS_BUILDINGS[" + index + "] = " + Constants.CAMPUS_BUILDINGS[index]);
+			}
+			else {
+				spinner.setSelection(Constants.CAMPUS_BUILDINGS_GDC_POSITION);
+			}
+		}
+		
+//		spinner.setVisibility(View.GONE);
+		findViewById(R.id.choose_building).setOnClickListener(new OnClickListener() {
+
+			CheckBox has_power = (CheckBox) findViewById(R.id.has_power);
+			
+			@Override
+			public void onClick(View v) {
+//				spinner.setVisibility(View.VISIBLE);
+				
+				spinner.performClick();
+//				spinner.getLayoutParams().width = 200;
+				
+				spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+					
+					@Override
+					public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+						Log.d(TAG, "In onItemSelected(); selected " + spinner.getSelectedItem());
+						
+						String selected_item = spinner.getSelectedItem().toString().substring(0, 3);
+						
+						this_query.set_option_search_building(selected_item);
+
+						if (selected_item.equalsIgnoreCase(Constants.GDC)) {
+							has_power.setVisibility(View.VISIBLE);
+							has_power.setChecked(this_query.get_option_power());
+
+						}
+						else {
+							has_power.setVisibility(View.GONE);
+//							has_power.setChecked(false);
+//							this_query.set_option_power(false);
+						}
+
+						update_query_textview();
+					}
+					
+					@Override
+					public void onNothingSelected(AdapterView<?> parentView) {
+						Log.d(TAG, "In onNothingSelected(); nothing selected in spinner");
+//						spinner.setVisibility(View.GONE);
+					}
+				});
+			}
+		});
+	}
+
+	private void setTimeButtonOnClickListener() {
+
+		findViewById(R.id.timeButton).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Calendar calendar = Calendar.getInstance();
+				
+				calendar.setTime(this_query.get_start_date());
+				
+				Dialog timepicker_dialog = new TimePickerDialog(ActivityFindRoomLater.this, timepicker_dialog_listener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+//				Dialog timepicker_dialog = new TimePickerDialog(ActivityFindRoomLater.this, timepicker_dialog_listener, selected_hour, selected_minute, true);
+				timepicker_dialog.show();
+			}
+		});		
+	}
+
+	private void setDateButtonOnClickListener() {
+
 		findViewById(R.id.dateButton).setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -98,105 +295,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				datepicker_dialog.show();
 			}
 		});
-		
-		findViewById(R.id.timeButton).setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Calendar calendar = Calendar.getInstance();
-				
-				calendar.setTime(this_query.get_start_date());
-				
-				Dialog timepicker_dialog = new TimePickerDialog(ActivityFindRoomLater.this, timepicker_dialog_listener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
-//				Dialog timepicker_dialog = new TimePickerDialog(ActivityFindRoomLater.this, timepicker_dialog_listener, selected_hour, selected_minute, true);
-				timepicker_dialog.show();
-			}
-		});
-		
-//        if (savedInstanceState != null) {
-//            DatePickerDialog dpd = (DatePickerDialog) getSupportFragmentManager().findFragmentByTag(DATEPICKER_TAG);
-//            if (dpd != null) {
-//                dpd.setOnDateSetListener(this);
-//            }
-//
-//            TimePickerDialog tpd = (TimePickerDialog) getSupportFragmentManager().findFragmentByTag(TIMEPICKER_TAG);
-//            if (tpd != null) {
-//                tpd.setOnTimeSetListener(this);
-//            }
-//        }
-		
-		findViewById(R.id.min_duration).setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				show_duration_picker();
-			}
-		});
-		
-		findViewById(R.id.min_capacity).setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				show_capacity_picker();
-			}
-		});
-		
-		final Spinner spinner = (Spinner) findViewById(R.id.choose_building_spinner);
-		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.campus_buildings, android.R.layout.simple_spinner_item);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinner.setAdapter(adapter);
-		spinner.setSelection(Constants.CAMPUS_BUILDINGS_GDC_POSITION);
-		findViewById(R.id.choose_building).setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				spinner.performClick();
-				
-				spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-					
-					@Override
-					public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-						Log.d(TAG, "In onItemSelected(); selected " + spinner.getSelectedItem());
-						
-						this_query.set_option_search_building(spinner.getSelectedItem().toString());
-						update_query_textview();
-					}
-					
-					@Override
-					public void onNothingSelected(AdapterView<?> parentView) {
-						Log.d(TAG, "In onNothingSelected(); nothing selected in spinner");
-					}
-				});
-			}
-		});
-		
-		// http://stackoverflow.com/questions/8386832/android-checkbox-listener
-		CheckBox has_power = (CheckBox) findViewById(R.id.has_power);
-		has_power.setChecked(this_query.get_option_power());
-		has_power.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (isChecked) {
-					this_query.set_option_power(Boolean.valueOf(true));
-				}
-				else {
-					this_query.set_option_power(Boolean.valueOf(false));
-				}
-//				Toast.makeText(FindRoomLaterActivity.this, "Selected power option: " + selected_power, Toast.LENGTH_SHORT).show();
-				update_query_textview();
-			}
-		});
-		
-		findViewById(R.id.get_Room).setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				getRoomRec();
-			}
-		});
-		
-	}		// end onCreate()
+	}
 	
 	private DatePickerDialog.OnDateSetListener datepicker_dialog_listener = new OnDateSetListener() {
 		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {

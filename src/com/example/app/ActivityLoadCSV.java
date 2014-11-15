@@ -54,7 +54,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 
 		mContext = this;
 		
-		if (!has_network_connectivity()) {
+		if (!has_network_connectivity() && !Constants.DEBUG) {
 			Log.d(TAG, "No wifi and/or mobile cxn detected on startup, onCreate(), LoadCSV");
 			goto_wait_for_cxn();
 			return;
@@ -85,6 +85,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		
 		startActivity(new Intent(ActivityLoadCSV.this, ActivityWaitForCxn.class));
 		finish();
+		return;
 	}
 	
 	@Override

@@ -1,6 +1,8 @@
 package com.example.app;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -17,8 +19,8 @@ final class Room implements Comparable<Room> {
 	private int capacity;
 	private boolean has_power;
 	
-//	private Map<Integer, Set<Event>> course_schedule;
-	private SparseArray<Set<Event>> course_schedule;
+	private Map<Integer, Set<Event>> course_schedule;
+//	private SparseArray<Set<Event>> course_schedule;
 
 	/**
 	 * @param location
@@ -47,8 +49,8 @@ final class Room implements Comparable<Room> {
 		this.has_power = has_power;
 		
 		// loopify?
-//		this.course_schedule = new HashMap<Integer, Set<Event>>();
-		this.course_schedule = new SparseArray<Set<Event>>();
+		this.course_schedule = new HashMap<Integer, Set<Event>>();
+//		this.course_schedule = new SparseArray<Set<Event>>();
 		this.course_schedule.put(Constants.SUNDAY, new HashSet<Event>());
 		this.course_schedule.put(Constants.MONDAY, new HashSet<Event>());
 		this.course_schedule.put(Constants.TUESDAY, new HashSet<Event>());
@@ -74,8 +76,8 @@ final class Room implements Comparable<Room> {
 		return true;
 	}
 	
-//	protected final Map<Integer, Set<Event>> get_events() {
-	protected final SparseArray<Set<Event>> get_events() {
+	protected final Map<Integer, Set<Event>> get_events() {
+//	protected final SparseArray<Set<Event>> get_events() {
 		return this.course_schedule;
 	}
 	
@@ -168,6 +170,35 @@ final class Room implements Comparable<Room> {
 		out.type = this.type;
 		out.capacity = this.capacity;
 		out.has_power = this.has_power;
+		
+		out.course_schedule = new HashMap<Integer, Set<Event>>(this.course_schedule.size() * 2);
+		Integer curr_key;
+		Set<Event> curr_val;
+		for (Map.Entry<Integer, Set<Event>> entry : this.course_schedule.entrySet()) {
+			curr_key = Integer.valueOf(entry.getKey());
+			curr_val = new HashSet<Event>(entry.getValue().size() * 2);
+			for (Event event : entry.getValue()) {
+				curr_val.add(event.clone());
+			}
+			out.course_schedule.put(curr_key, curr_val);
+		}
+		
+//		out.course_schedule = new SparseArray<Set<Event>>(this.course_schedule.size() * 2);
+//		Set<Event> curr_schedule, schedule_to_add;
+//		for (int i = Constants.SUNDAY; i <= Constants.SATURDAY; i++) {
+//			curr_schedule = this.course_schedule.get(i);
+//			if (curr_schedule != null && curr_schedule.size() > 0) {
+//				schedule_to_add = new HashSet<Event>(curr_schedule.size() * 2);
+//				for (Event event : curr_schedule) {
+//					schedule_to_add.add(event.clone());
+//				}
+//			}
+//			else {
+//				schedule_to_add = new HashSet<Event>();
+//			}
+//			out.course_schedule.put(Integer.valueOf(i), schedule_to_add);
+//		}
+		
 		return out;
 	}
 

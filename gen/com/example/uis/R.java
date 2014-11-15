@@ -17,6 +17,9 @@ public final class R {
         public static final int abc_slide_out_top=0x7f040005;
         public static final int panda_cycle_loader_animation=0x7f040006;
     }
+    public static final class array {
+        public static final int campus_buildings=0x7f0d0000;
+    }
     public static final class attr {
         /**  Custom divider drawable to use for elements in the action bar. 
          <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
@@ -1141,7 +1144,7 @@ containing a value of this type.
         public static final int no_cxn_dinosaur_transparent_200p=0x7f02008d;
     }
     public static final class id {
-        public static final int abort_button=0x7f060056;
+        public static final int abort_button=0x7f060058;
         public static final int action_bar=0x7f06001c;
         public static final int action_bar_activity_content=0x7f060015;
         public static final int action_bar_container=0x7f06001b;
@@ -1153,32 +1156,34 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f060016;
         public static final int action_menu_presenter=0x7f060017;
         public static final int action_mode_close_button=0x7f060024;
-        public static final int action_settings=0x7f06005d;
+        public static final int action_settings=0x7f06005f;
         public static final int activity_chooser_view_content=0x7f060025;
         public static final int always=0x7f06000b;
         public static final int background=0x7f06003f;
         public static final int beginning=0x7f060011;
         public static final int bottom_button_bar=0x7f060040;
-        public static final int cancel_button=0x7f06005a;
+        public static final int cancel_button=0x7f06005c;
         public static final int checkbox=0x7f06002d;
+        public static final int choose_building=0x7f06004b;
+        public static final int choose_building_spinner=0x7f06004c;
         public static final int collapseActionView=0x7f06000d;
-        public static final int continue_button=0x7f060054;
+        public static final int continue_button=0x7f060056;
         public static final int dateButton=0x7f060047;
         public static final int default_activity_button=0x7f060028;
         public static final int dialog=0x7f06000e;
-        public static final int dinosaur=0x7f060051;
+        public static final int dinosaur=0x7f060053;
         public static final int disableHome=0x7f060008;
         public static final int dropdown=0x7f06000f;
         public static final int edit_query=0x7f060030;
         public static final int end=0x7f060013;
-        public static final int error_msg=0x7f060057;
+        public static final int error_msg=0x7f060059;
         public static final int expand_activities_button=0x7f060026;
         public static final int expanded_menu=0x7f06002c;
-        public static final int find_room_for_later=0x7f060059;
+        public static final int find_room_for_later=0x7f06005b;
         public static final int find_room_later=0x7f060043;
-        public static final int find_room_now=0x7f060058;
+        public static final int find_room_now=0x7f06005a;
         public static final int get_Room=0x7f060046;
-        public static final int has_power=0x7f06004b;
+        public static final int has_power=0x7f06004d;
         public static final int home=0x7f060014;
         public static final int homeAsUp=0x7f060005;
         public static final int icon=0x7f06002a;
@@ -1186,25 +1191,25 @@ containing a value of this type.
         public static final int image=0x7f060027;
         public static final int listMode=0x7f060001;
         public static final int list_item=0x7f060029;
-        public static final int loading_msg=0x7f06004d;
+        public static final int loading_msg=0x7f06004f;
         public static final int middle=0x7f060012;
         public static final int min_capacity=0x7f06004a;
         public static final int min_duration=0x7f060049;
         public static final int never=0x7f060009;
         public static final int new_Room=0x7f060042;
-        public static final int no_cxn_msg=0x7f06004e;
-        public static final int no_cxn_smartass_msg=0x7f060050;
+        public static final int no_cxn_msg=0x7f060050;
+        public static final int no_cxn_smartass_msg=0x7f060052;
         public static final int no_get_new_Room=0x7f06003d;
         public static final int none=0x7f060010;
         public static final int normal=0x7f060000;
-        public static final int number_picker=0x7f06005c;
+        public static final int number_picker=0x7f06005e;
         public static final int ohkay=0x7f060041;
-        public static final int progressSpinner=0x7f06004f;
+        public static final int progressSpinner=0x7f060051;
         public static final int progress_circular=0x7f060018;
         public static final int progress_horizontal=0x7f060019;
-        public static final int quit_button=0x7f060053;
+        public static final int quit_button=0x7f060055;
         public static final int radio=0x7f06002f;
-        public static final int restart_button=0x7f060055;
+        public static final int restart_button=0x7f060057;
         public static final int room_num=0x7f060045;
         public static final int search_badge=0x7f060032;
         public static final int search_bar=0x7f060031;
@@ -1216,7 +1221,7 @@ containing a value of this type.
         public static final int search_plate=0x7f060036;
         public static final int search_src_text=0x7f060037;
         public static final int search_voice_btn=0x7f06003b;
-        public static final int set_button=0x7f06005b;
+        public static final int set_button=0x7f06005d;
         public static final int shortcut=0x7f06002e;
         public static final int showCustom=0x7f060007;
         public static final int showHome=0x7f060004;
@@ -1229,8 +1234,8 @@ containing a value of this type.
         public static final int title=0x7f06002b;
         public static final int title_heading=0x7f06003e;
         public static final int top_action_bar=0x7f060020;
-        public static final int top_button_bar=0x7f06004c;
-        public static final int try_again=0x7f060052;
+        public static final int top_button_bar=0x7f06004e;
+        public static final int try_again=0x7f060054;
         public static final int up=0x7f060021;
         public static final int useLogo=0x7f060003;
         public static final int withText=0x7f06000c;
@@ -1297,28 +1302,193 @@ containing a value of this type.
         public static final int support_simple_spinner_dropdown_item=0x7f030020;
     }
     public static final class menu {
-        public static final int activity_wait_for_cxn=0x7f0d0000;
-        public static final int exit=0x7f0d0001;
-        public static final int find_room=0x7f0d0002;
-        public static final int find_room_later=0x7f0d0003;
-        public static final int load_csv=0x7f0d0004;
-        public static final int main=0x7f0d0005;
+        public static final int activity_wait_for_cxn=0x7f0e0000;
+        public static final int exit=0x7f0e0001;
+        public static final int find_room=0x7f0e0002;
+        public static final int find_room_later=0x7f0e0003;
+        public static final int load_csv=0x7f0e0004;
+        public static final int main=0x7f0e0005;
     }
     public static final class raw {
         public static final int calendar_events_feed_0311=0x7f050000;
-        public static final int calendar_events_feed_2710=0x7f050001;
-        public static final int calendar_events_feed_2910=0x7f050002;
-        public static final int calendar_events_feed_3110=0x7f050003;
-        public static final int calendar_events_today_feed_0311=0x7f050004;
-        public static final int calendar_events_today_feed_2710=0x7f050005;
-        public static final int calendar_events_today_feed_2910=0x7f050006;
-        public static final int calendar_events_today_feed_3110=0x7f050007;
-        public static final int calendar_rooms_feed_0311=0x7f050008;
-        public static final int calendar_rooms_feed_2710=0x7f050009;
-        public static final int calendar_rooms_feed_2910=0x7f05000a;
-        public static final int calendar_rooms_feed_3110=0x7f05000b;
+        public static final int calendar_events_feed_1411=0x7f050001;
+        public static final int calendar_events_feed_2710=0x7f050002;
+        public static final int calendar_events_feed_2910=0x7f050003;
+        public static final int calendar_events_feed_3110=0x7f050004;
+        public static final int calendar_events_today_feed_0311=0x7f050005;
+        public static final int calendar_events_today_feed_1411=0x7f050006;
+        public static final int calendar_events_today_feed_2710=0x7f050007;
+        public static final int calendar_events_today_feed_2910=0x7f050008;
+        public static final int calendar_events_today_feed_3110=0x7f050009;
+        public static final int calendar_rooms_feed_0311=0x7f05000a;
+        public static final int calendar_rooms_feed_1411=0x7f05000b;
+        public static final int calendar_rooms_feed_2710=0x7f05000c;
+        public static final int calendar_rooms_feed_2910=0x7f05000d;
+        public static final int calendar_rooms_feed_3110=0x7f05000e;
+        public static final int master_course_schedule_f14=0x7f05000f;
+        public static final int master_course_schedule_s15=0x7f050010;
     }
     public static final class string {
+        /**  Campus buildings 
+         */
+        public static final int ACA=0x7f0b0040;
+        public static final int ADH=0x7f0b0041;
+        public static final int AFP=0x7f0b0042;
+        public static final int AHG=0x7f0b0043;
+        public static final int ANB=0x7f0b0044;
+        public static final int AND=0x7f0b0045;
+        public static final int ARC=0x7f0b0046;
+        public static final int ART=0x7f0b0047;
+        public static final int ATT=0x7f0b0048;
+        public static final int BAT=0x7f0b0049;
+        public static final int BEL=0x7f0b004a;
+        public static final int BEN=0x7f0b004b;
+        public static final int BHD=0x7f0b004c;
+        public static final int BIO=0x7f0b004d;
+        public static final int BLD=0x7f0b004e;
+        public static final int BMA=0x7f0b004f;
+        public static final int BMC=0x7f0b0050;
+        public static final int BME=0x7f0b0051;
+        public static final int BOT=0x7f0b0052;
+        public static final int BRB=0x7f0b0053;
+        public static final int BRG=0x7f0b0054;
+        public static final int BTL=0x7f0b0055;
+        public static final int BUR=0x7f0b0056;
+        public static final int BWY=0x7f0b0057;
+        public static final int CAL=0x7f0b0058;
+        public static final int CBA=0x7f0b0059;
+        public static final int CCF=0x7f0b005f;
+        public static final int CCG=0x7f0b005a;
+        public static final int CCJ=0x7f0b005b;
+        public static final int CDA=0x7f0b005c;
+        public static final int CDL=0x7f0b005d;
+        public static final int CEE=0x7f0b005e;
+        public static final int CLA=0x7f0b0060;
+        public static final int CLK=0x7f0b0061;
+        public static final int CMA=0x7f0b0062;
+        public static final int CMB=0x7f0b0063;
+        public static final int CML=0x7f0b0064;
+        public static final int COM=0x7f0b0065;
+        public static final int CPE=0x7f0b0066;
+        public static final int CRB=0x7f0b0067;
+        public static final int CRD=0x7f0b0068;
+        public static final int CRH=0x7f0b0069;
+        public static final int CSA=0x7f0b006a;
+        public static final int CTR=0x7f0b006b;
+        public static final int DCP=0x7f0b006d;
+        public static final int DEV=0x7f0b006c;
+        public static final int DFA=0x7f0b006e;
+        public static final int DFF=0x7f0b006f;
+        public static final int EAS=0x7f0b0070;
+        public static final int ECJ=0x7f0b0071;
+        public static final int ENS=0x7f0b0072;
+        public static final int EPS=0x7f0b0073;
+        public static final int ERC=0x7f0b0074;
+        public static final int ETC=0x7f0b0075;
+        public static final int FAC=0x7f0b0076;
+        public static final int FDF=0x7f0b0077;
+        public static final int FDH=0x7f0b0078;
+        public static final int FNT=0x7f0b0079;
+        public static final int FPC=0x7f0b007a;
+        public static final int GAR=0x7f0b007b;
+        public static final int GDC=0x7f0b007c;
+        public static final int GEA=0x7f0b007d;
+        public static final int GEB=0x7f0b007e;
+        public static final int GOL=0x7f0b007f;
+        public static final int GRE=0x7f0b0080;
+        public static final int GRG=0x7f0b0081;
+        public static final int GSB=0x7f0b0082;
+        public static final int GUG=0x7f0b0083;
+        public static final int HMA=0x7f0b0084;
+        public static final int HRC=0x7f0b0085;
+        public static final int HRH=0x7f0b0086;
+        public static final int HSM=0x7f0b0087;
+        public static final int INT=0x7f0b0088;
+        public static final int IPF=0x7f0b0089;
+        public static final int JCD=0x7f0b008a;
+        public static final int JES=0x7f0b008b;
+        public static final int JGB=0x7f0b008c;
+        public static final int JHH=0x7f0b008d;
+        public static final int JON=0x7f0b008e;
+        public static final int KIN=0x7f0b008f;
+        public static final int LBJ=0x7f0b0090;
+        public static final int LCH=0x7f0b0091;
+        public static final int LDH=0x7f0b0092;
+        public static final int LFH=0x7f0b0093;
+        public static final int LLA=0x7f0b0094;
+        public static final int LLB=0x7f0b0095;
+        public static final int LLC=0x7f0b0096;
+        public static final int LLD=0x7f0b0097;
+        public static final int LLE=0x7f0b0098;
+        public static final int LLF=0x7f0b0099;
+        public static final int LTD=0x7f0b009a;
+        public static final int LTH=0x7f0b009b;
+        public static final int MAG=0x7f0b009c;
+        public static final int MAI=0x7f0b009d;
+        public static final int MBB=0x7f0b009e;
+        public static final int MEZ=0x7f0b009f;
+        public static final int MFH=0x7f0b00a0;
+        public static final int MHD=0x7f0b00a1;
+        public static final int MMS=0x7f0b00a2;
+        public static final int MNC=0x7f0b00a3;
+        public static final int MRH=0x7f0b00a4;
+        public static final int MSB=0x7f0b00a5;
+        public static final int NEZ=0x7f0b00a6;
+        public static final int NHB=0x7f0b00a7;
+        public static final int NMS=0x7f0b00a8;
+        public static final int NOA=0x7f0b00a9;
+        public static final int NUR=0x7f0b00aa;
+        public static final int PAC=0x7f0b00ab;
+        public static final int PAI=0x7f0b00ac;
+        public static final int PAR=0x7f0b00ad;
+        public static final int PAT=0x7f0b00ae;
+        public static final int PCL=0x7f0b00af;
+        public static final int PHD=0x7f0b00b0;
+        public static final int PHR=0x7f0b00b1;
+        public static final int POB=0x7f0b00b2;
+        public static final int PPA=0x7f0b00b3;
+        public static final int PPB=0x7f0b00b4;
+        public static final int PPE=0x7f0b00b5;
+        public static final int PPL=0x7f0b00b6;
+        public static final int RHD=0x7f0b00b7;
+        public static final int RLM=0x7f0b00b8;
+        public static final int RSC=0x7f0b00b9;
+        public static final int SAC=0x7f0b00ba;
+        public static final int SAG=0x7f0b00bb;
+        public static final int SBS=0x7f0b00bc;
+        public static final int SEA=0x7f0b00bd;
+        public static final int SER=0x7f0b00be;
+        public static final int SJG=0x7f0b00bf;
+        public static final int SJH=0x7f0b00c0;
+        public static final int SRH=0x7f0b00c1;
+        public static final int SSB=0x7f0b00c2;
+        public static final int SSW=0x7f0b00c3;
+        public static final int STD=0x7f0b00c4;
+        public static final int SUT=0x7f0b00c5;
+        public static final int SW7=0x7f0b00c7;
+        public static final int SWG=0x7f0b00c6;
+        public static final int SZB=0x7f0b00c8;
+        public static final int TCC=0x7f0b00c9;
+        public static final int TMM=0x7f0b00ca;
+        public static final int TNH=0x7f0b00cb;
+        public static final int TRG=0x7f0b00cc;
+        public static final int TSC=0x7f0b00cd;
+        public static final int TSG=0x7f0b00ce;
+        public static final int TTC=0x7f0b00cf;
+        public static final int UA9=0x7f0b00d0;
+        public static final int UIL=0x7f0b00d1;
+        public static final int UNB=0x7f0b00d2;
+        public static final int UPB=0x7f0b00d3;
+        public static final int UTA=0x7f0b00d4;
+        public static final int UTC=0x7f0b00d5;
+        public static final int UTX=0x7f0b00d6;
+        public static final int WAG=0x7f0b00d7;
+        public static final int WCH=0x7f0b00d8;
+        public static final int WEL=0x7f0b00d9;
+        public static final int WIN=0x7f0b00da;
+        public static final int WMB=0x7f0b00db;
+        public static final int WRW=0x7f0b00dc;
+        public static final int WWH=0x7f0b00dd;
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
          */
         public static final int abc_action_bar_home_description=0x7f0b0001;
@@ -1366,14 +1536,15 @@ containing a value of this type.
         /**  Number picker dialogs 
          */
         public static final int cancel=0x7f0b001d;
+        public static final int choose_building=0x7f0b0037;
         public static final int continue_msg=0x7f0b0022;
-        public static final int current_query=0x7f0b003a;
+        public static final int current_query=0x7f0b003b;
         public static final int find_room_later=0x7f0b001c;
         /**  Main 
          */
         public static final int find_room_now=0x7f0b001b;
-        public static final int get_room=0x7f0b0038;
-        public static final int get_room_enthusiastic=0x7f0b0039;
+        public static final int get_room=0x7f0b0039;
+        public static final int get_room_enthusiastic=0x7f0b003a;
         public static final int hello_world=0x7f0b000f;
         public static final int home=0x7f0b0017;
         /**  Load CSV warning/failure dialogs 
@@ -1387,16 +1558,16 @@ containing a value of this type.
         public static final int need_cxn_msg=0x7f0b0019;
         public static final int new_room=0x7f0b002d;
         public static final int new_room_caps=0x7f0b002e;
-        public static final int no=0x7f0b003c;
+        public static final int no=0x7f0b003d;
         public static final int no_cxn_dinosaur_desc=0x7f0b002b;
         public static final int no_cxn_msg=0x7f0b0028;
         public static final int no_cxn_smartass_msg=0x7f0b0027;
         /**  Find room activity 
          */
         public static final int ok=0x7f0b002c;
-        public static final int power_plugs_question=0x7f0b0037;
+        public static final int power_plugs_question=0x7f0b0038;
         public static final int quit=0x7f0b002a;
-        public static final int quit_question=0x7f0b003d;
+        public static final int quit_question=0x7f0b003e;
         public static final int restart=0x7f0b0023;
         public static final int search_later=0x7f0b0031;
         public static final int search_options=0x7f0b0032;
@@ -1408,7 +1579,7 @@ containing a value of this type.
         public static final int set_start_date=0x7f0b0033;
         public static final int set_start_time=0x7f0b0034;
         public static final int timeout_exceeded_msg=0x7f0b0026;
-        public static final int title_activity_activity_wait_for_cxn=0x7f0b003e;
+        public static final int title_activity_activity_wait_for_cxn=0x7f0b003f;
         public static final int title_activity_exit=0x7f0b0014;
         public static final int title_activity_find_room=0x7f0b0012;
         public static final int title_activity_find_room_later=0x7f0b0013;
@@ -1424,7 +1595,7 @@ containing a value of this type.
         public static final int warning=0x7f0b0021;
         /**  Exit activity 
          */
-        public static final int yes=0x7f0b003b;
+        public static final int yes=0x7f0b003c;
     }
     public static final class style {
         /** 

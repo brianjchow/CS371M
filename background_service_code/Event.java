@@ -239,7 +239,7 @@ public class Event implements Comparable<Event> {
 	
 	public int compareTo(Event other) {
 		int result = ComparisonChain.start()
-				.compare(this.start_date, other.start_date)
+			.compare(this.start_date, other.start_date)
 			.compare(this.event_name, other.event_name)
 			.compare(this.location, other.location)
 			.compare(this.end_date, other.end_date)
