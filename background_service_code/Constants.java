@@ -10,6 +10,10 @@ final class Constants {
 	protected static		RoomList	GDC_ROOMS_NEXT_SEMESTER			=	null;
 	protected static		RoomList	USED_ROOMS_THIS_SEMESTER		=	null;
 	protected static		RoomList	USED_ROOMS_NEXT_SEMESTER		=	null;
+	protected static		BuildingList	BUILDING_CACHELIST_THIS_SEMESTER	=	null;
+	protected static		BuildingList	BUILDING_CACHELIST_NEXT_SEMESTER	=	null;
+	protected static		boolean		DISABLE_SEARCHES_NEXT_SEMESTER	=	false;
+	
 	protected static final	String		COURSE_SCHEDULE_THIS_SEMESTER	=	"course_schedules/master_course_schedule_f14.csv";
 	protected static final	String		COURSE_SCHEDULE_NEXT_SEMESTER	=	"course_schedules/master_course_schedule_s15.csv";
 
@@ -224,6 +228,10 @@ final class Constants {
 	}
 
 	protected static void init() {
+		if (COURSE_SCHEDULE_THIS_SEMESTER == null) {
+			throw new IllegalArgumentException("App needs at least the current course schedule to correctly function.");
+		}
+		
 		if (CSV_FEEDS_MASTER == null) {
 			has_feed_been_read = false;
 			CSV_FEEDS_CLEANED = null;
@@ -237,35 +245,48 @@ final class Constants {
 		
 		CSV_FEEDS_CLEANED = get_events_cleaned();
 		
-		if (COURSE_SCHEDULE_THIS_SEMESTER == null) {
-			USED_ROOMS_THIS_SEMESTER = null;
-		}
-		else {
-			USED_ROOMS_THIS_SEMESTER = new RoomList(COURSE_SCHEDULE_THIS_SEMESTER);
-		}
+		BUILDING_CACHELIST_THIS_SEMESTER = new BuildingList();
+		BUILDING_CACHELIST_THIS_SEMESTER.put_building(GDC, Building.get_instance(GDC, COURSE_SCHEDULE_THIS_SEMESTER));
 		
 		if (COURSE_SCHEDULE_NEXT_SEMESTER == null) {
-			USED_ROOMS_NEXT_SEMESTER = null;
+			DISABLE_SEARCHES_NEXT_SEMESTER = true;
 		}
 		else {
-			USED_ROOMS_NEXT_SEMESTER = new RoomList(COURSE_SCHEDULE_NEXT_SEMESTER);
+			BUILDING_CACHELIST_NEXT_SEMESTER = new BuildingList();
+			BUILDING_CACHELIST_NEXT_SEMESTER.put_building(GDC, Building.get_instance(GDC, COURSE_SCHEDULE_NEXT_SEMESTER));
 		}
 		
-		if (USED_ROOMS_THIS_SEMESTER == null) {
-			GDC_ROOMS_THIS_SEMESTER = new RoomList();
-			GDC_ROOMS_THIS_SEMESTER.initialise_gdc_rooms();
-		}
-		else {
-			GDC_ROOMS_THIS_SEMESTER = USED_ROOMS_THIS_SEMESTER.get_gdc_rooms();
-		}
 		
-		if (USED_ROOMS_NEXT_SEMESTER == null) {
-			GDC_ROOMS_NEXT_SEMESTER = new RoomList();
-			GDC_ROOMS_THIS_SEMESTER.initialise_gdc_rooms();
-		}
-		else {
-			GDC_ROOMS_NEXT_SEMESTER = USED_ROOMS_NEXT_SEMESTER.get_gdc_rooms();
-		}
+		
+//		if (COURSE_SCHEDULE_THIS_SEMESTER == null) {
+//			USED_ROOMS_THIS_SEMESTER = null;
+//		}
+//		else {
+//			USED_ROOMS_THIS_SEMESTER = new RoomList(COURSE_SCHEDULE_THIS_SEMESTER);
+//		}
+//		
+//		if (COURSE_SCHEDULE_NEXT_SEMESTER == null) {
+//			USED_ROOMS_NEXT_SEMESTER = null;
+//		}
+//		else {
+//			USED_ROOMS_NEXT_SEMESTER = new RoomList(COURSE_SCHEDULE_NEXT_SEMESTER);
+//		}
+//		
+//		if (USED_ROOMS_THIS_SEMESTER == null) {
+//			GDC_ROOMS_THIS_SEMESTER = new RoomList();
+//			GDC_ROOMS_THIS_SEMESTER.initialise_gdc_rooms();
+//		}
+//		else {
+//			GDC_ROOMS_THIS_SEMESTER = USED_ROOMS_THIS_SEMESTER.get_gdc_rooms();
+//		}
+//		
+//		if (USED_ROOMS_NEXT_SEMESTER == null) {
+//			GDC_ROOMS_NEXT_SEMESTER = new RoomList();
+//			GDC_ROOMS_THIS_SEMESTER.initialise_gdc_rooms();
+//		}
+//		else {
+//			GDC_ROOMS_NEXT_SEMESTER = USED_ROOMS_NEXT_SEMESTER.get_gdc_rooms();
+//		}
 		
 	}
 	

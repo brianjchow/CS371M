@@ -347,11 +347,27 @@ final class CSVReader {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
-//		Constants.init();
+		Constants.init();
+		
 //		CourseScheduleDatabase.generate("course_schedules/master_course_schedule_f14_raw.csv");
 //		CourseScheduleDatabase.generate("course_schedules/master_course_schedule_s15_raw.csv");
-		CourseScheduleDatabase.read_course_schedule_from_db("master_course_schedule_f14.db");
+//		CourseScheduleDatabase.read_course_schedule_from_db("master_course_schedule_f14.db");
 //		CourseScheduleDatabase.read_course_schedule_from_db("master_course_schedule_s15.db");
+		
+		Stopwatch stopwatch = new Stopwatch();
+		stopwatch.start();
+		for (int i = 0; i < Constants.CAMPUS_BUILDINGS.length; i++) {
+			System.out.println(Building.get_instance(Constants.CAMPUS_BUILDINGS[i], "master_course_schedule_f14.db").toString());
+		}
+		stopwatch.stop();
+		System.out.println("Size of BUILDING_CACHELIST_THIS_SEMESTER: " + Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_size());
+		System.out.println("Took " + stopwatch.time() + " seconds to read from db (average " + (stopwatch.time() / Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_size()) + " seconds ea)");
+		
+//		Building gdc = Building.get_instance(Constants.GDC, "master_course_schedule_f14.db");
+//		System.out.println(gdc.toString());
+//		
+//		Building cal = Building.get_instance("CAL", "master_course_schedule_f14.db");
+//		System.out.println(cal.toString());
 		
 		int current_month = 11;
 		int current_day = 14;
