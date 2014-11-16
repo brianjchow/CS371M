@@ -73,7 +73,7 @@ final class RoomList {
 	
 	protected RoomList() {
 		this.list = new HashMap<Location, Room>(Constants.VALID_GDC_ROOMS.length * 2);
-		initialise();
+//		initialise_gdc_rooms();
 	}
 	
 	protected RoomList(String course_schedule_file_name) {
@@ -82,7 +82,7 @@ final class RoomList {
 		}
 		
 		this.list = new HashMap<Location, Room>(25000);		// F14: 16710 buckets; S15: 15001 buckets		
-		initialise();
+		initialise_gdc_rooms();
 		
 		// https://bitbucket.org/xerial/sqlite-jdbc
 		try {
@@ -95,7 +95,13 @@ final class RoomList {
 			if (WRITE_TO_DB) {
 				statement.executeUpdate("drop table if exists " + db_name);
 				statement.executeUpdate("create table " + db_name + " ("
-						+ "dept string, num string, name string, meeting_days string, start_time INTEGER, end_time INTEGER, building string, room string, capacity INTEGER)");
+						+ "name string, meeting_days string, start_time INTEGER, end_time INTEGER, building string, room string, capacity INTEGER)");
+				
+//				statement.executeUpdate("create table " + db_name + " ("
+//						+ "name string, meeting_days string, start_time INTEGER, end_time INTEGER, location string, capacity INTEGER)");
+				
+//				statement.executeUpdate("create table " + db_name + " ("
+//						+ "dept string, num string, name string, meeting_days string, start_time INTEGER, end_time INTEGER, building string, room string, capacity INTEGER)");
 			}
 		}
 		catch (ClassNotFoundException e) {
@@ -137,7 +143,7 @@ final class RoomList {
 	 * Initialise this RoomList's backing Map. Populate it with
 	 * the rooms available in GDC.
 	 */
-	private void initialise() {
+	protected void initialise_gdc_rooms() {
 		String[] room_types = Constants.VALID_GDC_ROOMS_TYPES;
 		int[] room_capacities = Constants.VALID_GDC_ROOMS_CAPACITIES;
 		boolean[] room_powers = Constants.VALID_GDC_ROOMS_POWERS;
@@ -282,12 +288,28 @@ final class RoomList {
 			int capacity;
 			
 			while (rs.next()) {
-				name = rs.getString("dept") + " " + rs.getString("num") + " - " + rs.getString("name");
+				/* 9-arg rows */
+//				name = rs.getString("dept") + " " + rs.getString("num") + " - " + rs.getString("name");
+//				meeting_days = set_meeting_days(rs.getString("meeting_days"));
+//				start_time = Utilities.get_date(rs.getInt("start_time"));
+//				end_time = Utilities.get_date(rs.getInt("end_time"));
+//				location = new Location(rs.getString("building") + " " + rs.getString("room"));
+//				capacity = rs.getInt("capacity");
+				
+				/* 6-arg rows */
+//				name = rs.getString("name");
+//				meeting_days = set_meeting_days(rs.getString("meeting_days"));
+//				start_time = Utilities.get_date(rs.getInt("start_time"));
+//				end_time = Utilities.get_date(rs.getInt("end_time"));
+//				location = new Location(rs.getString("location"));
+//				capacity = rs.getInt("capacity");
+
+				location = new Location(rs.getString("building") + " " + rs.getString("room"));
+				capacity = rs.getInt("capacity");
+				name = rs.getString("name");
 				meeting_days = set_meeting_days(rs.getString("meeting_days"));
 				start_time = Utilities.get_date(rs.getInt("start_time"));
 				end_time = Utilities.get_date(rs.getInt("end_time"));
-				location = new Location(rs.getString("building") + " " + rs.getString("room"));
-				capacity = rs.getInt("capacity");
 				
 				if (start_time != null && end_time != null) {
 					event = new Event(name, start_time, end_time, location);
@@ -298,7 +320,7 @@ final class RoomList {
 			}
 		}
 		catch (SQLException e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 		
 	}
@@ -453,6 +475,7 @@ final class RoomList {
 
 	}
 	
+	/* name string, meeting_days string, start_time INTEGER, end_time INTEGER, location string, capacity INTEGER */
 	private void insert_into_db(String dept, String num, String name, String meeting_days, int start_time, int end_time, String building, String room, int capacity) {
 		if (db_name == null || connection == null || statement == null) {
 			return;
@@ -460,9 +483,17 @@ final class RoomList {
 		
 		try {
 			String to_insert;
+			
+			/* 9-arg rows */
 //			to_insert = String.format("INSERT INTO %s VALUES(%s, %s, %s, %s, %s, %d, %d, %s, %s, %d)", db_name, dept, num, name, meeting_days, start_time, end_time, building, room, capacity);
-			to_insert = "'" + dept + "', '" + num + "', '" + name + "', '" + meeting_days + "', " + start_time + ", " + end_time + ", '" + building + "', '" + room + "', " + capacity;
+//			to_insert = "'" + dept + "', '" + num + "', '" + name + "', '" + meeting_days + "', " + start_time + ", " + end_time + ", '" + building + "', '" + room + "', " + capacity;
 //			System.out.println(to_insert);
+			
+			/* 6-arg rows */
+//			to_insert = "'" + dept + " " + num + " - " + name + "', '" + meeting_days + "', " + start_time + ", " + end_time + ", '" + building + " " + room + "', " + capacity;
+			
+			to_insert = "'" + dept + " " + num + " - " + name + "', '" + meeting_days + "', " + start_time + ", " + end_time + ", '" + building + "', '" + room + "', " + capacity;
+			
 			statement.executeUpdate("INSERT INTO " + db_name + " VALUES(" + to_insert + ")");
 		}
 		catch (SQLException e) {
@@ -617,7 +648,46 @@ final class RoomList {
 		
 		return total;
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+		else if (!(other instanceof RoomList)) {
+			return false;
+		}
+		
+		RoomList other_list = (RoomList) other;
+		if (this.get_size() != other_list.get_size()) {
+			return false;
+		}
+		
+		Location curr_loc;
+		Room curr_room, other_list_room;
+		for (Map.Entry<Location, Room> entry : this.list.entrySet()) {
+			curr_loc = entry.getKey();
+			curr_room = entry.getValue();
 			
+			if ((other_list_room = other_list.list.get(curr_loc)) != null) {
+				if (!curr_room.equals(other_list_room)) {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	/*
+	 * TODO
+	 * 
+	 * OVERRIDE HASHCODE HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 */
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

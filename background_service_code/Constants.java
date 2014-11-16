@@ -253,6 +253,7 @@ final class Constants {
 		
 		if (USED_ROOMS_THIS_SEMESTER == null) {
 			GDC_ROOMS_THIS_SEMESTER = new RoomList();
+			GDC_ROOMS_THIS_SEMESTER.initialise_gdc_rooms();
 		}
 		else {
 			GDC_ROOMS_THIS_SEMESTER = USED_ROOMS_THIS_SEMESTER.get_gdc_rooms();
@@ -260,6 +261,7 @@ final class Constants {
 		
 		if (USED_ROOMS_NEXT_SEMESTER == null) {
 			GDC_ROOMS_NEXT_SEMESTER = new RoomList();
+			GDC_ROOMS_THIS_SEMESTER.initialise_gdc_rooms();
 		}
 		else {
 			GDC_ROOMS_NEXT_SEMESTER = USED_ROOMS_NEXT_SEMESTER.get_gdc_rooms();

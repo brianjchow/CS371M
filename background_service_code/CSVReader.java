@@ -347,7 +347,11 @@ final class CSVReader {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
-		Constants.init();
+//		Constants.init();
+//		CourseScheduleDatabase.generate("course_schedules/master_course_schedule_f14_raw.csv");
+//		CourseScheduleDatabase.generate("course_schedules/master_course_schedule_s15_raw.csv");
+		CourseScheduleDatabase.read_course_schedule_from_db("master_course_schedule_f14.db");
+//		CourseScheduleDatabase.read_course_schedule_from_db("master_course_schedule_s15.db");
 		
 		int current_month = 11;
 		int current_day = 14;
@@ -372,11 +376,11 @@ final class CSVReader {
 		
 //		System.out.println(Constants.USED_ROOMS_THIS_SEMESTER.toString());
 		
-		RoomList gdc_rooms = Constants.USED_ROOMS_THIS_SEMESTER.get_gdc_rooms();
-		System.out.println(gdc_rooms.toString());
+//		RoomList gdc_rooms = Constants.USED_ROOMS_THIS_SEMESTER.get_gdc_rooms();
+//		System.out.println(gdc_rooms.toString());
 		
-		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.USED_ROOMS_THIS_SEMESTER.get_size());
-		System.out.println("Total number events in RoomList: " + Constants.USED_ROOMS_THIS_SEMESTER.get_num_events_all_rooms() + "\n");
+//		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.USED_ROOMS_THIS_SEMESTER.get_size());
+//		System.out.println("Total number events in RoomList: " + Constants.USED_ROOMS_THIS_SEMESTER.get_num_events_all_rooms() + "\n");
 		
 //		for (int i = 0; i < Constants.CAMPUS_BUILDINGS.length; i++) {
 ////			System.out.printf("<string name = \"%s\">%s</string>\n", Constants.CAMPUS_BUILDINGS[i], Constants.CAMPUS_BUILDINGS[i]);
