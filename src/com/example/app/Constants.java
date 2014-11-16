@@ -1,13 +1,12 @@
 package com.example.app;
 
-import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import android.content.Context;
 import android.util.Log;
-
-import com.example.uis.R;
 
 final class Constants {
 	
@@ -237,6 +236,10 @@ final class Constants {
 	}
 	
 	protected static void init(Context context) {
+		init(context, DEBUG);
+	}
+	
+	protected static void init(Context context, boolean read_from_local_feeds) {
 		if (context == null) {
 			throw new IllegalArgumentException();
 		}
@@ -246,8 +249,7 @@ final class Constants {
 			CSV_FEEDS_CLEANED = null;
 		}
 		
-		CSV_FEEDS_MASTER = CSVReader.read_csv(context);
-		
+		CSV_FEEDS_MASTER = CSVReader.read_csv(context, read_from_local_feeds);		
 		if (CSV_FEEDS_MASTER == null) {
 			throw new IllegalStateException("Unknown error occurred while reading CSV feeds.");
 		}
@@ -299,69 +301,16 @@ final class Constants {
 		else {
 			GDC_ROOMS_NEXT_SEMESTER = USED_ROOMS_NEXT_SEMESTER.get_gdc_rooms();
 		}
-	
-	}
-	
-	protected static void init(Context context, boolean read_from_local_feeds) {
-		if (context == null) {
-			throw new IllegalArgumentException();
-		}
-
-		if (CSV_FEEDS_MASTER == null) {
-			has_feed_been_read = false;
-			CSV_FEEDS_CLEANED = null;
-		}
 		
-		CSV_FEEDS_MASTER = CSVReader.read_csv(context, read_from_local_feeds);		
-		if (CSV_FEEDS_MASTER == null) {
-			throw new IllegalStateException("Unknown error occurred while reading CSV feeds.");
-		}
-		
-		CSV_FEEDS_CLEANED = get_events_cleaned();
-		
-		if (COURSE_SCHEDULE_THIS_SEMESTER == null) {
-			USED_ROOMS_THIS_SEMESTER = null;
-		}
-		else {
-			USED_ROOMS_THIS_SEMESTER = new RoomList(context, COURSE_SCHEDULE_THIS_SEMESTER);
-			
-//			int res_id = getResId(COURSE_SCHEDULE_THIS_SEMESTER, R.raw.class);
-//			if (res_id != -1) {
-//				USED_ROOMS_THIS_SEMESTER = new RoomList(context, res_id);
-//			}
-//			else {
-//				USED_ROOMS_THIS_SEMESTER = null;
-//			}
-		}
-		
-		if (COURSE_SCHEDULE_NEXT_SEMESTER == null) {
-			USED_ROOMS_NEXT_SEMESTER = null;
-		}
-		else {
-			USED_ROOMS_THIS_SEMESTER = new RoomList(context, COURSE_SCHEDULE_NEXT_SEMESTER);
-			
-//			int res_id = getResId(COURSE_SCHEDULE_NEXT_SEMESTER, R.raw.class);
-//			if (res_id != -1) {
-//				USED_ROOMS_THIS_SEMESTER = new RoomList(context, res_id);
-//			}
-//			else {
-//				USED_ROOMS_THIS_SEMESTER = null;
-//			}
-		}
-		
-		if (USED_ROOMS_THIS_SEMESTER == null) {
-			GDC_ROOMS_THIS_SEMESTER = new RoomList();
-		}
-		else {
-			GDC_ROOMS_THIS_SEMESTER = USED_ROOMS_THIS_SEMESTER.get_gdc_rooms();
-		}
-		
-		if (USED_ROOMS_NEXT_SEMESTER == null) {
-			GDC_ROOMS_NEXT_SEMESTER = new RoomList();
-		}
-		else {
-			GDC_ROOMS_NEXT_SEMESTER = USED_ROOMS_NEXT_SEMESTER.get_gdc_rooms();
-		}
+//		Stopwatch stopwatch = new Stopwatch();
+//		stopwatch.start();
+//		CourseScheduleDatabase csd = new CourseScheduleDatabase(context, "master_course_schedule_f14.db");
+//		RoomList all_courses = csd.get_roomlist();
+////		List<ArrayList<String>> all_courses = csd.get_all_courses();
+//		stopwatch.stop();
+//		
+////		Log.d(TAG, all_courses.toString());
+//		Log.d(TAG, "Took " + stopwatch.time() + " seconds to read from db file");
 	
 	}
 
