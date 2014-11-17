@@ -9,6 +9,15 @@ import java.util.regex.PatternSyntaxException;
 
 public class Utilities {
 	
+	protected static int get_hashmap_size(int size) {
+		if (size < 0) {
+			throw new IllegalArgumentException();
+		}
+		
+		int out = (int) Math.ceil((double) size / Constants.DEFAULT_HASHMAP_LOAD_FACTOR);
+		return out;
+	}
+	
 	protected static boolean date_is_in_range(Date what, Date start, Date end) {
 		if (what == null || start == null || end == null) {
 			throw new IllegalArgumentException("Null argument.");

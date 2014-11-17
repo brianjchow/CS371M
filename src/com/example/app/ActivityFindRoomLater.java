@@ -48,13 +48,16 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			Query temp = (Query) savedInstanceState.getParcelable("this_query");
 			if (temp != null) {
 				this_query = temp;
+				this_query.set_context(ActivityFindRoomLater.this);
 			}
 			else {
-				this_query = new Query();
+//				this_query = new Query(getApplicationContext());
+				this_query = new Query(ActivityFindRoomLater.this);
 			}
 		}
 		else {
-			this_query = new Query();		
+//			this_query = new Query(getApplicationContext());
+			this_query = new Query(ActivityFindRoomLater.this);
 			
 			Bundle bundle = getIntent().getExtras();
 			if (bundle != null) {
@@ -62,6 +65,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				if (query != null) {
 					Log.d(TAG, "Using transmitted parcelable: " + query.toString());
 					this_query = query;
+//					this_query.set_context(getApplicationContext());
+					this_query.set_context(ActivityFindRoomLater.this);
 				}
 			}
 		}

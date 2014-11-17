@@ -1,5 +1,6 @@
 package com.example.app;
 
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,7 +12,21 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class Utilities {
-	
+
+	// http://stackoverflow.com/questions/4427608/android-getting-resource-id-from-string
+	protected static int getResId(String var_name, Class<?> c) {
+		int id = -1;
+		try {
+			Field id_field = c.getDeclaredField(var_name);
+			id = id_field.getInt(id_field);
+		}
+		catch (Exception e) {
+			id = -1;
+		}
+		
+		return id;
+	}
+
 	protected static boolean date_is_in_range(Date what, Date start, Date end) {
 		if (what == null || start == null || end == null) {
 			throw new IllegalArgumentException("Null argument.");

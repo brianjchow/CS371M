@@ -39,9 +39,11 @@ public class ActivityRoomRec extends ActionBarActivity {
 			Query temp = (Query) savedInstanceState.getParcelable("this_query");
 			if (temp != null) {
 				this_query = temp;
+				this_query.set_context(ActivityRoomRec.this);
 			}
 			else {
-				this_query = new Query();
+//				this_query = new Query(getApplicationContext());
+				this_query = new Query(ActivityRoomRec.this);
 			}
 			
 			curr_recommendation = savedInstanceState.getString("curr_recommendation", Constants.NO_ROOMS_AVAIL_MSG);
@@ -59,7 +61,8 @@ public class ActivityRoomRec extends ActionBarActivity {
 			update_query_textview(this_query);
 		}
 		else {
-			this_query = new Query();		
+//			this_query = new Query(getApplicationContext());
+			this_query = new Query(ActivityRoomRec.this);		
 			
 			Bundle bundle = getIntent().getExtras();
 			if (bundle != null) {
@@ -67,6 +70,8 @@ public class ActivityRoomRec extends ActionBarActivity {
 				if (query != null) {
 					Log.d(TAG, "Using transmitted parcelable: " + query.toString());
 					this_query = query;
+//					this_query.set_context(getApplicationContext());
+					this_query.set_context(ActivityRoomRec.this);
 				}
 			}
 		}
@@ -108,6 +113,9 @@ public class ActivityRoomRec extends ActionBarActivity {
 	}
 	
 	private void search(Query query) {
+		Log.d(TAG, "Size of CSV_FEEDS_MASTER: " + Constants.CSV_FEEDS_MASTER.get_size());
+		Log.d(TAG, "Size of CSV_FEEDS_CLEANED: " + Constants.CSV_FEEDS_CLEANED.get_size());
+		
 		curr_recommendation = query.search();
 		setTextViewInfo(curr_recommendation);
 		

@@ -16,10 +16,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
-import com.example.uis.R;
-
 import android.content.Context;
 import android.util.Log;
+
+import com.example.uis.R;
 
 /**
  * @author Fatass
@@ -115,13 +115,14 @@ final class CSVReader {
 	 * @return An EventList of events parsed from a CSV feed(s).
 	 */
 	protected static EventList read_csv(Context context, boolean read_from_local_feeds) {
-		if (Constants.CSV_FEEDS_MASTER != null) {
-			return Constants.CSV_FEEDS_MASTER.clone();
-		}
-//		if (Constants.get_has_feed_been_read()) {
+//		if (Constants.CSV_FEEDS_MASTER != null) {
 //			return Constants.CSV_FEEDS_MASTER.clone();
 //		}
-//		Constants.set_has_feed_been_read();
+		
+		if (Constants.get_has_feed_been_read()) {
+			return Constants.CSV_FEEDS_MASTER.clone();
+		}
+		Constants.set_has_feed_been_read();
 		
 		CSVReader reader = new CSVReader();
 		List<HashMap<String, String>> event_strings;
@@ -173,6 +174,7 @@ final class CSVReader {
 		
 		time_to_read = stopwatch.time();
 		Log.d(TAG, "Took " + time_to_read + " seconds to read " + lines_read + " lines");
+		Log.d(TAG, "Num events supposed to be in CSV_FEEDS_MASTER: " + events.get_size());
 //		Toast.makeText(context, "Took " + stopwatch.time() + " seconds to read " + lines_read + " lines", Toast.LENGTH_SHORT).show();	// DO NOT TOAST HERE; WILL CAUSE EXCEPTION (can't update UI thread here)
 		
 		return events;		
@@ -207,9 +209,17 @@ final class CSVReader {
 			
 			// end of line reached in file; parse this event
 			else {
+//Log.d(TAG, curr_line.toString());
+				
+				if (curr_line.toString().equals("Location") || curr_line.toString().equals("Title")) {
+					curr_line.setLength(0);
+					continue;
+				}
+				
 				lines_read++;
 				result = split_line(curr_line);
 				if (result != null) {
+//Log.d(TAG, result.toString());
 					schedules.add(result);
 				}
 				curr_line.setLength(0);
@@ -397,32 +407,49 @@ final class CSVReader {
 				temp_to_str = regex_replace(temp_to_str, "(CST|CDT|registrar?( - )*|room?(: )*)?[():,]*", "");
 
 				if (temp_to_str.length() > 0) {
-					
+										
 					// location encountered
-					if (containsIgnoreCase(temp_to_str, "GDC") ||
+					if (containsIgnoreCase(temp_to_str, Constants.GDC) ||
 						is_campus_building_str(temp_to_str)) {
+						Log.d(TAG, "location " + temp_to_str + " " + temp_to_str.length());
 //						tuple.put(Constants.LOCATION, temp_to_str);
-						tuple.put("location", temp_to_str);
+						tuple.put(Constants.LOCATION, temp_to_str);
 					}
 					
 					// event time and date encountered
 					else if (is_date_string(temp_to_str)) {
-						if (containsIgnoreCase(temp_to_str, "all day")) {
-							temp_to_str = regex_replace(temp_to_str, "(" + "all day" + ")", "0001");
+						if (temp_to_str.toString().equals("Location") || temp_to_str.toString().equals("Title")) {
+							return null;
+						}
+//						for (int j = 0; j < temp_to_str.length(); j++) {
+//							if (Character.isDigit(temp_to_str.charAt(j))) {
+//								String curr_event_name;
+//								if ((curr_event_name = tuple.get(Constants.EVENT_NAME)) != null) {
+//									temp_to_str = new StringBuilder().append(temp_to_str).append(curr_event_name).toString();
+//								}
+//								tuple.put(Constants.EVENT_NAME, temp_to_str);
+//								continue;
+//							}
+//						}
+						
+						Log.d(TAG, "date string |" + temp_to_str + "| " + temp_to_str.length());
+						if (containsIgnoreCase(temp_to_str, Constants.ALL_DAY)) {
+							temp_to_str = regex_replace(temp_to_str, "(" + Constants.ALL_DAY + ")", "0001");
 							String copy = temp_to_str;
 							copy = regex_replace(copy, "0001", "2359");
-							tuple.put("end_date", copy);
+							tuple.put(Constants.END_DATE, copy);
 						}
-						tuple.put("start_date", temp_to_str);
+						tuple.put(Constants.START_DATE, temp_to_str);
 					}
 					
 					// event name encountered
 					else {
+						Log.d(TAG, "event name " + temp_to_str + " " + temp_to_str.length());
 						String curr_event_name;
-						if ((curr_event_name = tuple.get("event_name")) != null) {
+						if ((curr_event_name = tuple.get(Constants.EVENT_NAME)) != null) {
 							temp_to_str = new StringBuilder().append(temp_to_str).append(curr_event_name).toString();
 						}
-						tuple.put("event_name", temp_to_str);
+						tuple.put(Constants.EVENT_NAME, temp_to_str);
 					}
 				}
 			}
@@ -453,11 +480,13 @@ final class CSVReader {
 		}
 		
 		// set default location of this event if none specified
-		if (tuple.get("location") == null) {
-//			tuple.put(Constants.LOCATION, Constants.GDC + Constants.DEFAULT_GDC_LOCATION);
-			tuple.put("location", "GDC Gateshenge");
+		if (tuple.get(Constants.LOCATION) == null) {
+			tuple.put(Constants.LOCATION, Constants.GDC + " " + Constants.DEFAULT_GDC_LOCATION);
+//			tuple.put("location", "GDC Gateshenge");
 		}
 
+//		Log.d(TAG, tuple.toString());
+		
 		return tuple;
 	}
 

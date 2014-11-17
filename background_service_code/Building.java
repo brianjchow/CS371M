@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -20,6 +19,10 @@ final class Building implements Comparable<Building> {
 		if (name == null) {
 			throw new IllegalArgumentException();
 		}
+		else if (name.length() != Constants.BUILDING_CODE_LENGTH) {
+			throw new IllegalArgumentException("Building codes must be exactly 3 characters in length.");
+		}
+		
 		
 		this.name = name;
 		this.rooms = new HashMap<String, Room>();
@@ -45,7 +48,7 @@ final class Building implements Comparable<Building> {
 //	}
 	
 	protected static final Building get_instance(String building_name, String db_file_name) {
-		if (building_name == null || building_name.length() != 3 || db_file_name == null || db_file_name.length() <= 0) {
+		if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH || db_file_name == null || db_file_name.length() <= 0) {
 			throw new IllegalArgumentException();
 		}
 		
@@ -73,9 +76,19 @@ final class Building implements Comparable<Building> {
 		return out;
 	}
 	
-	protected final Iterator<Map.Entry<String, Room>> get_iterator() {
-		return (this.rooms.entrySet().iterator());
+	protected final SortedSet<String> get_keyset() {
+		SortedSet<String> out = new TreeSet<String>();
+		
+		for (String room_num : this.rooms.keySet()) {
+			out.add(room_num);
+		}
+		
+		return out;
 	}
+	
+//	protected final Iterator<Map.Entry<String, Room>> get_iterator() {
+//		return (this.rooms.entrySet().iterator());
+//	}
 	
 	protected String get_name() {
 		return this.name;
@@ -162,8 +175,7 @@ final class Building implements Comparable<Building> {
 		
 		return (out.toString());
 	}
-	
-	
+		
 	private static class Database {
 		
 //		private static final String		BUILDING		=	"building";
@@ -180,7 +192,7 @@ final class Building implements Comparable<Building> {
 		
 		// http://zetcode.com/db/sqlite/select/
 		protected static Map<String, Room> populate(String building_name, String db_file_name) {
-			if (building_name == null || building_name.length() <= 0 || db_file_name == null || db_file_name.length() <= 0) {
+			if (building_name == null || building_name.length() != 3 || db_file_name == null || db_file_name.length() <= 0) {
 				throw new IllegalArgumentException();
 			}
 			
@@ -201,7 +213,9 @@ final class Building implements Comparable<Building> {
 			try {
 				ResultSet rs = statement.executeQuery("SELECT * FROM " + db_name + " WHERE building=\"" + building_name.toUpperCase() + "\"");
 				
-				if (building_name.equalsIgnoreCase(Constants.GDC)) {
+				boolean building_is_gdc = building_name.equalsIgnoreCase(Constants.GDC);
+				
+				if (building_is_gdc) {
 					out = initialise_gdc_room_properties();
 				}
 				
@@ -218,6 +232,10 @@ final class Building implements Comparable<Building> {
 						event = new Event(name, start_time, end_time, location);
 						
 						if ((room = out.get(room_num)) == null) {
+							if (building_is_gdc) {
+								continue;
+							}
+							
 							if (capacity > 0) {
 								room = new Room(location, Constants.DEFAULT_ROOM_TYPE, capacity, false);
 							}
@@ -262,7 +280,7 @@ final class Building implements Comparable<Building> {
 			// https://bitbucket.org/xerial/sqlite-jdbc
 			try {
 				Class.forName("org.sqlite.JDBC");
-				connection = DriverManager.getConnection("jdbc:sqlite:" + db_name + ".db");
+				connection = DriverManager.getConnection("jdbc:sqlite:" + db_name + "." + Constants.DEFAULT_DB_EXTENSION);
 				statement = connection.createStatement();
 			}
 			catch (ClassNotFoundException e) {
@@ -295,6 +313,11 @@ final class Building implements Comparable<Building> {
 			String gdc_str = Constants.GDC + " ";
 			Room room;
 			for (int i = 0; i < Constants.VALID_GDC_ROOMS.length; i++) {
+				if ((Constants.IGNORE_CONFERENCE_ROOMS && room_types[i].equals(Constants.CONFERENCE)) ||
+						room_types[i].equals(Constants.LOBBY) ||
+						room_types[i].equals(Constants.LOUNGE)) {
+					continue;
+				}
 				room = new Room(new Location(gdc_str + Constants.VALID_GDC_ROOMS[i]), room_types[i], room_capacities[i], room_powers[i]);
 				out.put(Constants.VALID_GDC_ROOMS[i], room);
 			}
@@ -346,7 +369,7 @@ final class Building implements Comparable<Building> {
 			String out = file_name;
 			
 			int subfolder_index = file_name.lastIndexOf("/");
-			int file_ext_dot_index = file_name.indexOf(".");
+			int file_ext_dot_index = file_name.lastIndexOf(".");
 			if (file_ext_dot_index >= 0 && file_ext_dot_index < file_name.length()) {
 				if (subfolder_index == -1) {
 					out = file_name.substring(0, file_ext_dot_index);

@@ -87,7 +87,7 @@ public class EventList {
 			
 			// set dummy location if not specified in feed
 			if ((location = curr_event.get(Constants.LOCATION)) == null) {
-				location = Constants.GDC + Constants.DEFAULT_GDC_LOCATION;
+				location = Constants.GDC + " " +  Constants.DEFAULT_GDC_LOCATION;
 			}
 			
 			// set default duration of Event as 90 minutes if none specified

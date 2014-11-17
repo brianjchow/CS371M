@@ -1,9 +1,7 @@
 package com.example.app;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
 import android.content.Context;
 import android.util.Log;
@@ -16,14 +14,23 @@ final class Constants {
 	protected static		EventList	CSV_FEEDS_CLEANED				=	null;
 	private static 			boolean 	has_feed_been_read;
 
-	protected static	 	RoomList 	GDC_ROOMS_THIS_SEMESTER			=	null;
-	protected static		RoomList	GDC_ROOMS_NEXT_SEMESTER			=	null;
-	protected static		RoomList	USED_ROOMS_THIS_SEMESTER		=	null;
-	protected static		RoomList	USED_ROOMS_NEXT_SEMESTER		=	null;
+//	protected static	 	RoomList 	GDC_ROOMS_THIS_SEMESTER			=	null;
+//	protected static		RoomList	GDC_ROOMS_NEXT_SEMESTER			=	null;
+//	protected static		RoomList	USED_ROOMS_THIS_SEMESTER		=	null;
+//	protected static		RoomList	USED_ROOMS_NEXT_SEMESTER		=	null;
 //	protected static final	int			COURSE_SCHEDULE_THIS_SEMESTER	=	R.raw.master_course_schedule_f14;
 //	protected static final	int			COURSE_SCHEDULE_NEXT_SEMESTER	=	R.raw.master_course_schedule_s15;
-	protected static final	String		COURSE_SCHEDULE_THIS_SEMESTER	=	null; // "master_course_schedule_f14";
-	protected static final	String		COURSE_SCHEDULE_NEXT_SEMESTER	=	null; // "master_course_schedule_s15";
+	protected static		BuildingList	BUILDING_CACHELIST_THIS_SEMESTER	=	null;
+	protected static		BuildingList	BUILDING_CACHELIST_NEXT_SEMESTER	=	null;
+	protected static		boolean		DISABLE_SEARCHES_NEXT_SEMESTER	=	false;
+	
+	protected static final	boolean		IGNORE_CONFERENCE_ROOMS			=	true;
+	
+	protected static final	String		COURSE_SCHEDULE_THIS_SEMESTER	=	"master_course_schedule_f14";
+	protected static final	String		COURSE_SCHEDULE_NEXT_SEMESTER	=	"master_course_schedule_s15";
+	protected static final	String		DEFAULT_DB_EXTENSION			=	"db";
+
+	protected static final	int			BUILDING_CODE_LENGTH			=	3;
 
 	protected static final	int			SPRING_START_MONTH				=	1;
 	protected static final	int			SPRING_START_DAY				=	10;
@@ -126,6 +133,8 @@ final class Constants {
 	protected static final	String		LOBBY;
 	protected static final	String		LOUNGE;
 	protected static final	String		SEMINAR;
+	
+	protected static final	double		DEFAULT_HASHMAP_LOAD_FACTOR		=	0.7;
 	
 	static {
 		
@@ -241,7 +250,10 @@ final class Constants {
 	
 	protected static void init(Context context, boolean read_from_local_feeds) {
 		if (context == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Context argument cannot be null.");
+		}
+		else if (COURSE_SCHEDULE_THIS_SEMESTER == null) {
+			throw new IllegalArgumentException("App needs at least the current course schedule to correctly function.");
 		}
 
 		if (CSV_FEEDS_MASTER == null) {
@@ -251,56 +263,80 @@ final class Constants {
 		
 		CSV_FEEDS_MASTER = CSVReader.read_csv(context, read_from_local_feeds);		
 		if (CSV_FEEDS_MASTER == null) {
-			throw new IllegalStateException("Unknown error occurred while reading CSV feeds.");
+			throw new IllegalStateException("Unknown error occurred while reading CSV feeds; CSV_FEEDS_MASTER is null");
 		}
 		
 		CSV_FEEDS_CLEANED = get_events_cleaned();
 		
 		Log.d(TAG, "Now finished reading CSV feeds");
+		Log.d(TAG, "Size of CSV_FEEDS_MASTER: " + CSV_FEEDS_MASTER.get_size());
+		Log.d(TAG, "Size of CSV_FEEDS_CLEANED: " + CSV_FEEDS_CLEANED.get_size());
 		
-		if (COURSE_SCHEDULE_THIS_SEMESTER == null) {
-			USED_ROOMS_THIS_SEMESTER = null;
-		}
-		else {
-			USED_ROOMS_THIS_SEMESTER = new RoomList(context, COURSE_SCHEDULE_THIS_SEMESTER);
-			
-//			int res_id = getResId(COURSE_SCHEDULE_THIS_SEMESTER, R.raw.class);
-//			if (res_id != -1) {
-//				USED_ROOMS_THIS_SEMESTER = new RoomList(context, res_id);
-//			}
-//			else {
-//				USED_ROOMS_THIS_SEMESTER = null;
-//			}
+		Stopwatch stopwatch = new Stopwatch();
+		stopwatch.start();
+		
+		Log.d(TAG, "Now creating initial BuildingLists");
+		BUILDING_CACHELIST_THIS_SEMESTER = new BuildingList();
+		BUILDING_CACHELIST_THIS_SEMESTER.put_building(GDC, Building.get_instance(context, GDC, COURSE_SCHEDULE_THIS_SEMESTER));
+		
+		stopwatch.stop();
+		Log.d(TAG, "Took " + stopwatch.time() + " seconds to read GDC course schedules");
+		
+		if (DEBUG) {
+			Log.d(TAG, "Num rooms in GDC list: " + BUILDING_CACHELIST_THIS_SEMESTER.get_building(GDC).get_num_rooms());
 		}
 		
 		if (COURSE_SCHEDULE_NEXT_SEMESTER == null) {
-			USED_ROOMS_NEXT_SEMESTER = null;
+			DISABLE_SEARCHES_NEXT_SEMESTER = true;
 		}
 		else {
-			USED_ROOMS_THIS_SEMESTER = new RoomList(context, COURSE_SCHEDULE_NEXT_SEMESTER);
-			
-//			int res_id = getResId(COURSE_SCHEDULE_NEXT_SEMESTER, R.raw.class);
-//			if (res_id != -1) {
-//				USED_ROOMS_THIS_SEMESTER = new RoomList(context, res_id);
-//			}
-//			else {
-//				USED_ROOMS_THIS_SEMESTER = null;
-//			}
+			BUILDING_CACHELIST_NEXT_SEMESTER = new BuildingList();
+			BUILDING_CACHELIST_NEXT_SEMESTER.put_building(GDC, Building.get_instance(context, GDC, COURSE_SCHEDULE_NEXT_SEMESTER));
 		}
 		
-		if (USED_ROOMS_THIS_SEMESTER == null) {
-			GDC_ROOMS_THIS_SEMESTER = new RoomList();
-		}
-		else {
-			GDC_ROOMS_THIS_SEMESTER = USED_ROOMS_THIS_SEMESTER.get_gdc_rooms();
-		}
-		
-		if (USED_ROOMS_NEXT_SEMESTER == null) {
-			GDC_ROOMS_NEXT_SEMESTER = new RoomList();
-		}
-		else {
-			GDC_ROOMS_NEXT_SEMESTER = USED_ROOMS_NEXT_SEMESTER.get_gdc_rooms();
-		}
+//		if (COURSE_SCHEDULE_THIS_SEMESTER == null) {
+//			USED_ROOMS_THIS_SEMESTER = null;
+//		}
+//		else {
+//			USED_ROOMS_THIS_SEMESTER = new RoomList(context, COURSE_SCHEDULE_THIS_SEMESTER);
+//			
+////			int res_id = getResId(COURSE_SCHEDULE_THIS_SEMESTER, R.raw.class);
+////			if (res_id != -1) {
+////				USED_ROOMS_THIS_SEMESTER = new RoomList(context, res_id);
+////			}
+////			else {
+////				USED_ROOMS_THIS_SEMESTER = null;
+////			}
+//		}
+//		
+//		if (COURSE_SCHEDULE_NEXT_SEMESTER == null) {
+//			USED_ROOMS_NEXT_SEMESTER = null;
+//		}
+//		else {
+//			USED_ROOMS_THIS_SEMESTER = new RoomList(context, COURSE_SCHEDULE_NEXT_SEMESTER);
+//			
+////			int res_id = getResId(COURSE_SCHEDULE_NEXT_SEMESTER, R.raw.class);
+////			if (res_id != -1) {
+////				USED_ROOMS_THIS_SEMESTER = new RoomList(context, res_id);
+////			}
+////			else {
+////				USED_ROOMS_THIS_SEMESTER = null;
+////			}
+//		}
+//		
+//		if (USED_ROOMS_THIS_SEMESTER == null) {
+//			GDC_ROOMS_THIS_SEMESTER = new RoomList();
+//		}
+//		else {
+//			GDC_ROOMS_THIS_SEMESTER = USED_ROOMS_THIS_SEMESTER.get_gdc_rooms();
+//		}
+//		
+//		if (USED_ROOMS_NEXT_SEMESTER == null) {
+//			GDC_ROOMS_NEXT_SEMESTER = new RoomList();
+//		}
+//		else {
+//			GDC_ROOMS_NEXT_SEMESTER = USED_ROOMS_NEXT_SEMESTER.get_gdc_rooms();
+//		}
 		
 //		Stopwatch stopwatch = new Stopwatch();
 //		stopwatch.start();
@@ -342,7 +378,7 @@ final class Constants {
 	 */
 	private static final EventList get_events_cleaned() {
 		if (CSV_FEEDS_MASTER == null) {
-			throw new IllegalStateException();
+			throw new IllegalStateException("ERROR: CSV_FEEDS_MASTER is null, Constants.get_events_cleaned()");
 		}
 //		final String[] ignore_rooms = { "1.210", "2.100", "3.100", "4.100", "4.202", "4.314", "5.100", "6.100", "6.302" };
 		EventList out = new EventList();
@@ -540,7 +576,7 @@ final class Constants {
 	private static final boolean[] initialise_valid_gdc_rooms_powers() {
 		final boolean[] VALID_GDC_ROOMS_POWERS = {
 				false, false,
-				false, false, false, false, false, false, true, false, false,
+				false, false, false, true, true, true, true, false, false,
 				false, false, false, false,
 				false, false, false, false, false, false, false, false,
 				false, false, false, false, false, false,

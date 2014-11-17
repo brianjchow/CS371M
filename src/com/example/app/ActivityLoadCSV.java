@@ -61,20 +61,21 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		}
 
 		final ReadFeedTask read_csv = new ReadFeedTask();
-		read_csv.execute(this);
-//		read_csv.cancel(true);
+		read_csv.execute(getApplicationContext());
 		
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			
-			@Override
-			public void run() {
-				if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
-					read_csv.cancel(true);
+		if (!Constants.DEBUG) {
+			Handler handler = new Handler();
+			handler.postDelayed(new Runnable() {
+				
+				@Override
+				public void run() {
+					if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
+						read_csv.cancel(true);
+					}
 				}
-			}
-			
-		}, TIMEOUT_AFTER);
+				
+			}, TIMEOUT_AFTER);
+		}
 		
 	}
 	

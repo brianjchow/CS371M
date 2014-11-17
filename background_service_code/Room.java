@@ -46,13 +46,13 @@ final class Room implements Comparable<Room> {
 		
 		// loopify?
 		this.course_schedule = new HashMap<Integer, Set<Event>>();
-		this.course_schedule.put(Constants.SUNDAY, new HashSet<Event>());
-		this.course_schedule.put(Constants.MONDAY, new HashSet<Event>());
-		this.course_schedule.put(Constants.TUESDAY, new HashSet<Event>());
-		this.course_schedule.put(Constants.WEDNESDAY, new HashSet<Event>());
-		this.course_schedule.put(Constants.THURSDAY, new HashSet<Event>());
-		this.course_schedule.put(Constants.FRIDAY, new HashSet<Event>());
-		this.course_schedule.put(Constants.SATURDAY, new HashSet<Event>());
+		this.course_schedule.put(Constants.SUNDAY, new TreeSet<Event>());
+		this.course_schedule.put(Constants.MONDAY, new TreeSet<Event>());
+		this.course_schedule.put(Constants.TUESDAY, new TreeSet<Event>());
+		this.course_schedule.put(Constants.WEDNESDAY, new TreeSet<Event>());
+		this.course_schedule.put(Constants.THURSDAY, new TreeSet<Event>());
+		this.course_schedule.put(Constants.FRIDAY, new TreeSet<Event>());
+		this.course_schedule.put(Constants.SATURDAY, new TreeSet<Event>());
 	}
 
 	// use the Constants provided for the day; will fail otherwise
@@ -73,7 +73,8 @@ final class Room implements Comparable<Room> {
 	
 	protected final Set<Event> get_events(int day_of_week) {
 		if (!Utilities.valid_day_of_week(day_of_week)) {
-			return null;
+//			return null;
+			throw new IllegalArgumentException();
 		}
 		return (this.course_schedule.get(day_of_week));
 	}

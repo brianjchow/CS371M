@@ -1,17 +1,8 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -169,8 +160,10 @@ final class CSVReader {
 			
 			// end of line reached in file; parse this event
 			else {
+// System.out.println(curr_line.toString());
 				result = split_line(curr_line);
 				if (result != null) {
+// System.out.println(result.toString());
 					schedules.add(result);
 				}
 				curr_line.setLength(0);
@@ -271,14 +264,18 @@ final class CSVReader {
 
 				if (temp_to_str.length() > 0) {
 					
+//					System.out.println(temp_to_str);
+					
 					// location encountered
 					if (containsIgnoreCase(temp_to_str, Constants.GDC) ||
 						is_campus_building_str(temp_to_str)) {
+//System.out.println("location " + temp_to_str);
 						tuple.put(Constants.LOCATION, temp_to_str);
 					}
 					
 					// event time and date encountered
 					else if (is_date_string(temp_to_str)) {
+//System.out.println("date " + temp_to_str);
 						if (containsIgnoreCase(temp_to_str, Constants.ALL_DAY)) {
 							temp_to_str = regex_replace(temp_to_str, "(" + Constants.ALL_DAY + ")", "0001");
 							String copy = temp_to_str;
@@ -290,6 +287,7 @@ final class CSVReader {
 					
 					// event name encountered
 					else {
+//System.out.println("event " + temp_to_str);
 						String curr_event_name;
 						if ((curr_event_name = tuple.get(Constants.EVENT_NAME)) != null) {
 							temp_to_str = new StringBuilder().append(temp_to_str).append(curr_event_name).toString();
@@ -326,7 +324,7 @@ final class CSVReader {
 		
 		// set default location of this event if none specified
 		if (tuple.get(Constants.LOCATION) == null) {
-			tuple.put(Constants.LOCATION, Constants.GDC + Constants.DEFAULT_GDC_LOCATION);
+			tuple.put(Constants.LOCATION, Constants.GDC + " " + Constants.DEFAULT_GDC_LOCATION);
 		}
 
 		return tuple;
@@ -353,16 +351,16 @@ final class CSVReader {
 //		CourseScheduleDatabase.generate("course_schedules/master_course_schedule_s15_raw.csv");
 //		CourseScheduleDatabase.read_course_schedule_from_db("master_course_schedule_f14.db");
 //		CourseScheduleDatabase.read_course_schedule_from_db("master_course_schedule_s15.db");
-		
-		Stopwatch stopwatch = new Stopwatch();
-		stopwatch.start();
-		for (int i = 0; i < Constants.CAMPUS_BUILDINGS.length; i++) {
-			System.out.println(Building.get_instance(Constants.CAMPUS_BUILDINGS[i], "master_course_schedule_f14.db").toString());
-		}
-		stopwatch.stop();
-		System.out.println("Size of BUILDING_CACHELIST_THIS_SEMESTER: " + Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_size());
-		System.out.println("Took " + stopwatch.time() + " seconds to read from db (average " + (stopwatch.time() / Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_size()) + " seconds ea)");
-		
+//		
+//		Stopwatch stopwatch = new Stopwatch();
+//		stopwatch.start();
+//		for (int i = 0; i < Constants.CAMPUS_BUILDINGS.length; i++) {
+//			System.out.println(Building.get_instance(Constants.CAMPUS_BUILDINGS[i], "master_course_schedule_f14.db").toString());
+//		}
+//		stopwatch.stop();
+//		System.out.println("Size of BUILDING_CACHELIST_THIS_SEMESTER: " + Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_size());
+//		System.out.println("Took " + stopwatch.time() + " seconds to read from db (average " + (stopwatch.time() / Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_size()) + " seconds ea)");
+//		
 //		Building gdc = Building.get_instance(Constants.GDC, "master_course_schedule_f14.db");
 //		System.out.println(gdc.toString());
 //		
@@ -374,19 +372,19 @@ final class CSVReader {
 		
 		String db_file = "master_course_schedule_f14";
 
-//		test(Utilities.get_date(current_month, current_day, 2014, 400), 61);
-//		test(Utilities.get_date(current_month, current_day, 2014, 800), 61);
-//		test(Utilities.get_date(current_month, current_day, 2014, 1030), 61);
-//		test(Utilities.get_date(current_month, current_day, 2014, 1300), 61);
-//		test(Utilities.get_date(current_month, current_day, 2014, 1300), 1);
-//		test(Utilities.get_date(current_month, current_day, 2014, 1630), 61);
-//		test(Utilities.get_date(current_month, current_day, 2014, 1656), 60);
-//		test(Utilities.get_date(current_month, current_day, 2014, 2159), 1);
-//		test(Utilities.get_date(current_month, current_day, 2014, 2300), 61);
-//		test(Utilities.get_date(current_month, current_day, 2014, 759), 1);
-//		test(Utilities.get_date(current_month, current_day, 2014, 759), 2);
-//		test(Utilities.get_date(current_month, current_day, 2014, 0000), Constants.MINUTES_IN_DAY);
-//		test(Utilities.get_date(current_month, current_day, 2014, 2317), 60);
+		test(Utilities.get_date(current_month, current_day, 2014, 400), 61);
+		test(Utilities.get_date(current_month, current_day, 2014, 800), 61);
+		test(Utilities.get_date(current_month, current_day, 2014, 1030), 61);
+		test(Utilities.get_date(current_month, current_day, 2014, 1300), 61);
+		test(Utilities.get_date(current_month, current_day, 2014, 1300), 1);
+		test(Utilities.get_date(current_month, current_day, 2014, 1630), 61);
+		test(Utilities.get_date(current_month, current_day, 2014, 1656), 60);
+		test(Utilities.get_date(current_month, current_day, 2014, 2159), 1);
+		test(Utilities.get_date(current_month, current_day, 2014, 2300), 61);
+		test(Utilities.get_date(current_month, current_day, 2014, 759), 1);
+		test(Utilities.get_date(current_month, current_day, 2014, 759), 2);
+		test(Utilities.get_date(current_month, current_day, 2014, 0000), Constants.MINUTES_IN_DAY);
+		test(Utilities.get_date(current_month, current_day, 2014, 2317), 60);
 		
 //		test_all_buildings(Utilities.get_date(current_month, current_day, 2014, 1300), 1);
 		
@@ -528,39 +526,39 @@ final class CSVReader {
 		
 	}
 	
-	public static void print_rooms_read_from_schedule() {
-		int total_num_courses = 0;
-		List<String> all_rooms = new ArrayList<String>(2000);
-		Iterator<Map.Entry<Location, Room>> itr = Constants.USED_ROOMS_THIS_SEMESTER.get_iterator();
-		Map.Entry<Location, Room> curr_entry;
-		Room curr_room;
-		while (itr.hasNext()) {
-			curr_entry = itr.next();
-			curr_room = curr_entry.getValue();
-			Map<Integer, Set<Event>> curr_room_events = curr_room.get_events();
-			
-			all_rooms.add(curr_room.get_location().toString());
-			
-			System.out.print(curr_room.get_location().toString() + "\n   ");
-			for (int i = Constants.MONDAY; i <= Constants.FRIDAY; i++) {
-				System.out.print(Constants.DAYS_OF_WEEK_SHORT[i] + ": ");
-				
-				for (Event event : curr_room_events.get(i)) {
-					System.out.printf("%s (%s), ", event.get_event_name(), Utilities.get_time(event.get_start_date()));
-				}
-				
-				System.out.print("\n   ");
-			}
-			
-			System.out.println("\n");
-			
-			total_num_courses += curr_room.get_num_events();
-		}
-		Collections.sort(all_rooms);
-		System.out.println(all_rooms.toString() + "\n");
-		System.out.println("Total events in RoomList: " + total_num_courses);
-		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.USED_ROOMS_THIS_SEMESTER.get_size());
-	}
+//	public static void print_rooms_read_from_schedule() {
+//		int total_num_courses = 0;
+//		List<String> all_rooms = new ArrayList<String>(2000);
+//		Iterator<Map.Entry<Location, Room>> itr = Constants.USED_ROOMS_THIS_SEMESTER.get_iterator();
+//		Map.Entry<Location, Room> curr_entry;
+//		Room curr_room;
+//		while (itr.hasNext()) {
+//			curr_entry = itr.next();
+//			curr_room = curr_entry.getValue();
+//			Map<Integer, Set<Event>> curr_room_events = curr_room.get_events();
+//			
+//			all_rooms.add(curr_room.get_location().toString());
+//			
+//			System.out.print(curr_room.get_location().toString() + "\n   ");
+//			for (int i = Constants.MONDAY; i <= Constants.FRIDAY; i++) {
+//				System.out.print(Constants.DAYS_OF_WEEK_SHORT[i] + ": ");
+//				
+//				for (Event event : curr_room_events.get(i)) {
+//					System.out.printf("%s (%s), ", event.get_event_name(), Utilities.get_time(event.get_start_date()));
+//				}
+//				
+//				System.out.print("\n   ");
+//			}
+//			
+//			System.out.println("\n");
+//			
+//			total_num_courses += curr_room.get_num_events();
+//		}
+//		Collections.sort(all_rooms);
+//		System.out.println(all_rooms.toString() + "\n");
+//		System.out.println("Total events in RoomList: " + total_num_courses);
+//		System.out.println("Size of RoomList (# unique rooms in schedule): " + Constants.USED_ROOMS_THIS_SEMESTER.get_size());
+//	}
 	
 	
 	

@@ -6,16 +6,21 @@ final class Constants {
 	protected static		EventList	CSV_FEEDS_CLEANED				=	null;
 	private static 			boolean 	has_feed_been_read;
 
-	protected static	 	RoomList 	GDC_ROOMS_THIS_SEMESTER			=	null;
-	protected static		RoomList	GDC_ROOMS_NEXT_SEMESTER			=	null;
-	protected static		RoomList	USED_ROOMS_THIS_SEMESTER		=	null;
-	protected static		RoomList	USED_ROOMS_NEXT_SEMESTER		=	null;
+//	protected static	 	RoomList 	GDC_ROOMS_THIS_SEMESTER			=	null;
+//	protected static		RoomList	GDC_ROOMS_NEXT_SEMESTER			=	null;
+//	protected static		RoomList	USED_ROOMS_THIS_SEMESTER		=	null;
+//	protected static		RoomList	USED_ROOMS_NEXT_SEMESTER		=	null;
 	protected static		BuildingList	BUILDING_CACHELIST_THIS_SEMESTER	=	null;
 	protected static		BuildingList	BUILDING_CACHELIST_NEXT_SEMESTER	=	null;
 	protected static		boolean		DISABLE_SEARCHES_NEXT_SEMESTER	=	false;
 	
+	protected static final	boolean		IGNORE_CONFERENCE_ROOMS			=	true;
+	
 	protected static final	String		COURSE_SCHEDULE_THIS_SEMESTER	=	"course_schedules/master_course_schedule_f14.csv";
 	protected static final	String		COURSE_SCHEDULE_NEXT_SEMESTER	=	"course_schedules/master_course_schedule_s15.csv";
+	protected static final	String		DEFAULT_DB_EXTENSION			=	"db";
+	
+	protected static final	int			BUILDING_CODE_LENGTH			=	3;
 
 	protected static final	int			SPRING_START_MONTH				=	1;
 	protected static final	int			SPRING_START_DAY				=	10;
@@ -117,6 +122,8 @@ final class Constants {
 	protected static final	String		LOBBY;
 	protected static final	String		LOUNGE;
 	protected static final	String		SEMINAR;
+	
+	protected static final	double		DEFAULT_HASHMAP_LOAD_FACTOR = 0.7;
 	
 	static {
 		
@@ -502,7 +509,7 @@ final class Constants {
 	private static final boolean[] initialise_valid_gdc_rooms_powers() {
 		final boolean[] VALID_GDC_ROOMS_POWERS = {
 				false, false,
-				false, false, false, false, false, false, true, false, false,
+				false, false, false, true, true, true, true, false, false,
 				false, false, false, false,
 				false, false, false, false, false, false, false, false,
 				false, false, false, false, false, false,
