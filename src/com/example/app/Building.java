@@ -1,6 +1,7 @@
 package com.example.app;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -20,7 +21,7 @@ final class Building implements Comparable<Building> {
 			throw new IllegalArgumentException("Building codes must be exactly 3 characters in length.");
 		}
 		
-		this.name = name;
+		this.name = name.toUpperCase(Locale.ENGLISH);
 		this.rooms = new HashMap<String, Room>();
 	}
 		
@@ -57,19 +58,41 @@ final class Building implements Comparable<Building> {
 		
 		if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER != null &&
 			Utilities.containsIgnoreCase(Constants.COURSE_SCHEDULE_NEXT_SEMESTER, db_file_name)) {
-			if ((out = Constants.BUILDING_CACHELIST_NEXT_SEMESTER.get_building(building_name)) == null) {
-				out = new Building(building_name);
-				out.populate(context, db_file_name);
+
+			if ((out = Constants.BUILDING_CACHELIST_NEXT_SEMESTER.get_building(building_name)) != null) {
+				return out;
+			}
+			
+			out = new Building(building_name);
+			out.populate(context, db_file_name);
+			
+			if (Constants.BUILDING_CACHELIST_NEXT_SEMESTER != null &&
+					Constants.BUILDING_CACHELIST_NEXT_SEMESTER.get_building(building_name) == null) {
 				Constants.BUILDING_CACHELIST_NEXT_SEMESTER.put_building(building_name, out);
 			}
+			
+//			if ((out = Constants.BUILDING_CACHELIST_NEXT_SEMESTER.get_building(building_name)) == null) {
+//				Constants.BUILDING_CACHELIST_NEXT_SEMESTER.put_building(building_name, out);
+//			}
 		}
 //		else if (Utilities.containsIgnoreCase(Constants.COURSE_SCHEDULE_THIS_SEMESTER, db_file_name)) {
 		else {
-			if ((out = Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_building(building_name)) == null) {
-				out = new Building(building_name);
-				out.populate(context, db_file_name);
+
+			if ((out = Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_building(building_name)) != null) {
+				return out;
+			}
+			
+			out = new Building(building_name);
+			out.populate(context, db_file_name);
+			
+			if (Constants.BUILDING_CACHELIST_THIS_SEMESTER != null &&
+					Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_building(building_name) == null) {
 				Constants.BUILDING_CACHELIST_THIS_SEMESTER.put_building(building_name, out);
 			}
+			
+//			if ((out = Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_building(building_name)) == null) {
+//				Constants.BUILDING_CACHELIST_THIS_SEMESTER.put_building(building_name, out);
+//			}
 		}
 //		else {
 //			out = null;
@@ -110,7 +133,9 @@ final class Building implements Comparable<Building> {
 		}
 		
 		CourseScheduleDatabase db = new CourseScheduleDatabase(context, db_file_name);
-		this.rooms = db.get_all_courses(this.name, db_file_name);
+		this.rooms = db.get_courses(this.name, db_file_name);
+		
+//		System.out.println(this.rooms.toString());
 	}
 	
 //	protected boolean put_room(String room_num, Room room) {
@@ -122,6 +147,22 @@ final class Building implements Comparable<Building> {
 //		return true;
 //	}
 	
+	@Override
+	protected Building clone() {
+		Building out = new Building(this.name);
+		
+		String curr_room_str;
+		Room curr_room;
+		for (Map.Entry<String, Room> entry : this.rooms.entrySet()) {
+			curr_room_str = entry.getKey();
+			curr_room = entry.getValue();
+			
+			out.rooms.put(curr_room_str, curr_room.clone());
+		}
+		
+		return out;
+	}
+		
 	@Override
 	public int compareTo(Building other) {
 		return (this.name.compareTo(other.name));

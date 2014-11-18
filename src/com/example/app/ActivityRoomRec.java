@@ -68,7 +68,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 			if (bundle != null) {
 				Query query = (Query) bundle.getParcelable("this_query");
 				if (query != null) {
-					Log.d(TAG, "Using transmitted parcelable: " + query.toString());
+//					Log.d(TAG, "Using transmitted parcelable: " + query.toString());
 					this_query = query;
 //					this_query.set_context(getApplicationContext());
 					this_query.set_context(ActivityRoomRec.this);
@@ -113,10 +113,17 @@ public class ActivityRoomRec extends ActionBarActivity {
 	}
 	
 	private void search(Query query) {
-		Log.d(TAG, "Size of CSV_FEEDS_MASTER: " + Constants.CSV_FEEDS_MASTER.get_size());
-		Log.d(TAG, "Size of CSV_FEEDS_CLEANED: " + Constants.CSV_FEEDS_CLEANED.get_size());
+//		Log.d(TAG, "Size of CSV_FEEDS_MASTER: " + Constants.CSV_FEEDS_MASTER.get_size());
+//		Log.d(TAG, "Size of CSV_FEEDS_CLEANED: " + Constants.CSV_FEEDS_CLEANED.get_size());
+		
+		Stopwatch stopwatch = new Stopwatch();
+		stopwatch.start();
 		
 		curr_recommendation = query.search();
+		
+		stopwatch.stop();
+		Log.d(TAG, "Took " + stopwatch.time() + " seconds to execute search");
+		
 		setTextViewInfo(curr_recommendation);
 		
 		View background = findViewById(R.id.background);
@@ -146,11 +153,33 @@ public class ActivityRoomRec extends ActionBarActivity {
 		return id;
 	}
 
+	private boolean rec_is_message_status_flag(String recommendation) {
+		if (recommendation == null) {
+			throw new IllegalArgumentException();
+		}
+		else if (recommendation.length() <= 0) {
+			recommendation = Constants.MESSAGE_STATUS_FLAGS[Constants.SEARCH_ERROR];
+			return true;
+		}
+		
+		for (int i = 0; i < Constants.MESSAGE_STATUS_FLAGS.length; i++) {
+			if (recommendation.equals(Constants.MESSAGE_STATUS_FLAGS[i])) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	private void setTextViewInfo(String recommendation) {
-		TextView roomRecText = (TextView) findViewById(R.id.room_num);
-		if (!recommendation.equals(Constants.NO_ROOMS_AVAIL_MSG)) {
+		if (recommendation == null || recommendation.length() <= 0) {
+			recommendation = Constants.MESSAGE_STATUS_FLAGS[Constants.SEARCH_ERROR];
+		}
+		else if (!rec_is_message_status_flag(recommendation)) {
 			recommendation = "Try " + recommendation;
 		}
+		
+		TextView roomRecText = (TextView) findViewById(R.id.room_num);
 		roomRecText.setText(recommendation);		
 	}
 	

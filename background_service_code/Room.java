@@ -74,7 +74,7 @@ final class Room implements Comparable<Room> {
 	protected final Set<Event> get_events(int day_of_week) {
 		if (!Utilities.valid_day_of_week(day_of_week)) {
 //			return null;
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Invalid day of week specified (" + day_of_week + "), Room.get_events()");
 		}
 		return (this.course_schedule.get(day_of_week));
 	}

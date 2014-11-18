@@ -7,6 +7,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+
 public class Utilities {
 	
 	protected static int get_hashmap_size(int size) {
@@ -187,12 +190,38 @@ public class Utilities {
 		return (Integer.parseInt(out));
 	}
 	
+	// http://stackoverflow.com/questions/18938152/check-if-two-date-periods-overlap
 	protected static boolean times_overlap(Date start1, Date end1, Date start2, Date end2) {
 		if (start1 == null || end1 == null || start2 == null || end2 == null) {
 			return false;
 		}
 		return (start1.before(end2) && start2.before(end1));
 	}
+	
+//	protected static boolean times_overlap(Date start1, Date end1, Date start2, Date end2) {
+//		if (start1 == null || end1 == null || start2 == null || end2 == null) {
+//			throw new IllegalArgumentException("One or more arguments is null");
+//		}
+//		
+//		Calendar calendar = Calendar.getInstance();
+//		
+//		calendar.setTime(start1);
+//		DateTime start_one = new DateTime(calendar.getTime());
+//		
+//		calendar.setTime(end1);
+//		DateTime end_one = new DateTime(calendar.getTime());
+//		
+//		calendar.setTime(start2);
+//		DateTime start_two = new DateTime(calendar.getTime());
+//		
+//		calendar.setTime(end2);
+//		DateTime end_two = new DateTime(calendar.getTime());
+//		
+//		Interval one = new Interval(start_one, end_one);
+//		Interval two = new Interval(start_two, end_two);
+//		
+//		return (one.overlaps(two));
+//	}
 	
 	protected static boolean occur_on_same_day(Date date1, Date date2) {
 		if (date1 == null || date2 == null) {

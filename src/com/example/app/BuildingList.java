@@ -47,6 +47,39 @@ final class BuildingList {
 	}
 	
 	@Override
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+		else if (!(other instanceof BuildingList)) {
+			return false;
+		}
+		
+		BuildingList other_list = (BuildingList) other;
+		
+		if (this.get_size() != other_list.get_size()) {
+			return false;
+		}
+		
+		String curr_bldg_str;
+		Building curr_bldg, other_bldg;
+		for (Map.Entry<String, Building> entry : other_list.buildings.entrySet()) {
+			curr_bldg_str = entry.getKey();
+			curr_bldg = entry.getValue();
+			
+			if ((other_bldg = this.buildings.get(curr_bldg_str)) == null) {
+				return false;
+			}
+			
+			if (!other_bldg.equals(curr_bldg)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	@Override
 	public String toString() {
 		StringBuilder out = new StringBuilder(1000);
 		

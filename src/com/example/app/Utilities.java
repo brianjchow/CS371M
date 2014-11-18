@@ -13,6 +13,23 @@ import java.util.regex.PatternSyntaxException;
 
 public class Utilities {
 
+	protected static boolean str_is_gdc(String str) {
+		if (str == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		return (str.equalsIgnoreCase(Constants.GDC));
+	}
+	
+	protected static int get_hashmap_size(int size) {
+		if (size < 0) {
+			throw new IllegalArgumentException();
+		}
+		
+		int out = (int) Math.ceil((double) size / Constants.DEFAULT_HASHMAP_LOAD_FACTOR);
+		return out;
+	}
+	
 	// http://stackoverflow.com/questions/4427608/android-getting-resource-id-from-string
 	protected static int getResId(String var_name, Class<?> c) {
 		int id = -1;
@@ -202,6 +219,31 @@ public class Utilities {
 		}
 		return (start1.before(end2) && start2.before(end1));
 	}
+	
+//	protected static boolean times_overlap(Date start1, Date end1, Date start2, Date end2) {
+//		if (start1 == null || end1 == null || start2 == null || end2 == null) {
+//			throw new IllegalArgumentException("One or more arguments is null");
+//		}
+//		
+//		Calendar calendar = Calendar.getInstance();
+//		
+//		calendar.setTime(start1);
+//		DateTime start_one = new DateTime(calendar.getTime());
+//		
+//		calendar.setTime(end1);
+//		DateTime end_one = new DateTime(calendar.getTime());
+//		
+//		calendar.setTime(start2);
+//		DateTime start_two = new DateTime(calendar.getTime());
+//		
+//		calendar.setTime(end2);
+//		DateTime end_two = new DateTime(calendar.getTime());
+//		
+//		Interval one = new Interval(start_one, end_one);
+//		Interval two = new Interval(start_two, end_two);
+//		
+//		return (one.overlaps(two));
+//	}
 	
 	protected static boolean occur_on_same_day(Date date1, Date date2) {
 		if (date1 == null || date2 == null) {

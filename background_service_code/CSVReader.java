@@ -386,6 +386,8 @@ final class CSVReader {
 		test(Utilities.get_date(current_month, current_day, 2014, 0000), Constants.MINUTES_IN_DAY);
 		test(Utilities.get_date(current_month, current_day, 2014, 2317), 60);
 		
+		System.out.println(Constants.BUILDING_CACHELIST_THIS_SEMESTER.toString());
+		
 //		test_all_buildings(Utilities.get_date(current_month, current_day, 2014, 1300), 1);
 		
 //		System.out.println(Constants.USED_ROOMS_THIS_SEMESTER.toString());
@@ -461,7 +463,7 @@ final class CSVReader {
 		query.set_option_capacity(0);
 //		query.set_option_capacity(new Integer(0));
 		
-//		query.set_option_search_building("cal");
+		query.set_option_search_building("gea");
 
 		String random_room = query.search();
 

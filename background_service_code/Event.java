@@ -156,6 +156,14 @@ public class Event implements Comparable<Event> {
 		this.event_name = event_name;
 	}
 	
+	protected void set_end_date(Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		this.end_date = date;
+	}
+	
 	/**
 	 * @param end_date
 	 */
@@ -182,6 +190,19 @@ public class Event implements Comparable<Event> {
 		
 		this.location.set_building(temp[0]);
 		this.location.set_room(temp[1]);
+	}
+	
+	protected void set_start_date(Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		this.start_date = date;
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(this.start_date);
+		calendar.add(Calendar.MINUTE, Constants.DEFAULT_EVENT_DURATION);
+		this.end_date = calendar.getTime();
 	}
 		
 	/**

@@ -49,18 +49,20 @@ final class Constants {
 	protected static final	String		SEARCH_GDC_ONLY;
 	protected static final	String		SEARCH_BUILDING;
 	
+	protected static final	String		ALL_ROOMS_AVAIL_MSG;
 	protected static final 	String 		NO_ROOMS_AVAIL_MSG;
 	protected static final 	String 		GO_HOME_MSG;
 	protected static final	String		SUMMER_MSG;
 	protected static final	String		HOLIDAY_MSG;
 	protected static final	String		NO_INFO_AVAIL_MSG;
 	protected static final	String		SEARCH_ERROR_MSG;
-	protected static final	int			NO_ROOMS_AVAIL					=	0;
-	protected static final	int			GO_HOME							=	1;
-	protected static final	int			SUMMER							=	2;
-	protected static final	int			HOLIDAY							=	3;
-	protected static final	int			NO_INFO							=	4;
-	protected static final	int			SEARCH_ERROR					=	5;
+	protected static final	int			ALL_ROOMS_AVAIL					=	0;
+	protected static final	int			NO_ROOMS_AVAIL					=	1;
+	protected static final	int			GO_HOME							=	2;
+	protected static final	int			SUMMER							=	3;
+	protected static final	int			HOLIDAY							=	4;
+	protected static final	int			NO_INFO							=	5;
+	protected static final	int			SEARCH_ERROR					=	6;
 	protected static final	String[]	MESSAGE_STATUS_FLAGS;
 		
 	protected static final 	int[] 		DAYS_IN_MONTH;
@@ -139,6 +141,7 @@ final class Constants {
 		SEARCH_GDC_ONLY				=	"search_gdc_only";
 		SEARCH_BUILDING				=	"search_building";
 		
+		ALL_ROOMS_AVAIL_MSG			=	"All rooms available.";
 		NO_ROOMS_AVAIL_MSG			=	"No rooms available; please try again.";
 		GO_HOME_MSG					=	"Go home and sleep, you procrastinator";
 		SUMMER_MSG					=	"Some rooms available (summer hours; check course schedules).";
@@ -233,16 +236,23 @@ final class Constants {
 		NIGHTFALL					=	Utilities.get_date(1, 1, 2014, 2200);
 
 	}
-
+	
+	private static void reset() {
+		CSV_FEEDS_MASTER = null;
+		has_feed_been_read = false;
+		CSV_FEEDS_CLEANED = null;
+		
+		BUILDING_CACHELIST_THIS_SEMESTER = null;
+		BUILDING_CACHELIST_NEXT_SEMESTER = null;
+		DISABLE_SEARCHES_NEXT_SEMESTER = false;
+	}
+	
 	protected static void init() {
 		if (COURSE_SCHEDULE_THIS_SEMESTER == null) {
 			throw new IllegalArgumentException("App needs at least the current course schedule to correctly function.");
 		}
 		
-		if (CSV_FEEDS_MASTER == null) {
-			has_feed_been_read = false;
-			CSV_FEEDS_CLEANED = null;
-		}
+		reset();
 		
 		CSV_FEEDS_MASTER = CSVReader.read_csv();
 		
@@ -431,7 +441,7 @@ final class Constants {
 	
 	private static final String[] initialise_message_status_flags() {
 		final String[] FLAGS = {
-				NO_ROOMS_AVAIL_MSG, GO_HOME_MSG, SUMMER_MSG, HOLIDAY_MSG, SEARCH_ERROR_MSG
+				ALL_ROOMS_AVAIL_MSG, NO_ROOMS_AVAIL_MSG, GO_HOME_MSG, SUMMER_MSG, HOLIDAY_MSG, SEARCH_ERROR_MSG
 		};
 		return FLAGS;
 	}

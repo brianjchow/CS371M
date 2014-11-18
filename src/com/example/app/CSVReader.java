@@ -19,12 +19,11 @@ import org.apache.http.protocol.HttpContext;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.uis.R;
-
 /**
  * @author Fatass
  *
  */
+@SuppressWarnings("unused")
 final class CSVReader {
 	
 	private static final String ALL_EVENTS_SCHEDULE		= "https://www.cs.utexas.edu/calendar/touch/feed";			// events
@@ -77,16 +76,28 @@ final class CSVReader {
 	 * @return True if str contains a day of the week, false otherwise.
 	 */
 	private boolean is_date_string(String str) {
-		if (str == null) {
+		if (str == null || str.length() <= 0) {
 			return false;
 		}
-		for (int i = 0; i < Constants.DAYS_OF_WEEK_LONG.length; i++) {
-			if (containsIgnoreCase(str, Constants.DAYS_OF_WEEK_SHORT[i]) ||
-				containsIgnoreCase(str, Constants.DAYS_OF_WEEK_LONG[i])) {
-				
-				return true;
+		
+		String[] split = str.split("\\s+");
+		
+		for (int i = 0; i < split.length; i++) {
+			for (int j = 1; j < Constants.DAYS_OF_WEEK_SHORT.length; j++) {
+				if (split[i].equalsIgnoreCase(Constants.DAYS_OF_WEEK_SHORT[j])) {
+					return true;
+				}
 			}
 		}
+		
+//		for (int i = 0; i < Constants.DAYS_OF_WEEK_LONG.length; i++) {
+//			if (containsIgnoreCase(str, Constants.DAYS_OF_WEEK_SHORT[i]) ||
+//				containsIgnoreCase(str, Constants.DAYS_OF_WEEK_LONG[i])) {
+//				
+//				return true;
+//			}
+//		}
+		
 		return false;
 	}
 		
@@ -156,30 +167,78 @@ final class CSVReader {
 			}
 		}
 		else {
-			Log.d(TAG, "Now reading from local files");			
+			Log.d(TAG, "Now reading from local files");
+			
+			String ext = ".csv";
+			
 //			event_strings = reader.read_csv_from_file("calendar_events_today_feed_2710.csv");
-			event_strings = reader.read_csv_from_file(context, R.raw.calendar_events_today_feed_1411);
+//			event_strings = reader.read_csv_from_file(context, R.raw.calendar_events_today_feed_1411);
+			event_strings = reader.read_csv_from_file(context, "calendar_events_today_feed_1411" + ext);
 			events.add(event_strings);
 			
 //			event_strings = reader.read_csv_from_file("calendar_events_feed_2710.csv");
-			event_strings = reader.read_csv_from_file(context, R.raw.calendar_events_feed_1411);
+//			event_strings = reader.read_csv_from_file(context, R.raw.calendar_events_feed_1411);
+			event_strings = reader.read_csv_from_file(context, "calendar_events_feed_1411" + ext);
 			events.add(event_strings);
 
 //			event_strings = reader.read_csv_from_file("calendar_rooms_feed_2710.csv");
-			event_strings = reader.read_csv_from_file(context, R.raw.calendar_rooms_feed_1411);
+//			event_strings = reader.read_csv_from_file(context, R.raw.calendar_rooms_feed_1411);
+			event_strings = reader.read_csv_from_file(context, "calendar_rooms_feed_1411" + ext);
 			events.add(event_strings);	
 		}
 		
 		stopwatch.stop();
 		
 		time_to_read = stopwatch.time();
-		Log.d(TAG, "Took " + time_to_read + " seconds to read " + lines_read + " lines");
+//		Log.d(TAG, "Took " + time_to_read + " seconds to read " + lines_read + " lines");
+		Log.d(TAG, "Took " + (time_to_read + Constants.time_to_read) + " seconds to read CSV feeds (" + lines_read + " lines) and load GDC course schedule");
 		Log.d(TAG, "Num events supposed to be in CSV_FEEDS_MASTER: " + events.get_size());
 //		Toast.makeText(context, "Took " + stopwatch.time() + " seconds to read " + lines_read + " lines", Toast.LENGTH_SHORT).show();	// DO NOT TOAST HERE; WILL CAUSE EXCEPTION (can't update UI thread here)
 		
 		return events;		
 	}
 		
+	private List<HashMap<String, String>> read_csv_from_file(Context context, String filename) {
+		if (context == null) {
+			throw new IllegalArgumentException();
+		}
+		else if (filename == null || filename.length() <= 0) {
+			throw new IllegalArgumentException("Error: cannot read from null or empty file name, read_csv_from_file()");
+		}
+
+		List<HashMap<String, String>> schedules = new ArrayList<HashMap<String, String>>(100);
+		InputReader input = new InputReader(context, filename);
+		
+		int temp = 0;
+
+		StringBuilder curr_line = new StringBuilder();
+		HashMap<String, String> result;
+
+		while ((temp = input.read()) != -1) {
+			char curr_byte = (char) temp;
+			if (curr_byte != '\n') {
+				curr_line.append(curr_byte);
+			}
+			
+			// end of line reached in file; parse this event
+			else {
+// System.out.println(curr_line.toString());
+				
+				lines_read++;
+				result = split_line(curr_line);
+				if (result != null) {
+// System.out.println(result.toString());
+					schedules.add(result);
+				}
+				curr_line.setLength(0);
+			}
+		}
+		
+		input.close();
+		return schedules;
+	}
+	
+	
 	/**
 	 * @param filename
 	 * @return a List of Maps of Strings; each Map contains Strings for one
@@ -293,7 +352,6 @@ final class CSVReader {
 	 * @return a List of Maps of Strings; each Map contains Strings for one
 	 * 		   event parsed from the CSV feed given by site (a URL)
 	 */
-	@SuppressWarnings("unused")
 	private List<HashMap<String, String>> read_csv_from_url(String site) {
 		if (site == null || site.length() <= 0) {
 			throw new IllegalArgumentException("Error: cannot read from null or empty site name, read_csv_from_url()");
@@ -406,33 +464,22 @@ final class CSVReader {
 				temp_to_str = regex_replace(temp_to_str, "(  )+", " ");
 				temp_to_str = regex_replace(temp_to_str, "(CST|CDT|registrar?( - )*|room?(: )*)?[():,]*", "");
 
+				if (temp_to_str.equals("Location") || temp_to_str.equals("Title")) {
+					return null;
+				}
+				
 				if (temp_to_str.length() > 0) {
 										
 					// location encountered
 					if (containsIgnoreCase(temp_to_str, Constants.GDC) ||
 						is_campus_building_str(temp_to_str)) {
-						Log.d(TAG, "location " + temp_to_str + " " + temp_to_str.length());
-//						tuple.put(Constants.LOCATION, temp_to_str);
+//						Log.d(TAG, "location " + temp_to_str + " " + temp_to_str.length());
 						tuple.put(Constants.LOCATION, temp_to_str);
 					}
 					
 					// event time and date encountered
 					else if (is_date_string(temp_to_str)) {
-						if (temp_to_str.toString().equals("Location") || temp_to_str.toString().equals("Title")) {
-							return null;
-						}
-//						for (int j = 0; j < temp_to_str.length(); j++) {
-//							if (Character.isDigit(temp_to_str.charAt(j))) {
-//								String curr_event_name;
-//								if ((curr_event_name = tuple.get(Constants.EVENT_NAME)) != null) {
-//									temp_to_str = new StringBuilder().append(temp_to_str).append(curr_event_name).toString();
-//								}
-//								tuple.put(Constants.EVENT_NAME, temp_to_str);
-//								continue;
-//							}
-//						}
-						
-						Log.d(TAG, "date string |" + temp_to_str + "| " + temp_to_str.length());
+//						Log.d(TAG, "date string |" + temp_to_str + "| " + temp_to_str.length());
 						if (containsIgnoreCase(temp_to_str, Constants.ALL_DAY)) {
 							temp_to_str = regex_replace(temp_to_str, "(" + Constants.ALL_DAY + ")", "0001");
 							String copy = temp_to_str;
@@ -444,7 +491,7 @@ final class CSVReader {
 					
 					// event name encountered
 					else {
-						Log.d(TAG, "event name " + temp_to_str + " " + temp_to_str.length());
+//						Log.d(TAG, "event name " + temp_to_str + " " + temp_to_str.length());
 						String curr_event_name;
 						if ((curr_event_name = tuple.get(Constants.EVENT_NAME)) != null) {
 							temp_to_str = new StringBuilder().append(temp_to_str).append(curr_event_name).toString();

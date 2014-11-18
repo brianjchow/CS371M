@@ -20,8 +20,8 @@ final class Constants {
 //	protected static		RoomList	USED_ROOMS_NEXT_SEMESTER		=	null;
 //	protected static final	int			COURSE_SCHEDULE_THIS_SEMESTER	=	R.raw.master_course_schedule_f14;
 //	protected static final	int			COURSE_SCHEDULE_NEXT_SEMESTER	=	R.raw.master_course_schedule_s15;
-	protected static		BuildingList	BUILDING_CACHELIST_THIS_SEMESTER	=	null;
-	protected static		BuildingList	BUILDING_CACHELIST_NEXT_SEMESTER	=	null;
+	protected static		BuildingList	BUILDING_CACHELIST_THIS_SEMESTER	=	null; // new BuildingList();
+	protected static		BuildingList	BUILDING_CACHELIST_NEXT_SEMESTER	=	null; // new BuildingList();
 	protected static		boolean		DISABLE_SEARCHES_NEXT_SEMESTER	=	false;
 	
 	protected static final	boolean		IGNORE_CONFERENCE_ROOMS			=	true;
@@ -59,21 +59,23 @@ final class Constants {
 	protected static final 	String 		POWER;
 	protected static final	String		SEARCH_GDC_ONLY;
 	protected static final	String		SEARCH_BUILDING;
-	
+
+	protected static final	String		ALL_ROOMS_AVAIL_MSG;
 	protected static final 	String 		NO_ROOMS_AVAIL_MSG;
 	protected static final 	String 		GO_HOME_MSG;
 	protected static final	String		SUMMER_MSG;
 	protected static final	String		HOLIDAY_MSG;
 	protected static final	String		NO_INFO_AVAIL_MSG;
 	protected static final	String		SEARCH_ERROR_MSG;
-	protected static final	int			NO_ROOMS_AVAIL					=	0;
-	protected static final	int			GO_HOME							=	1;
-	protected static final	int			SUMMER							=	2;
-	protected static final	int			HOLIDAY							=	3;
-	protected static final	int			NO_INFO							=	4;
-	protected static final	int			SEARCH_ERROR					=	5;
+	protected static final	int			ALL_ROOMS_AVAIL					=	0;
+	protected static final	int			NO_ROOMS_AVAIL					=	1;
+	protected static final	int			GO_HOME							=	2;
+	protected static final	int			SUMMER							=	3;
+	protected static final	int			HOLIDAY							=	4;
+	protected static final	int			NO_INFO							=	5;
+	protected static final	int			SEARCH_ERROR					=	6;
 	protected static final	String[]	MESSAGE_STATUS_FLAGS;
-		
+	
 	protected static final 	int[] 		DAYS_IN_MONTH;
 	protected static final 	String[] 	DAYS_OF_WEEK_LONG;
 	protected static final 	String[] 	DAYS_OF_WEEK_SHORT;
@@ -144,12 +146,45 @@ final class Constants {
 		ATRIUM						=	"Atrium";
 		
 		CAMPUS_BUILDINGS			=	initialise_campus_buildings();
-			
+		
+		DAYS_IN_MONTH				=	initialise_days_in_month();
+		DAYS_OF_WEEK_LONG			=	initialise_days_of_week_long();
+		DAYS_OF_WEEK_SHORT			=	initialise_days_of_week_short();
+		
+		MONTHS_LONG					=	initialise_months_long();
+		MONTHS_SHORT				=	initialise_months_short();
+
+		CLASS						=	"class";
+		CONFERENCE					=	"conference";
+		LAB							=	"lab";
+		LECTURE_HALL				=	"lecture_hall";
+		LOBBY						=	"lobby";
+		LOUNGE						=	"lounge";
+		SEMINAR						=	"seminar";
+
+		VALID_GDC_ROOMS				=	initialise_valid_gdc_rooms();
+		VALID_GDC_ROOMS_TYPES		=	initialise_valid_gdc_rooms_types();
+		VALID_GDC_ROOMS_CAPACITIES	=	initialise_valid_gdc_rooms_capacities();
+		VALID_GDC_ROOMS_POWERS		=	initialise_valid_gdc_rooms_powers();
+
+		DEPARTMENTS					=	initialise_departments();
+		
+		IGNORE_ROOMS				=	initialise_ignore_rooms();
+
+		DEFAULT_GDC_LOCATION		=	"Gateshenge";
+		EVENT_NAME					=	"event_name";
+		GDC							=	"GDC";
+		GDC_ATRIUM					=	new Location(GDC + " " + ATRIUM);
+		GDC_GATESHENGE				=	new Location(GDC + " " + DEFAULT_GDC_LOCATION);
+
+		LOCATION					=	"location";
+		
 		CAPACITY					=	"capacity";
 		POWER						=	"power";
 		SEARCH_GDC_ONLY				=	"search_gdc_only";
 		SEARCH_BUILDING				=	"search_building";
-		
+
+		ALL_ROOMS_AVAIL_MSG			=	"All rooms available.";
 		NO_ROOMS_AVAIL_MSG			=	"No rooms available; please try again.";
 		GO_HOME_MSG					=	"Go home and sleep, you procrastinator";
 		SUMMER_MSG					=	"Some rooms available (summer hours; check course schedules).";
@@ -157,7 +192,7 @@ final class Constants {
 		NO_INFO_AVAIL_MSG			=	"Not enough info available for search; please try again.";
 		SEARCH_ERROR_MSG			=	"Unknown search error; please try again.";
 		MESSAGE_STATUS_FLAGS		=	initialise_message_status_flags();
-		
+
 //		MONDAY						=	0;
 //		TUESDAY						=	1;
 //		WEDNESDAY					=	2;
@@ -175,24 +210,8 @@ final class Constants {
 		FRIDAY						=	6;
 		SATURDAY					=	7;
 		NUM_DAYS_IN_WEEK			=	8;
-				
-		DAYS_IN_MONTH				=	initialise_days_in_month();
-		DAYS_OF_WEEK_LONG			=	initialise_days_of_week_long();
-		DAYS_OF_WEEK_SHORT			=	initialise_days_of_week_short();
-		
-		DEFAULT_GDC_LOCATION		=	"Gateshenge";
+
 		END_DATE					=	"end_date";
-		EVENT_NAME					=	"event_name";
-		GDC							=	"GDC";
-		GDC_ATRIUM					=	new Location(GDC + " " + ATRIUM);
-		GDC_GATESHENGE				=	new Location(GDC + " " + DEFAULT_GDC_LOCATION);
-		
-		DEPARTMENTS					=	initialise_departments();
-		
-		IGNORE_ROOMS				=	initialise_ignore_rooms();
-		LOCATION					=	"location";
-		MONTHS_LONG					=	initialise_months_long();
-		MONTHS_SHORT				=	initialise_months_short();
 
 		START_DATE					=	"start_date";	
 		
@@ -214,18 +233,6 @@ final class Constants {
 		US_DATE_24H_TIME_FORMAT		=	"MMM dd yyyy HHmm";
 		US_DATE_NO_TIME_FORMAT		=	"MMM dd yyyy";
 
-		CLASS						=	"class";
-		CONFERENCE					=	"conference";
-		LAB							=	"lab";
-		LECTURE_HALL				=	"lecture_hall";
-		LOBBY						=	"lobby";
-		LOUNGE						=	"lounge";
-		SEMINAR						=	"seminar";
-		VALID_GDC_ROOMS				=	initialise_valid_gdc_rooms();
-		VALID_GDC_ROOMS_TYPES		=	initialise_valid_gdc_rooms_types();
-		VALID_GDC_ROOMS_CAPACITIES	=	initialise_valid_gdc_rooms_capacities();
-		VALID_GDC_ROOMS_POWERS		=	initialise_valid_gdc_rooms_powers();
-		
 		DEFAULT_ROOM_HAS_POWER		=	false;
 		DEFAULT_ROOM_TYPE			=	CLASS;
 
@@ -244,6 +251,19 @@ final class Constants {
 		NIGHTFALL					=	Utilities.get_date(1, 1, 2014, 2200);
 	}
 	
+	protected static int lines_read = 0;
+	protected static double time_to_read = 0;
+	
+	private static void reset() {
+		CSV_FEEDS_MASTER = null;
+		has_feed_been_read = false;
+		CSV_FEEDS_CLEANED = null;
+		
+		BUILDING_CACHELIST_THIS_SEMESTER = null;
+		BUILDING_CACHELIST_NEXT_SEMESTER = null;
+		DISABLE_SEARCHES_NEXT_SEMESTER = false;
+	}
+	
 	protected static void init(Context context) {
 		init(context, DEBUG);
 	}
@@ -256,10 +276,7 @@ final class Constants {
 			throw new IllegalArgumentException("App needs at least the current course schedule to correctly function.");
 		}
 
-		if (CSV_FEEDS_MASTER == null) {
-			has_feed_been_read = false;
-			CSV_FEEDS_CLEANED = null;
-		}
+		reset();
 		
 		CSV_FEEDS_MASTER = CSVReader.read_csv(context, read_from_local_feeds);		
 		if (CSV_FEEDS_MASTER == null) {
@@ -276,11 +293,19 @@ final class Constants {
 		stopwatch.start();
 		
 		Log.d(TAG, "Now creating initial BuildingLists");
+
 		BUILDING_CACHELIST_THIS_SEMESTER = new BuildingList();
-		BUILDING_CACHELIST_THIS_SEMESTER.put_building(GDC, Building.get_instance(context, GDC, COURSE_SCHEDULE_THIS_SEMESTER));
+		final Building gdc_instance_this_semester = Building.get_instance(context, GDC, COURSE_SCHEDULE_THIS_SEMESTER);
+		if (gdc_instance_this_semester == null) {
+			throw new IllegalStateException("Fatal error: failed to get GDC Building instance for this semester");
+		}
+		
+//		BUILDING_CACHELIST_THIS_SEMESTER.put_building(GDC, gdc_instance_this_semester);
 		
 		stopwatch.stop();
-		Log.d(TAG, "Took " + stopwatch.time() + " seconds to read GDC course schedules");
+		time_to_read += stopwatch.time();
+		
+//		Log.d(TAG, "Took " + stopwatch.time() + " seconds to read GDC course schedules");
 		
 		if (DEBUG) {
 			Log.d(TAG, "Num rooms in GDC list: " + BUILDING_CACHELIST_THIS_SEMESTER.get_building(GDC).get_num_rooms());
@@ -291,7 +316,12 @@ final class Constants {
 		}
 		else {
 			BUILDING_CACHELIST_NEXT_SEMESTER = new BuildingList();
-			BUILDING_CACHELIST_NEXT_SEMESTER.put_building(GDC, Building.get_instance(context, GDC, COURSE_SCHEDULE_NEXT_SEMESTER));
+//			BUILDING_CACHELIST_NEXT_SEMESTER.put_building(GDC, Building.get_instance(context, GDC, COURSE_SCHEDULE_NEXT_SEMESTER));
+			
+			final Building gdc_instance_next_semester = Building.get_instance(context, GDC, COURSE_SCHEDULE_NEXT_SEMESTER);
+			if (gdc_instance_next_semester == null) {
+				throw new IllegalStateException("Fatal error: failed to get GDC Building instance for next semester");
+			}
 		}
 		
 //		if (COURSE_SCHEDULE_THIS_SEMESTER == null) {
@@ -498,7 +528,7 @@ final class Constants {
 	
 	private static final String[] initialise_message_status_flags() {
 		final String[] FLAGS = {
-				NO_ROOMS_AVAIL_MSG, GO_HOME_MSG, SUMMER_MSG, HOLIDAY_MSG, SEARCH_ERROR_MSG
+				ALL_ROOMS_AVAIL_MSG, NO_ROOMS_AVAIL_MSG, GO_HOME_MSG, SUMMER_MSG, HOLIDAY_MSG, SEARCH_ERROR_MSG
 		};
 		return FLAGS;
 	}

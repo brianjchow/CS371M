@@ -331,6 +331,16 @@ public class Query {
 		return today;
 	}
 
+	private boolean search_is_on_weekend() {
+		int today = get_this_day_of_week();
+		
+		if (today == Constants.SATURDAY || today == Constants.SUNDAY) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * @param duration
 	 * @return True if an update to this.duration was successfully
@@ -433,7 +443,7 @@ public class Query {
 		if (!building_code.equalsIgnoreCase(Constants.GDC)) {
 			this.set_option_power(false);
 		}
-		this.options.put(Constants.SEARCH_BUILDING, building_code);
+		this.options.put(Constants.SEARCH_BUILDING, building_code.toUpperCase());
 		return true;		
 	}
 	
@@ -613,7 +623,7 @@ public class Query {
 			return get_message_from_flag();
 		}
 		
-		List<String> valid_rooms = this.search_get_all_available_rooms(eolist);
+		List<String> valid_rooms = this.search_get_list(eolist);
 
 		if (valid_rooms.size() <= 0) {
 			return get_message_from_flag();
@@ -625,17 +635,17 @@ public class Query {
 		
 		if (Constants.DEBUG) {
 			Collections.sort(valid_rooms);
-			System.out.println(valid_rooms.size() + " " + valid_rooms.toString() + "\n");			
+			System.out.println(valid_rooms.size() + " " + valid_rooms.toString() + "\n");	
 		}
-		
-		return random_room;
+
+		return (this.get_option_search_building() + " " + random_room);
 	}
 	
-	protected List<String> search_get_all_available_rooms() {
-		return (search_get_all_available_rooms(Constants.CSV_FEEDS_CLEANED));
+	protected List<String> search_get_list() {
+		return (search_get_list(Constants.CSV_FEEDS_CLEANED));
 	}
 	
-	protected List<String> search_get_all_available_rooms(EventList eolist) {
+	protected List<String> search_get_list(EventList eolist) {
 		if (eolist == null) {
 			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
 		}
@@ -644,6 +654,10 @@ public class Query {
 		
 		if (eolist.get_size() <= 0) {
 			set_message_status_flag(Constants.NO_ROOMS_AVAIL);
+			return out;
+		}
+		else if (this.search_is_on_weekend()) {
+			set_message_status_flag(Constants.ALL_ROOMS_AVAIL);
 			return out;
 		}
 		else if (this.search_is_at_night()) {
@@ -704,6 +718,10 @@ public class Query {
 			}
 		}
 		
+		final Calendar cal1 = Calendar.getInstance();
+		final Calendar cal2 = Calendar.getInstance();
+//		Date temp;
+		
 		int today = this.get_this_day_of_week();
 		boolean is_valid = true;
 		Room curr_room;
@@ -714,8 +732,30 @@ public class Query {
 			}
 			
 			Set<Event> courses = curr_room.get_events(today);
+//	System.out.println(courses.toString());
+			
+			Date curr_start_date, curr_end_date;
 			for (Event curr_event : courses) {
-				if (Utilities.times_overlap(curr_event.get_start_date(), curr_event.get_end_date(), this.start_date, this.end_date) ||
+				curr_start_date = curr_event.get_start_date();
+				curr_end_date = curr_event.get_end_date();	
+				
+				cal1.setTime(curr_start_date);
+				cal2.setTime(this.start_date);
+				
+				/* Set DatePicker to limit search to the current day */
+				
+//				cal1.set(Calendar.MONTH, cal2.get(Calendar.MONTH));
+				cal1.set(Calendar.DAY_OF_YEAR, cal2.get(Calendar.DAY_OF_YEAR));
+				curr_start_date = cal1.getTime();
+				
+				cal1.setTime(curr_end_date);
+				cal2.setTime(this.end_date);
+				
+//				cal1.set(Calendar.MONTH, cal2.get(Calendar.MONTH));
+				cal1.set(Calendar.DAY_OF_YEAR, cal2.get(Calendar.DAY_OF_YEAR));
+				curr_end_date = cal1.getTime();
+				
+				if (Utilities.times_overlap(curr_start_date, curr_end_date, this.start_date, this.end_date) ||
 						curr_room.get_capacity() < wanted_capacity) {
 					is_valid = false;
 					break;

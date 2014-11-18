@@ -29,6 +29,27 @@ public class InputReader {
 		}
 	}
 	
+	// http://stackoverflow.com/questions/9544737/read-file-from-assets
+	public InputReader(Context context, String file_name) {
+		if (context == null) {
+			throw new IllegalArgumentException("Error: Context argument is null");
+		}
+		else if (file_name == null || file_name.length() < 0) {
+			throw new IllegalArgumentException("Error: file name is either null or empty, InputReader constructor");
+		}
+		
+		try {
+//			AssetFileDescriptor fd = context.getAssets().openFd(file_name);
+//			FileReader file_reader = new FileReader(fd.getFileDescriptor());
+//			this.reader = new BufferedReader(file_reader);
+			
+			this.reader = new BufferedReader(new InputStreamReader(context.getAssets().open(file_name), "UTF-8"));
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public InputReader(InputStream stream) {
 		if (stream == null) {
 			throw new IllegalArgumentException("InputStream cannot be null, InputReader constructor");

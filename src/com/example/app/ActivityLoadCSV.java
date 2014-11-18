@@ -191,7 +191,14 @@ public class ActivityLoadCSV extends ActionBarActivity {
 				}
 			}
 			catch (Exception e) {
-				Log.d(TAG, "Caught an exception while reading CSV: " + e.getMessage());
+//				http://stackoverflow.com/questions/6834106/try-catch-exception-always-returns-null
+//				if (e == null) {
+//					Log.d(TAG, "Exception e is actually null (?)");
+//					throw new RuntimeException();
+//				}
+
+				Log.d(TAG, "Caught an exception while reading CSV: " + e.toString());
+				e.printStackTrace();
 				this.exception = e;
 				result = false;
 			}
@@ -214,7 +221,8 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			
 			if (done.equals(Boolean.valueOf(true))) {
 				Log.d(TAG, "Done reading CSV, now entering MainActivity...");
-				Toast.makeText(mContext, "Took " + CSVReader.time_to_read + " seconds to read " + CSVReader.lines_read + " lines", Toast.LENGTH_LONG).show();
+//				Toast.makeText(mContext, "Took " + CSVReader.time_to_read + " seconds to read " + CSVReader.lines_read + " lines", Toast.LENGTH_LONG).show();
+				Toast.makeText(mContext, "Took " + (CSVReader.time_to_read + Constants.time_to_read) + " seconds to read CSV feeds (" + CSVReader.lines_read + " lines) and load GDC course schedule", Toast.LENGTH_LONG).show();
 				startActivity(new Intent(mContext, ActivityMain.class));
 				finish();
 				return;
@@ -245,8 +253,8 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			
 			@Override
 			public void onClick(View v) {
-				Constants.CSV_FEEDS_MASTER = null;
-				Constants.CSV_FEEDS_CLEANED = null;
+//				Constants.CSV_FEEDS_MASTER = null;
+//				Constants.CSV_FEEDS_CLEANED = null;
 				Constants.init(mContext, true);
 				
 				dialog.dismiss();

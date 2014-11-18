@@ -24,7 +24,7 @@ final class Building implements Comparable<Building> {
 		}
 		
 		
-		this.name = name;
+		this.name = name.toUpperCase();
 		this.rooms = new HashMap<String, Room>();
 	}
 		
@@ -47,31 +47,88 @@ final class Building implements Comparable<Building> {
 //		return out;
 //	}
 	
+//	protected static final Building get_instance(String building_name, String db_file_name) {
+//		if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH || db_file_name == null || db_file_name.length() <= 0) {
+//			throw new IllegalArgumentException();
+//		}
+//		
+//		Building out;
+//		
+//		if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER != null &&
+//			Utilities.containsIgnoreCase(Constants.COURSE_SCHEDULE_NEXT_SEMESTER, db_file_name)) {
+//			if ((out = Constants.BUILDING_CACHELIST_NEXT_SEMESTER.get_building(building_name)) == null) {
+//				out = new Building(building_name);
+//				out.populate(db_file_name);
+//				Constants.BUILDING_CACHELIST_NEXT_SEMESTER.put_building(building_name, out);
+//			}
+//		}
+//		else if (Utilities.containsIgnoreCase(Constants.COURSE_SCHEDULE_THIS_SEMESTER, db_file_name)) {
+//			if ((out = Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_building(building_name)) == null) {
+//				out = new Building(building_name);
+//				out.populate(db_file_name);
+//				Constants.BUILDING_CACHELIST_THIS_SEMESTER.put_building(building_name, out);
+//			}
+//		}
+//		else {
+//			out = null;
+//		}
+//		
+//		return out;
+//	}
+	
 	protected static final Building get_instance(String building_name, String db_file_name) {
 		if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH || db_file_name == null || db_file_name.length() <= 0) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Bad argument, Building.get_instance()");
+		}
+		
+		int file_ext_dot_index = db_file_name.lastIndexOf(".");
+		if (file_ext_dot_index == -1) {
+			db_file_name += "." + Constants.DEFAULT_DB_EXTENSION;
 		}
 		
 		Building out;
 		
 		if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER != null &&
 			Utilities.containsIgnoreCase(Constants.COURSE_SCHEDULE_NEXT_SEMESTER, db_file_name)) {
-			if ((out = Constants.BUILDING_CACHELIST_NEXT_SEMESTER.get_building(building_name)) == null) {
-				out = new Building(building_name);
-				out.populate(db_file_name);
+
+			if ((out = Constants.BUILDING_CACHELIST_NEXT_SEMESTER.get_building(building_name)) != null) {
+				return out;
+			}
+			
+			out = new Building(building_name);
+			out.populate(db_file_name);
+			
+			if (Constants.BUILDING_CACHELIST_NEXT_SEMESTER != null &&
+					Constants.BUILDING_CACHELIST_NEXT_SEMESTER.get_building(building_name) == null) {
 				Constants.BUILDING_CACHELIST_NEXT_SEMESTER.put_building(building_name, out);
 			}
+			
+//			if ((out = Constants.BUILDING_CACHELIST_NEXT_SEMESTER.get_building(building_name)) == null) {
+//				Constants.BUILDING_CACHELIST_NEXT_SEMESTER.put_building(building_name, out);
+//			}
 		}
-		else if (Utilities.containsIgnoreCase(Constants.COURSE_SCHEDULE_THIS_SEMESTER, db_file_name)) {
-			if ((out = Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_building(building_name)) == null) {
-				out = new Building(building_name);
-				out.populate(db_file_name);
+//		else if (Utilities.containsIgnoreCase(Constants.COURSE_SCHEDULE_THIS_SEMESTER, db_file_name)) {
+		else {
+			
+			if ((out = Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_building(building_name)) != null) {
+				return out;
+			}
+			
+			out = new Building(building_name);
+			out.populate(db_file_name);
+			
+			if (Constants.BUILDING_CACHELIST_THIS_SEMESTER != null &&
+					Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_building(building_name) == null) {
 				Constants.BUILDING_CACHELIST_THIS_SEMESTER.put_building(building_name, out);
 			}
+			
+//			if ((out = Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_building(building_name)) == null) {
+//				Constants.BUILDING_CACHELIST_THIS_SEMESTER.put_building(building_name, out);
+//			}
 		}
-		else {
-			out = null;
-		}
+//		else {
+//			out = null;
+//		}
 		
 		return out;
 	}
@@ -118,6 +175,22 @@ final class Building implements Comparable<Building> {
 //		this.rooms.put(room_num, room);
 //		return true;
 //	}
+	
+	@Override
+	protected Building clone() {
+		Building out = new Building(this.name);
+		
+		String curr_room_str;
+		Room curr_room;
+		for (Map.Entry<String, Room> entry : this.rooms.entrySet()) {
+			curr_room_str = entry.getKey();
+			curr_room = entry.getValue();
+			
+			out.rooms.put(curr_room_str, curr_room.clone());
+		}
+		
+		return out;
+	}
 	
 	@Override
 	public int compareTo(Building other) {
@@ -192,7 +265,7 @@ final class Building implements Comparable<Building> {
 		
 		// http://zetcode.com/db/sqlite/select/
 		protected static Map<String, Room> populate(String building_name, String db_file_name) {
-			if (building_name == null || building_name.length() != 3 || db_file_name == null || db_file_name.length() <= 0) {
+			if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH || db_file_name == null || db_file_name.length() <= 0) {
 				throw new IllegalArgumentException();
 			}
 			
@@ -201,15 +274,21 @@ final class Building implements Comparable<Building> {
 			db_name = strip_file_name_formatting(db_file_name);
 			
 			establish_cxn();
+			
+//			final Calendar cal = Calendar.getInstance();
+//			final Calendar start_cal = Calendar.getInstance();
+//			final Calendar end_cal = Calendar.getInstance();
 						
 			String room_num, name;
 			boolean[] meeting_days;
-			Date start_time, end_time;
+			Date start_date, end_date;
 			Integer capacity;
 			
 			Room room;
 			Location location;
 			Event event;
+			Integer start_time, end_time;
+			
 			try {
 				ResultSet rs = statement.executeQuery("SELECT * FROM " + db_name + " WHERE building=\"" + building_name.toUpperCase() + "\"");
 				
@@ -223,18 +302,25 @@ final class Building implements Comparable<Building> {
 					room_num = rs.getString(ROOM);
 					name = rs.getString(NAME);
 					meeting_days = set_meeting_days(rs.getString(MEETING_DAYS));
-					start_time = Utilities.get_date(rs.getInt(START_TIME));
-					end_time = Utilities.get_date(rs.getInt(END_TIME));
+					
+					start_time = rs.getInt(START_TIME);
+					end_time = rs.getInt(END_TIME);
+					
+					start_date = Utilities.get_date(start_time);
+					end_date = Utilities.get_date(end_time);
 					capacity = rs.getInt(CAPACITY);
 					
-					if (start_time != null && end_time != null) {
-						location = new Location(building_name, room_num);
-						event = new Event(name, start_time, end_time, location);
-						
+					if (start_date != null && end_date != null) {
 						if ((room = out.get(room_num)) == null) {
 							if (building_is_gdc) {
 								continue;
 							}
+						}
+						
+						location = new Location(building_name, room_num);
+						event = new Event(name, start_date, end_date, location);
+						
+						if (room == null) {
 							
 							if (capacity > 0) {
 								room = new Room(location, Constants.DEFAULT_ROOM_TYPE, capacity, false);
@@ -244,8 +330,24 @@ final class Building implements Comparable<Building> {
 							}
 						}
 						
+//						start_cal.setTime(start_time);
+//						end_cal.setTime(end_time);
+						
+						// cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+						
+
 						for (int i = Constants.SUNDAY; i <= Constants.SATURDAY; i++) {
 							if (meeting_days[i]) {
+//								cal.set(Calendar.DAY_OF_WEEK, i);
+//								start_date = Utilities.get_date(cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+//										cal.get(Calendar.YEAR), start_time);
+//								
+//								end_date = Utilities.get_date(cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+//										cal.get(Calendar.YEAR), end_time);
+//								
+//								event.set_start_date(start_date);
+//								event.set_end_date(end_date);
+								
 								room.add_event(i, event);
 							}
 						}

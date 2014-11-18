@@ -17,13 +17,21 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 	private static final String TAG				=	"CourseScheduleDatabase";
 	private static final int DATABASE_VERSION	=	1;
 
+//	private static final String		BUILDING		=	"building";
+	private static final String		ROOM			=	"room";
+	private static final String		CAPACITY		=	"capacity";
+	private static final String		NAME			=	"name";
+	private static final String		MEETING_DAYS	=	"meeting_days";
+	private static final String		START_TIME		=	"start_time";
+	private static final String		END_TIME		=	"end_time";
+	
 //	private static final int COL_BUILDING		=	0;		// String
-	private static final int COL_ROOM			=	1;		// String
-	private static final int COL_CAPACITY		=	2;		// Integer
-	private static final int COL_NAME			=	3;		// String
-	private static final int COL_MEETING_DAYS	=	4;		// String
-	private static final int COL_START_TIME		=	5;		// Integer
-	private static final int COL_END_TIME		=	6;		// Integer
+//	private static final int COL_ROOM			=	1;		// String
+//	private static final int COL_CAPACITY		=	2;		// Integer
+//	private static final int COL_NAME			=	3;		// String
+//	private static final int COL_MEETING_DAYS	=	4;		// String
+//	private static final int COL_START_TIME		=	5;		// Integer
+//	private static final int COL_END_TIME		=	6;		// Integer
 	
 //	private static final int NUM_COLS			=	7;
 	
@@ -35,9 +43,10 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 		this.database_name = database_name;
 	}
 	
-	protected Map<String, Room> get_all_courses(String building_name, String db_file_name) {
+	protected Map<String, Room> get_courses(String building_name, String db_file_name) {
 		if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH || db_file_name == null || db_file_name.length() <= 0) {
-			throw new IllegalArgumentException();
+//			Log.d(TAG, "One or more arguments null, CourseScheduleDatabase.get_courses()");
+			throw new IllegalArgumentException("One or more arguments null, CourseScheduleDatabase.get_courses()");
 		}
 		
 		Map<String, Room> out = new HashMap<String, Room>(25);
@@ -53,11 +62,22 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 		query = "SELECT * FROM " + table_name + " WHERE building=\"" + building_name.toUpperCase(Locale.ENGLISH) + "\"";
 		
 		db = this.getReadableDatabase();
+//		Log.d(TAG, "db is null: " + (db == null));
+		
 		cursor = db.rawQuery(query, null);
+//		Log.d(TAG, "cursor is null: " + (cursor == null));
 
 		if (!cursor.moveToFirst()) {
 			return out;
 		}
+		
+		// consider switching to using a ContentProvider later
+		final int COL_ROOM = cursor.getColumnIndex(ROOM);
+		final int COL_CAPACITY = cursor.getColumnIndex(CAPACITY);
+		final int COL_NAME = cursor.getColumnIndex(NAME);
+		final int COL_MEETING_DAYS = cursor.getColumnIndex(MEETING_DAYS);
+		final int COL_START_TIME = cursor.getColumnIndex(START_TIME);
+		final int COL_END_TIME = cursor.getColumnIndex(END_TIME);
 		
 		boolean building_is_gdc = building_name.equalsIgnoreCase(Constants.GDC);
 		if (building_is_gdc) {
@@ -66,29 +86,37 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 		
 		String room_num, name;
 		boolean[] meeting_days;
-		Date start_time, end_time;
+		Date start_date, end_date;
 		Integer capacity;
 		
 		Room room;
 		Location location;
 		Event event;
+		Integer start_time, end_time;
 		
 		do {
 			room_num = cursor.getString(COL_ROOM);
 			capacity = cursor.getInt(COL_CAPACITY);
 			name = cursor.getString(COL_NAME);
 			meeting_days = set_meeting_days(cursor.getString(COL_MEETING_DAYS));
-			start_time = Utilities.get_date(cursor.getInt(COL_START_TIME));
-			end_time = Utilities.get_date(cursor.getInt(COL_END_TIME));
+			
+			start_time = cursor.getInt(COL_START_TIME);
+			end_time = cursor.getInt(COL_END_TIME);
+			
+			start_date = Utilities.get_date(start_time);
+			end_date = Utilities.get_date(end_time);
 			
 			if (start_time != null && end_time != null) {
-				location = new Location(building_name, room_num);
-				event = new Event(name, start_time, end_time, location);
-				
 				if ((room = out.get(room_num)) == null) {
 					if (building_is_gdc) {
 						continue;
 					}
+				}
+				
+				location = new Location(building_name, room_num);
+				event = new Event(name, start_date, end_date, location);
+				
+				if ((room = out.get(room_num)) == null) {
 					
 					if (capacity > 0) {
 						room = new Room(location, Constants.DEFAULT_ROOM_TYPE, capacity, false);
@@ -106,6 +134,8 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 				
 				out.put(room_num, room);
 			}
+			
+//			Log.d(TAG, DatabaseUtils.dumpCurrentRowToString(cursor));
 		}
 		while (cursor.moveToNext());
 		
@@ -168,6 +198,10 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 	}
 
 	private Map<String, Room> initialise_gdc_room_properties() {
+//		Log.d(TAG, (Constants.VALID_GDC_ROOMS == null) + " " + (Constants.VALID_GDC_ROOMS_TYPES == null) + " " + (Constants.VALID_GDC_ROOMS_CAPACITIES == null)
+//				+ " " + (Constants.VALID_GDC_ROOMS_POWERS == null) + " " + (Constants.GDC == null)
+//				+ " " + (Constants.CONFERENCE == null) + " " + (Constants.LOBBY == null) + " " + (Constants.LOUNGE == null));
+		
 		Map<String, Room> out = new HashMap<String, Room>(Constants.VALID_GDC_ROOMS.length * 2);
 
 		String[] room_types = Constants.VALID_GDC_ROOMS_TYPES;
@@ -176,9 +210,15 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 		String gdc_str = Constants.GDC + " ";
 		Room room;
 		for (int i = 0; i < Constants.VALID_GDC_ROOMS.length; i++) {
-			if ((Constants.IGNORE_CONFERENCE_ROOMS && room_types[i].equals(Constants.CONFERENCE)) ||
-					room_types[i].equals(Constants.LOBBY) ||
-					room_types[i].equals(Constants.LOUNGE)) {
+			if ((Constants.IGNORE_CONFERENCE_ROOMS && 
+					room_types[i]
+							.equals(Constants.CONFERENCE)) ||
+					
+					room_types[i]
+							.equals(Constants.LOBBY) ||
+					
+					room_types[i]
+							.equals(Constants.LOUNGE)) {
 				continue;
 			}
 			room = new Room(new Location(gdc_str + Constants.VALID_GDC_ROOMS[i]), room_types[i], room_capacities[i], room_powers[i]);
