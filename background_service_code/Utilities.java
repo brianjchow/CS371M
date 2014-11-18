@@ -7,10 +7,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
-
 public class Utilities {
+	
+	protected static boolean str_is_gdc(String str) {
+		if (str == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		return (str.equalsIgnoreCase(Constants.GDC));
+	}
 	
 	protected static int get_hashmap_size(int size) {
 		if (size < 0) {
