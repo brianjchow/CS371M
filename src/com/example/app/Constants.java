@@ -528,7 +528,7 @@ final class Constants {
 	
 	private static final String[] initialise_message_status_flags() {
 		final String[] FLAGS = {
-				ALL_ROOMS_AVAIL_MSG, NO_ROOMS_AVAIL_MSG, GO_HOME_MSG, SUMMER_MSG, HOLIDAY_MSG, SEARCH_ERROR_MSG
+				ALL_ROOMS_AVAIL_MSG, NO_ROOMS_AVAIL_MSG, GO_HOME_MSG, SUMMER_MSG, HOLIDAY_MSG, NO_INFO_AVAIL_MSG, SEARCH_ERROR_MSG
 		};
 		return FLAGS;
 	}

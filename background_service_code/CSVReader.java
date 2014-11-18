@@ -463,7 +463,7 @@ final class CSVReader {
 		query.set_option_capacity(0);
 //		query.set_option_capacity(new Integer(0));
 		
-		query.set_option_search_building("gea");
+		query.set_option_search_building("geb");
 
 		String random_room = query.search();
 

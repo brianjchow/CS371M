@@ -668,6 +668,7 @@ public class Query {
 		reset_message_status_flag();
 		String course_schedule = this.get_current_course_schedule();
 		if (course_schedule == null) {
+			set_message_status_flag(Constants.SEARCH_ERROR);
 			return out;
 		}
 		
@@ -676,6 +677,7 @@ public class Query {
 		Building search_building = Building.get_instance(this.get_option_search_building(), course_schedule);
 		if (search_building == null) {
 			set_message_status_flag(Constants.NO_INFO);
+			return out;
 		}
 		
 		SortedSet<String> valid_rooms = search_building.get_keyset();
@@ -769,6 +771,10 @@ public class Query {
 			is_valid = true;
 		}
 
+		if (out.size() <= 0) {
+			set_message_status_flag(Constants.NO_ROOMS_AVAIL);
+		}
+		
 		return out;
 	}
 
