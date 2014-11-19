@@ -2,7 +2,6 @@ package com.example.app;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import android.content.Context;
@@ -60,7 +59,7 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 		
 		Log.d(TAG, "Selecting from table " + table_name + " in db file " + this.database_name);
 		
-		query = "SELECT * FROM " + table_name + " WHERE building=\"" + building_name.toUpperCase(Locale.ENGLISH) + "\"";
+		query = "SELECT * FROM " + table_name + " WHERE building=\"" + building_name.toUpperCase(Constants.DEFAULT_LOCALE) + "\"";
 		
 		db = this.getReadableDatabase();
 //		Log.d(TAG, "db is null: " + (db == null));

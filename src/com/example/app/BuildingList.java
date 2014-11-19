@@ -1,7 +1,6 @@
 package com.example.app;
 
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -25,7 +24,7 @@ final class BuildingList {
 			throw new IllegalArgumentException();
 		}
 		
-		return (this.buildings.get(name.toUpperCase(Locale.ENGLISH)));
+		return (this.buildings.get(name.toUpperCase(Constants.DEFAULT_LOCALE)));
 	}
 	
 	protected Iterator<Map.Entry<String, Building>> get_iterator() {

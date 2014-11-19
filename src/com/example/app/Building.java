@@ -1,7 +1,6 @@
 package com.example.app;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -21,7 +20,7 @@ final class Building implements Comparable<Building> {
 			throw new IllegalArgumentException("Building codes must be exactly 3 characters in length.");
 		}
 		
-		this.name = name.toUpperCase(Locale.US);
+		this.name = name.toUpperCase(Constants.DEFAULT_LOCALE);
 		this.rooms = new HashMap<String, Room>();
 	}
 		

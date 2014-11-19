@@ -70,7 +70,7 @@ final class Constants {
 //	protected static final	int			NO_INFO							=	5;
 //	protected static final	int			SEARCH_ERROR					=	6;
 //	protected static final	String[]	MESSAGE_STATUS_FLAGS;
-		
+	
 	protected static final 	int[] 		DAYS_IN_MONTH;
 	protected static final 	String[] 	DAYS_OF_WEEK_LONG;
 	protected static final 	String[] 	DAYS_OF_WEEK_SHORT;

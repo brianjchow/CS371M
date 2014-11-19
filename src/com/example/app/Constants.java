@@ -2,6 +2,7 @@ package com.example.app;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 
 import android.content.Context;
 import android.util.Log;
@@ -16,14 +17,8 @@ final class Constants {
 	protected static		EventList	CSV_FEEDS_CLEANED				=	null;
 	private static 			boolean 	has_feed_been_read;
 
-//	protected static	 	RoomList 	GDC_ROOMS_THIS_SEMESTER			=	null;
-//	protected static		RoomList	GDC_ROOMS_NEXT_SEMESTER			=	null;
-//	protected static		RoomList	USED_ROOMS_THIS_SEMESTER		=	null;
-//	protected static		RoomList	USED_ROOMS_NEXT_SEMESTER		=	null;
-//	protected static final	int			COURSE_SCHEDULE_THIS_SEMESTER	=	R.raw.master_course_schedule_f14;
-//	protected static final	int			COURSE_SCHEDULE_NEXT_SEMESTER	=	R.raw.master_course_schedule_s15;
-	protected static		BuildingList	BUILDING_CACHELIST_THIS_SEMESTER	=	null; // new BuildingList();
-	protected static		BuildingList	BUILDING_CACHELIST_NEXT_SEMESTER	=	null; // new BuildingList();
+	protected static	BuildingList	BUILDING_CACHELIST_THIS_SEMESTER	=	null; // new BuildingList();
+	protected static	BuildingList	BUILDING_CACHELIST_NEXT_SEMESTER	=	null; // new BuildingList();
 	protected static		boolean		DISABLE_SEARCHES_NEXT_SEMESTER	=	false;
 	
 	protected static final	boolean		IGNORE_CONFERENCE_ROOMS			=	true;
@@ -55,29 +50,15 @@ final class Constants {
 	protected static final 	String 		ALL_DAY;
 	protected static final 	String 		ATRIUM;
 	protected static final 	String[] 	CAMPUS_BUILDINGS;
-	protected static final	int			CAMPUS_BUILDINGS_GDC_POSITION	=	29; // 60;
+	protected static final	int			CAMPUS_BUILDINGS_GDC_POS;	//	=	60; // 29 in reduced list
+	
+	protected static final	Locale		DEFAULT_LOCALE					=	Locale.US;
 	
 	protected static final 	String 		CAPACITY;
 	protected static final 	String 		POWER;
 	protected static final	String		SEARCH_GDC_ONLY;
 	protected static final	String		SEARCH_BUILDING;
 
-//	protected static final	String		ALL_ROOMS_AVAIL_MSG;
-//	protected static final 	String 		NO_ROOMS_AVAIL_MSG;
-//	protected static final 	String 		GO_HOME_MSG;
-//	protected static final	String		SUMMER_MSG;
-//	protected static final	String		HOLIDAY_MSG;
-//	protected static final	String		NO_INFO_AVAIL_MSG;
-//	protected static final	String		SEARCH_ERROR_MSG;
-//	protected static final	int			ALL_ROOMS_AVAIL					=	0;
-//	protected static final	int			NO_ROOMS_AVAIL					=	1;
-//	protected static final	int			GO_HOME							=	2;
-//	protected static final	int			SUMMER							=	3;
-//	protected static final	int			HOLIDAY							=	4;
-//	protected static final	int			NO_INFO							=	5;
-//	protected static final	int			SEARCH_ERROR					=	6;
-//	protected static final	String[]	MESSAGE_STATUS_FLAGS;
-	
 	protected static final 	int[] 		DAYS_IN_MONTH;
 	protected static final 	String[] 	DAYS_OF_WEEK_LONG;
 	protected static final 	String[] 	DAYS_OF_WEEK_SHORT;
@@ -143,11 +124,14 @@ final class Constants {
 	static {
 		
 		DEBUG						=	true;
+
+		GDC							=	"GDC";
 		
 		ALL_DAY						=	"all day";
 		ATRIUM						=	"Atrium";
 		
 		CAMPUS_BUILDINGS			=	initialise_campus_buildings();
+		CAMPUS_BUILDINGS_GDC_POS	=	initialise_campus_buildings_gdc_pos();
 		
 		CLASS						=	"class";
 		CONFERENCE					=	"conference";
@@ -168,7 +152,6 @@ final class Constants {
 
 		DEFAULT_GDC_LOCATION		=	"Gateshenge";
 		EVENT_NAME					=	"event_name";
-		GDC							=	"GDC";
 		GDC_ATRIUM					=	new Location(GDC + " " + ATRIUM);
 		GDC_GATESHENGE				=	new Location(GDC + " " + DEFAULT_GDC_LOCATION);
 
@@ -179,24 +162,6 @@ final class Constants {
 		SEARCH_GDC_ONLY				=	"search_gdc_only";
 		SEARCH_BUILDING				=	"search_building";
 
-//		ALL_ROOMS_AVAIL_MSG			=	"All rooms available.";
-//		NO_ROOMS_AVAIL_MSG			=	"No rooms available; please try again.";
-//		GO_HOME_MSG					=	"Go home and sleep, you procrastinator";
-//		SUMMER_MSG					=	"Some rooms available (summer hours); check course schedules).";
-//		HOLIDAY_MSG					=	"All rooms available (campus closed for holidays).";
-//		NO_INFO_AVAIL_MSG			=	"Not enough info available for search; please try again.";
-//		SEARCH_ERROR_MSG			=	"Unknown search error; please try again.";
-//		MESSAGE_STATUS_FLAGS		=	initialise_message_status_flags();
-
-//		MONDAY						=	0;
-//		TUESDAY						=	1;
-//		WEDNESDAY					=	2;
-//		THURSDAY					=	3;
-//		FRIDAY						=	4;
-//		SATURDAY					=	5;
-//		SUNDAY						=	6;
-//		NUM_DAYS_IN_WEEK			=	7;
-		
 		SUNDAY						=	1;
 		MONDAY						=	2;
 		TUESDAY						=	3;
@@ -238,17 +203,10 @@ final class Constants {
 		DEFAULT_ROOM_HAS_POWER		=	false;
 		DEFAULT_ROOM_TYPE			=	CLASS;
 
-//		VALID_GDC_ROOMS_ROOMLIST	=	new RoomList();
-//		VALID_ROOMS_THIS_SEMESTER	=	new RoomList();
-//		VALID_ROOMS_NEXT_SEMESTER	=	new RoomList();
-		
 		has_feed_been_read			=	false;
 
 		/* ################################# DO NOT MOVE ANYTHING BELOW THIS LINE ABOVE IT ################################# */
 		
-//		CSV_FEEDS_MASTER			=	CSVReader.read_csv();
-//		CSV_FEEDS_CLEANED			=	get_events_cleaned();
-
 		DAYBREAK					=	Utilities.get_date(1, 2, 2014, 800);
 		NIGHTFALL					=	Utilities.get_date(1, 1, 2014, 2200);
 		
@@ -327,76 +285,8 @@ final class Constants {
 				throw new IllegalStateException("Fatal error: failed to get GDC Building instance for next semester");
 			}
 		}
-		
-//		if (COURSE_SCHEDULE_THIS_SEMESTER == null) {
-//			USED_ROOMS_THIS_SEMESTER = null;
-//		}
-//		else {
-//			USED_ROOMS_THIS_SEMESTER = new RoomList(context, COURSE_SCHEDULE_THIS_SEMESTER);
-//			
-////			int res_id = getResId(COURSE_SCHEDULE_THIS_SEMESTER, R.raw.class);
-////			if (res_id != -1) {
-////				USED_ROOMS_THIS_SEMESTER = new RoomList(context, res_id);
-////			}
-////			else {
-////				USED_ROOMS_THIS_SEMESTER = null;
-////			}
-//		}
-//		
-//		if (COURSE_SCHEDULE_NEXT_SEMESTER == null) {
-//			USED_ROOMS_NEXT_SEMESTER = null;
-//		}
-//		else {
-//			USED_ROOMS_THIS_SEMESTER = new RoomList(context, COURSE_SCHEDULE_NEXT_SEMESTER);
-//			
-////			int res_id = getResId(COURSE_SCHEDULE_NEXT_SEMESTER, R.raw.class);
-////			if (res_id != -1) {
-////				USED_ROOMS_THIS_SEMESTER = new RoomList(context, res_id);
-////			}
-////			else {
-////				USED_ROOMS_THIS_SEMESTER = null;
-////			}
-//		}
-//		
-//		if (USED_ROOMS_THIS_SEMESTER == null) {
-//			GDC_ROOMS_THIS_SEMESTER = new RoomList();
-//		}
-//		else {
-//			GDC_ROOMS_THIS_SEMESTER = USED_ROOMS_THIS_SEMESTER.get_gdc_rooms();
-//		}
-//		
-//		if (USED_ROOMS_NEXT_SEMESTER == null) {
-//			GDC_ROOMS_NEXT_SEMESTER = new RoomList();
-//		}
-//		else {
-//			GDC_ROOMS_NEXT_SEMESTER = USED_ROOMS_NEXT_SEMESTER.get_gdc_rooms();
-//		}
-		
-//		Stopwatch stopwatch = new Stopwatch();
-//		stopwatch.start();
-//		CourseScheduleDatabase csd = new CourseScheduleDatabase(context, "master_course_schedule_f14.db");
-//		RoomList all_courses = csd.get_roomlist();
-////		List<ArrayList<String>> all_courses = csd.get_all_courses();
-//		stopwatch.stop();
-//		
-////		Log.d(TAG, all_courses.toString());
-//		Log.d(TAG, "Took " + stopwatch.time() + " seconds to read from db file");
-	
-	}
 
-//	// http://stackoverflow.com/questions/4427608/android-getting-resource-id-from-string
-//	private static int getResId(String var_name, Class<?> c) {
-//		int id = -1;
-//		try {
-//			Field id_field = c.getDeclaredField(var_name);
-//			id = id_field.getInt(id_field);
-//		}
-//		catch (Exception e) {
-//			id = -1;
-//		}
-//		
-//		return id;
-//	}
+	}
 
 	/*
 	 * Ignored rooms (room num, room type, capacity)
@@ -452,29 +342,59 @@ final class Constants {
 	}
 
 	private static final String[] initialise_campus_buildings() {
+//		final String[] CAMPUS_BUILDINGS = {
+//				"ACA", "ADH", "AFP", "AHG", "ANB", "AND", "ARC", "ART", "ATT",
+//				"BAT", "BEL", "BEN", "BHD", "BIO", "BLD", "BMA", "BMC", "BME", "BOT", "BRB", "BRG", "BTL", "BUR", "BWY",
+//				"CAL", "CBA", "CCG", "CCJ", "CDA", "CDL", "CEE", "CCF", "CLA", "CLK", "CMA", "CMB", "CML", "COM", "CPE", "CRB", "CRD", "CRH", "CSA", "CS3", "CS4", "CS5", "CTR",
+//				"DEV", "DCP", "DFA", "DFF",
+//				"EAS", "ECJ", "ENS", "EPS", "ERC", "ETC",
+//				"FAC", "FDF", "FDH", "FNT", "FPC",			// , "FC1", "FC2", "FC3", "FC4", "FC5", "FC6", "FC7", "FC8" (facilities complex)
+//				"GAR", "GDC", "GEA", "GEB", "GOL", "GRE", "GRG", "GSB", "GUG",
+//				"HMA", "HRC", "HRH", "HSM",
+//				"INT", "IPF",
+//				"JCD", "JES", "JGB", "JHH", "JON",
+//				"KIN",
+//				"LBJ", "LCH", "LDH", "LFH", "LLA", "LLB", "LLC", "LLD", "LLE", "LLF", "LTD", "LTH",
+//				"MAG", "MAI", "MBB", "MEZ", "MFH", "MHD", "MMS", "MNC", "MRH", "MSB",
+//				"NEZ", "NHB", "NMS", "NOA", "NUR",
+//				"PAC", "PAI", "PAR", "PAT", "PCL", "PHD", "PHR", "POB", "PPA", "PPB", "PPE", "PPL",
+//				"RHD", "RLM", "RSC",
+//				"SAC", "SAG", "SBS", "SEA", "SER", "SJG", "SJH", "SRH", "SSB", "SSW", "STD", "SUT", "SWG", "SW7", "SZB",
+//				"TCC", "TMM", "TNH", "TRG", "TSC", "TSG", "TTC",
+//				"UA9", "UIL", "UNB", "UPB", "UTA", "UTC", "UTX",
+//				"WAG", "WCH", "WEL", "WIN", "WMB", "WRW", "WWH"
+//		};
 		final String[] CAMPUS_BUILDINGS = {
-				"ACA", "ADH", "AFP", "AHG", "ANB", "AND", "ARC", "ART", "ATT",
-				"BAT", "BEL", "BEN", "BHD", "BIO", "BLD", "BMA", "BMC", "BME", "BOT", "BRB", "BRG", "BTL", "BUR", "BWY",
-				"CAL", "CBA", "CCG", "CCJ", "CDA", "CDL", "CEE", "CCF", "CLA", "CLK", "CMA", "CMB", "CML", "COM", "CPE", "CRB", "CRD", "CRH", "CSA", "CS3", "CS4", "CS5", "CTR",
-				"DEV", "DCP", "DFA", "DFF",
-				"EAS", "ECJ", "ENS", "EPS", "ERC", "ETC",
-				"FAC", "FDF", "FDH", "FNT", "FPC",			// , "FC1", "FC2", "FC3", "FC4", "FC5", "FC6", "FC7", "FC8" (facilities complex)
-				"GAR", "GDC", "GEA", "GEB", "GOL", "GRE", "GRG", "GSB", "GUG",
-				"HMA", "HRC", "HRH", "HSM",
-				"INT", "IPF",
-				"JCD", "JES", "JGB", "JHH", "JON",
-				"KIN",
-				"LBJ", "LCH", "LDH", "LFH", "LLA", "LLB", "LLC", "LLD", "LLE", "LLF", "LTD", "LTH",
-				"MAG", "MAI", "MBB", "MEZ", "MFH", "MHD", "MMS", "MNC", "MRH", "MSB",
+				"ACA", "AHG", "ART", "ATT",
+				"BAT", "BEL", "BEN", "BIO", "BMC", "BME", "BRB", "BTL", "BUR",
+				"CAL", "CBA", "CCJ", "CLA", "CMA", "CMB", "CRD", "DFA",
+				"ECJ", "ENS", "EPS", "ETC",
+				"FAC", "FDH", "FNT",
+				"GAR", "GDC", "GEA", "GEB", "GOL", "GRE", "GSB",
+				"HRC", "HRH",
+				"INT",
+				"JES", "JGB", "JON",
+				"LTH",
+				"MAI", "MBB", "MEZ", "MRH",
 				"NEZ", "NHB", "NMS", "NOA", "NUR",
-				"PAC", "PAI", "PAR", "PAT", "PCL", "PHD", "PHR", "POB", "PPA", "PPB", "PPE", "PPL",
-				"RHD", "RLM", "RSC",
-				"SAC", "SAG", "SBS", "SEA", "SER", "SJG", "SJH", "SRH", "SSB", "SSW", "STD", "SUT", "SWG", "SW7", "SZB",
-				"TCC", "TMM", "TNH", "TRG", "TSC", "TSG", "TTC",
-				"UA9", "UIL", "UNB", "UPB", "UTA", "UTC", "UTX",
-				"WAG", "WCH", "WEL", "WIN", "WMB", "WRW", "WWH"
+				"PAC", "PAI", "PAR", "PAT", "PCL", "PHR", "POB",
+				"RLM", "RSC",
+				"SAC", "SEA", "SRH", "SSB", "SSW", "STD", "SUT", "SZB",
+				"TNH", "TSC",
+				"UTA", "UTC",
+				"WAG", "WCH", "WEL", "WIN", "WMB", "WRW"
 		};
 		return CAMPUS_BUILDINGS;
+	}
+	
+	private static final int initialise_campus_buildings_gdc_pos() {
+		for (int i = 0; i < CAMPUS_BUILDINGS.length; i++) {
+			if (CAMPUS_BUILDINGS[i].equals(GDC)) {
+				return i;
+			}
+		}
+		
+		throw new IllegalStateException("ERROR: where's GDC in the campus buildings array mang?");
 	}
 	
 	private static final int[] initialise_days_in_month() {
@@ -529,14 +449,7 @@ final class Constants {
 		};
 		return IGNORE_ROOMS;
 	}
-	
-//	private static final String[] initialise_message_status_flags() {
-//		final String[] FLAGS = {
-//				ALL_ROOMS_AVAIL_MSG, NO_ROOMS_AVAIL_MSG, GO_HOME_MSG, SUMMER_MSG, HOLIDAY_MSG, NO_INFO_AVAIL_MSG, SEARCH_ERROR_MSG
-//		};
-//		return FLAGS;
-//	}
-	
+
 	private static final String[] initialise_months_long() {
 		final String[] MONTHS_LONG = {
 				"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"

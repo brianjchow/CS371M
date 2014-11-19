@@ -505,7 +505,7 @@ public class Query implements Parcelable {
 		if (!building_code.equalsIgnoreCase(Constants.GDC)) {
 			this.set_option_power(false);
 		}
-		this.options.put(Constants.SEARCH_BUILDING, building_code.toUpperCase(Locale.ENGLISH));
+		this.options.put(Constants.SEARCH_BUILDING, building_code.toUpperCase(Constants.DEFAULT_LOCALE));
 		return true;		
 	}
 
@@ -867,7 +867,7 @@ public class Query implements Parcelable {
 				throw new IllegalArgumentException();
 			}
 			
-			this.building_name = building_name.toUpperCase(Locale.US);
+			this.building_name = building_name.toUpperCase(Constants.DEFAULT_LOCALE);
 			this.results = new ArrayList<String>();
 			this.message_status = MessageStatus.SEARCH_ERROR.toString();
 		}
@@ -877,7 +877,7 @@ public class Query implements Parcelable {
 //				throw new IllegalArgumentException();
 //			}
 //
-//			this.building_name = building_name.toUpperCase(Locale.US);
+//			this.building_name = building_name.toUpperCase(Constants.DEFAULT_LOCALE);
 //			this.results = results;
 //			this.message_status = message_status.toString();
 //		}

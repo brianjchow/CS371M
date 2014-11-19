@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.uis.R;
 
@@ -128,6 +129,10 @@ public class ActivityRoomRec extends ActionBarActivity {
 		
 		stopwatch.stop();
 		Log.d(TAG, "Took " + stopwatch.time() + " seconds to execute search");
+		
+		if (Constants.DEBUG) {
+			Toast.makeText(ActivityRoomRec.this, "Took " + stopwatch.time() + " seconds to execute search", Toast.LENGTH_SHORT).show();
+		}
 		
 		setTextViewInfo(curr_recommendation);
 		

@@ -34,7 +34,7 @@ import com.example.uis.R;
 public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnDateSetListener, TimePickerDialog.OnTimeSetListener
 
 	private static final String TAG = "FindRoomLaterActivity";
-	private static final int SECS_IN_DAY = 1440;		// 24 * 60 * 60
+	private static final int SECS_IN_DAY = 86400;		// 24 * 60 * 60
 
 	private Query this_query;
 	
@@ -189,12 +189,13 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 
 		final Spinner spinner = (Spinner) findViewById(R.id.choose_building_spinner);
 		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ActivityFindRoomLater.this, R.array.campus_buildings, android.R.layout.simple_spinner_item);
+//		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(ActivityFindRoomLater.this, android.R.layout.simple_spinner_item, Constants.CAMPUS_BUILDINGS);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
 		
 		String search_building = this_query.get_option_search_building();
 		if (search_building.equalsIgnoreCase(Constants.GDC)) {
-			spinner.setSelection(Constants.CAMPUS_BUILDINGS_GDC_POSITION);
+			spinner.setSelection(Constants.CAMPUS_BUILDINGS_GDC_POS);
 		}
 		else {
 			int index = get_search_building_index(search_building);
@@ -203,7 +204,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				Log.d(TAG, "Found index " + index + " for search bldg " + search_building + "; CAMPUS_BUILDINGS[" + index + "] = " + Constants.CAMPUS_BUILDINGS[index]);
 			}
 			else {
-				spinner.setSelection(Constants.CAMPUS_BUILDINGS_GDC_POSITION);
+				spinner.setSelection(Constants.CAMPUS_BUILDINGS_GDC_POS);
 			}
 		}
 		
@@ -414,7 +415,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		time /= 60;
 		int time_remaining_in_day_mins = (int) time;
 		
-		time_remaining_in_day_mins = SECS_IN_DAY / 60;	// disable if limiting searches to the current day
+//		time_remaining_in_day_mins = SECS_IN_DAY / 60;	// disable if limiting searches to the current day
 		
 		final NumberPicker np = (NumberPicker) dialog.findViewById(R.id.number_picker);
 		String[] nums = new String[(int) time_remaining_in_day_mins + 1];
