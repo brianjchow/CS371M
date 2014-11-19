@@ -30,6 +30,10 @@ public class InputReader {
 	}
 	
 	// http://stackoverflow.com/questions/9544737/read-file-from-assets
+	// http://ponystyle.com/blog/2010/03/26/dealing-with-asset-compression-in-android-apps/
+
+	// TODO
+	// http://stackoverflow.com/questions/4153246/how-to-check-android-asset-resource
 	public InputReader(Context context, String file_name) {
 		if (context == null) {
 			throw new IllegalArgumentException("Error: Context argument is null");

@@ -2,7 +2,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,7 +19,7 @@ public class Query {
 	private int duration;					// how long the user needs the room to be available, in minutes; default 60
 	private Map<String, Object> options;	// [capacity, power plugs, search building] for now
 	
-	private static int MESSAGE_STATUS_FLAG = -1;
+//	private static int MESSAGE_STATUS_FLAG = -1;
 	
 	/**
 	 * Default constructor. Uses the current system time.
@@ -256,18 +255,22 @@ public class Query {
 		return Utilities.times_overlap(this_start, this_end, Constants.NIGHTFALL, Constants.DAYBREAK);
 	}
 
-	private String get_message_from_flag() {
-		if (MESSAGE_STATUS_FLAG >= 0 && MESSAGE_STATUS_FLAG < Constants.MESSAGE_STATUS_FLAGS.length) {
-			return Constants.MESSAGE_STATUS_FLAGS[MESSAGE_STATUS_FLAG];
+//	private String get_message_from_flag() {
+//		if (MESSAGE_STATUS_FLAG >= 0 && MESSAGE_STATUS_FLAG < Constants.MESSAGE_STATUS_FLAGS.length) {
+//			return Constants.MESSAGE_STATUS_FLAGS[MESSAGE_STATUS_FLAG];
+//		}
+//		return Constants.MESSAGE_STATUS_FLAGS[Constants.SEARCH_ERROR];
+//	}
+
+//	private void reset_message_status_flag() {
+//		MESSAGE_STATUS_FLAG = -1;
+//	}
+
+	private String get_current_course_schedule(QueryResult query_result) {
+		if (query_result == null) {
+			throw new IllegalArgumentException();
 		}
-		return Constants.MESSAGE_STATUS_FLAGS[Constants.SEARCH_ERROR];
-	}
-
-	private void reset_message_status_flag() {
-		MESSAGE_STATUS_FLAG = -1;
-	}
-
-	private String get_current_course_schedule() {
+		
 		Date now = Calendar.getInstance().getTime();
 		
 		if (Utilities.date_is_during_spring(this.start_date)) {
@@ -276,31 +279,41 @@ public class Query {
 			}
 			else if (Utilities.date_is_during_summer(now)) {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
-					MESSAGE_STATUS_FLAG = Constants.NO_INFO;
+					query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
+//					set_message_status(MessageStatus.NO_INFO_AVAIL);
+//					MESSAGE_STATUS_FLAG = Constants.NO_INFO;
 				}
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
 			}
 			else if (Utilities.date_is_during_fall(now)) {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
-					MESSAGE_STATUS_FLAG = Constants.NO_INFO;
+					query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
+//					set_message_status(MessageStatus.NO_INFO_AVAIL);
+//					MESSAGE_STATUS_FLAG = Constants.NO_INFO;
 				}
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
 			}
 			else {
-				MESSAGE_STATUS_FLAG = Constants.HOLIDAY;
+				query_result.set_message_status(MessageStatus.HOLIDAY);
+//				set_message_status(MessageStatus.HOLIDAY);
+//				MESSAGE_STATUS_FLAG = Constants.HOLIDAY;
 				return null;
 			}
 		}
 		
 		else if (Utilities.date_is_during_summer(this.start_date)) {
-			MESSAGE_STATUS_FLAG = Constants.SUMMER;
+			query_result.set_message_status(MessageStatus.SUMMER);
+//			set_message_status(MessageStatus.SUMMER);
+//			MESSAGE_STATUS_FLAG = Constants.SUMMER;
 			return null;
 		}
 		
 		else if (Utilities.date_is_during_fall(this.start_date)) {
 			if (Utilities.date_is_during_spring(now)) {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
-					MESSAGE_STATUS_FLAG = Constants.NO_INFO;
+					query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
+//					set_message_status(MessageStatus.NO_INFO_AVAIL);
+//					MESSAGE_STATUS_FLAG = Constants.NO_INFO;
 				}
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
 			}
@@ -311,13 +324,17 @@ public class Query {
 				return Constants.COURSE_SCHEDULE_THIS_SEMESTER;
 			}
 			else {
-				MESSAGE_STATUS_FLAG = Constants.HOLIDAY;
+				query_result.set_message_status(MessageStatus.HOLIDAY);
+//				set_message_status(MessageStatus.HOLIDAY);
+//				MESSAGE_STATUS_FLAG = Constants.HOLIDAY;
 				return null;
 			}
 		}
 		
 		else {
-			MESSAGE_STATUS_FLAG = Constants.HOLIDAY;
+			query_result.set_message_status(MessageStatus.HOLIDAY);
+//			set_message_status(MessageStatus.HOLIDAY);
+//			MESSAGE_STATUS_FLAG = Constants.HOLIDAY;
 			return null;
 		}
 		
@@ -357,13 +374,13 @@ public class Query {
 		return true;
 	}
 	
-	private void set_message_status_flag(int message_code) {
-		if (message_code < 0 || message_code >= Constants.MESSAGE_STATUS_FLAGS.length) {
-			throw new IllegalArgumentException();
-		}
-		
-		MESSAGE_STATUS_FLAG = message_code;
-	}
+//	private void set_message_status_flag(int message_code) {
+//		if (message_code < 0 || message_code >= Constants.MESSAGE_STATUS_FLAGS.length) {
+//			throw new IllegalArgumentException();
+//		}
+//		
+//		MESSAGE_STATUS_FLAG = message_code;
+//	}
 
 	/**
 	 * @param option
@@ -514,7 +531,7 @@ public class Query {
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(this.start_date);
-		calendar.set(Calendar.HOUR, hour);
+		calendar.set(Calendar.HOUR_OF_DAY, hour);
 		calendar.set(Calendar.MINUTE, minute);
 		this.start_date = calendar.getTime();
 		set_end_date();
@@ -599,85 +616,49 @@ public class Query {
 	}
 	
 /* ######################### SEARCH ALGORITHM DEVELOPMENT ######################### */
-		
-	/**
-	 * @return A String representing a Location if a
-	 * 		   room is found by the search algorithm.
-	 */
-	protected String search() {
+
+	protected QueryResult search() {
 		return (search(Constants.CSV_FEEDS_CLEANED));
 	}
 	
-	// O(n^2)
-	/**
-	 * @param eolist
-	 * @return A String representing a Location if a
-	 * 		   room is found by the search algorithm.
-	 */
-	protected String search(EventList eolist) {
+	protected QueryResult search(EventList eolist) {
 		if (eolist == null) {
 			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
 		}
-		else if (eolist.get_size() <= 0) {
-			set_message_status_flag(Constants.NO_ROOMS_AVAIL);
-			return get_message_from_flag();
-		}
 		
-		List<String> valid_rooms = this.search_get_list(eolist);
-
-		if (valid_rooms.size() <= 0) {
-			return get_message_from_flag();
-		}
-
-		/* Get a random room. */
-		int random_index = new Random().nextInt(valid_rooms.size());
-		String random_room = valid_rooms.get(random_index).toString();
-		
-		if (Constants.DEBUG) {
-			Collections.sort(valid_rooms);
-			System.out.println(valid_rooms.size() + " " + valid_rooms.toString() + "\n");	
-		}
-
-		return (this.get_option_search_building() + " " + random_room);
-	}
-	
-	protected List<String> search_get_list() {
-		return (search_get_list(Constants.CSV_FEEDS_CLEANED));
-	}
-	
-	protected List<String> search_get_list(EventList eolist) {
-		if (eolist == null) {
-			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
-		}
-
-		List<String> out = new ArrayList<String>();
+		QueryResult query_result = new QueryResult(this.get_option_search_building());
+		List<String> all_valid_rooms = new ArrayList<String>();
 		
 		if (eolist.get_size() <= 0) {
-			set_message_status_flag(Constants.NO_ROOMS_AVAIL);
-			return out;
+			query_result.set_message_status(MessageStatus.NO_ROOMS_AVAIL);
+			query_result.set_results(all_valid_rooms);
+			return query_result;
 		}
 		else if (this.search_is_on_weekend()) {
-			set_message_status_flag(Constants.ALL_ROOMS_AVAIL);
-			return out;
+			query_result.set_message_status(MessageStatus.ALL_ROOMS_AVAIL);
+			query_result.set_results(all_valid_rooms);
+			return query_result;
 		}
 		else if (this.search_is_at_night()) {
-			set_message_status_flag(Constants.GO_HOME);
-			return out;
+			query_result.set_message_status(MessageStatus.GO_HOME);
+			query_result.set_results(all_valid_rooms);
+			return query_result;
 		}
 		
-		reset_message_status_flag();
-		String course_schedule = this.get_current_course_schedule();
+//		reset_message_status_flag();
+		String course_schedule = this.get_current_course_schedule(query_result);
 		if (course_schedule == null) {
-			set_message_status_flag(Constants.SEARCH_ERROR);
-			return out;
+			query_result.set_results(all_valid_rooms);
+			return query_result;
 		}
 		
 		int wanted_capacity = this.get_option_capacity();
 		
 		Building search_building = Building.get_instance(this.get_option_search_building(), course_schedule);
 		if (search_building == null) {
-			set_message_status_flag(Constants.NO_INFO);
-			return out;
+			query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
+			query_result.set_results(all_valid_rooms);
+			return query_result;
 		}
 		
 		SortedSet<String> valid_rooms = search_building.get_keyset();
@@ -744,7 +725,7 @@ public class Query {
 				cal1.setTime(curr_start_date);
 				cal2.setTime(this.start_date);
 				
-				/* Set DatePicker to limit search to the current day */
+				/* TODO: Set DatePicker to limit search to the current day */
 				
 //				cal1.set(Calendar.MONTH, cal2.get(Calendar.MONTH));
 				cal1.set(Calendar.DAY_OF_YEAR, cal2.get(Calendar.DAY_OF_YEAR));
@@ -765,23 +746,299 @@ public class Query {
 			}
 			
 			if (is_valid) {
-				out.add(curr_room_str);
+				all_valid_rooms.add(curr_room_str);
 			}
 			
 			is_valid = true;
 		}
 
-		if (out.size() <= 0) {
-			set_message_status_flag(Constants.NO_ROOMS_AVAIL);
+		if (all_valid_rooms.size() <= 0) {
+			query_result.set_message_status(MessageStatus.NO_ROOMS_AVAIL);
+//			set_message_status(MessageStatus.NO_ROOMS_AVAIL);
+		}
+		else {
+			query_result.set_message_status(MessageStatus.SEARCH_SUCCESS);
+			query_result.set_results(all_valid_rooms);
 		}
 		
-		return out;
+		return query_result;
 	}
 
+	protected static class QueryResult {
+		private String building_name;
+		private List<String> results;
+		private String message_status;
+		
+		private QueryResult(String building_name) {
+			if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH) {
+				throw new IllegalArgumentException();
+			}
+			
+			this.building_name = building_name.toUpperCase(Locale.US);
+			this.results = new ArrayList<String>();
+			this.message_status = MessageStatus.SEARCH_ERROR.toString();
+		}
+		
+//		private QueryResult(String building_name, List<String> results, MessageStatus message_status) {
+//			if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH || results == null || message_status == null) {
+//				throw new IllegalArgumentException();
+//			}
+//
+//			this.building_name = building_name.toUpperCase(Locale.US);
+//			this.results = results;
+//			this.message_status = message_status.toString();
+//		}
+		
+		protected String get_message_status() {
+			return this.message_status;
+		}
+		
+		protected int get_num_results() {
+			return this.results.size();
+		}
+		
+		protected String get_random_room() {
+			if (this.results.size() <= 0 || !this.message_status.equals(MessageStatus.SEARCH_SUCCESS.toString())) {
+				return this.message_status;
+			}
+			
+			int random_index = new Random().nextInt(this.results.size());
+			String random_room = this.results.get(random_index);
+			
+			return (building_name + " " + random_room);
+		}
+		
+		protected List<String> get_results() {
+			return this.results;
+		}
+		
+		private boolean set_message_status(MessageStatus message_status) {
+			if (message_status == null) {
+//				return false;
+				throw new IllegalArgumentException();
+			}
+			
+			this.message_status = message_status.toString();
+			return true;
+		}
+		
+		private boolean set_results(List<String> results) {
+			if (results == null) {
+//				return false;
+				throw new IllegalArgumentException();
+			}
+			
+			this.results = results;
+			return true;
+		}
+	}
 	
+	public enum MessageStatus {
+		
+		ALL_ROOMS_AVAIL ("All rooms available."),
+		NO_ROOMS_AVAIL	("No rooms available; please try again."),
+		GO_HOME			("Go home and sleep, you procrastinator."),
+		SUMMER			("Some rooms available (summer hours); check course schedules."),
+		HOLIDAY			("All rooms available (campus closed for holidays)."),
+		NO_INFO_AVAIL	("Not enough info available for search; please try again."),
+		SEARCH_ERROR	("Unknown search error; please try again."),
+		
+		SEARCH_SUCCESS	("Search successful.")
+		;
+		
+		private final String msg;
+		
+		private MessageStatus(String msg) {
+			this.msg = msg;
+		}
+	
+		@Override
+		public String toString() {
+			return this.msg;
+		}
+	}
+
 }		// end of file
 
+/*
 
+
+//	protected String search() {
+//		return (search(Constants.CSV_FEEDS_CLEANED));
+//	}
+//	
+//	// O(n^2)
+//	protected String search(EventList eolist) {
+//		if (eolist == null) {
+//			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
+//		}
+//		else if (eolist.get_size() <= 0) {
+//			set_message_status_flag(Constants.NO_ROOMS_AVAIL);
+//			return get_message_from_flag();
+//		}
+//		
+//		List<String> valid_rooms = this.search_get_list(eolist);
+//
+//		if (valid_rooms.size() <= 0) {
+//			return get_message_from_flag();
+//		}
+//
+//		int random_index = new Random().nextInt(valid_rooms.size());
+//		String random_room = valid_rooms.get(random_index).toString();
+//		
+//		if (Constants.DEBUG) {
+//			Collections.sort(valid_rooms);
+//			System.out.println(valid_rooms.size() + " " + valid_rooms.toString() + "\n");	
+//		}
+//
+//		return (this.get_option_search_building() + " " + random_room);
+//	}
+//
+//	private List<String> search_get_list(QueryResult query_result) {
+//		return (search_get_list(query_result, Constants.CSV_FEEDS_CLEANED));
+//	}
+//	
+//	private List<String> search_get_list(QueryResult query_result, EventList eolist) {
+//		if (eolist == null) {
+//			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
+//		}
+//
+//		List<String> out = new ArrayList<String>();
+//		
+//		if (eolist.get_size() <= 0) {
+//			query_result.set_message_status(MessageStatus.NO_ROOMS_AVAIL);
+////			set_message_status(MessageStatus.NO_ROOMS_AVAIL);
+//			return out;
+//		}
+//		else if (this.search_is_on_weekend()) {
+//			query_result.set_message_status(MessageStatus.ALL_ROOMS_AVAIL);
+////			set_message_status(MessageStatus.ALL_ROOMS_AVAIL);
+//			return out;
+//		}
+//		else if (this.search_is_at_night()) {
+//			query_result.set_message_status(MessageStatus.GO_HOME);
+////			set_message_status(MessageStatus.GO_HOME);
+//			return out;
+//		}
+//		
+////		reset_message_status_flag();
+//		String course_schedule = this.get_current_course_schedule(query_result);
+//		if (course_schedule == null) {
+////			set_message_status(MessageStatus.SEARCH_ERROR);
+//			return out;
+//		}
+//		
+//		int wanted_capacity = this.get_option_capacity();
+//		
+//		Building search_building = Building.get_instance(this.get_option_search_building(), course_schedule);
+//		if (search_building == null) {
+//			query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
+////			set_message_status(MessageStatus.NO_INFO_AVAIL);
+//			return out;
+//		}
+//		
+//		SortedSet<String> valid_rooms = search_building.get_keyset();
+//		
+//		if (this.get_option_search_building().equalsIgnoreCase(Constants.GDC)) {
+//			boolean wanted_power = this.get_option_power();
+//			
+//			Iterator<Event> itr = eolist.get_iterator();
+//			Event curr_event;
+//			String curr_room_str;
+//			Room curr_room;
+//			while (itr.hasNext()) {
+//				curr_event = itr.next();
+//				curr_room_str = curr_event.get_location().get_room();
+//				curr_room = search_building.get_room(curr_room_str);
+//				
+//				if (curr_room == null) {
+//					continue;
+//				}
+//				else if (wanted_power && !curr_room.get_has_power()) {
+//					if (valid_rooms.contains(curr_room_str)) {
+//						valid_rooms.remove(curr_room_str);
+//						continue;
+//					}
+//				}
+//				
+//				if (!Utilities.occur_on_same_day(curr_event.get_start_date(), this.start_date)) {
+//					if (valid_rooms.contains(curr_room_str)) {
+//						valid_rooms.remove(curr_room_str);
+//						continue;
+//					}
+//				}
+//				
+//				if (Utilities.times_overlap(curr_event.get_start_date(), curr_event.get_end_date(), this.start_date, this.end_date)) {
+//					if (valid_rooms.contains(curr_room_str)) {
+//						valid_rooms.remove(curr_room_str);
+//						continue;
+//					}
+//				}
+//			}
+//		}
+//		
+//		final Calendar cal1 = Calendar.getInstance();
+//		final Calendar cal2 = Calendar.getInstance();
+////		Date temp;
+//		
+//		int today = this.get_this_day_of_week();
+//		boolean is_valid = true;
+//		Room curr_room;
+//		for (String curr_room_str : valid_rooms) {
+//			curr_room = search_building.get_room(curr_room_str);
+//			if (curr_room == null) {
+//				continue;
+//			}
+//			
+//			Set<Event> courses = curr_room.get_events(today);
+////	System.out.println(courses.toString());
+//			
+//			Date curr_start_date, curr_end_date;
+//			for (Event curr_event : courses) {
+//				curr_start_date = curr_event.get_start_date();
+//				curr_end_date = curr_event.get_end_date();	
+//				
+//				cal1.setTime(curr_start_date);
+//				cal2.setTime(this.start_date);
+//				
+////				cal1.set(Calendar.MONTH, cal2.get(Calendar.MONTH));
+//				cal1.set(Calendar.DAY_OF_YEAR, cal2.get(Calendar.DAY_OF_YEAR));
+//				curr_start_date = cal1.getTime();
+//				
+//				cal1.setTime(curr_end_date);
+//				cal2.setTime(this.end_date);
+//				
+////				cal1.set(Calendar.MONTH, cal2.get(Calendar.MONTH));
+//				cal1.set(Calendar.DAY_OF_YEAR, cal2.get(Calendar.DAY_OF_YEAR));
+//				curr_end_date = cal1.getTime();
+//				
+//				if (Utilities.times_overlap(curr_start_date, curr_end_date, this.start_date, this.end_date) ||
+//						curr_room.get_capacity() < wanted_capacity) {
+//					is_valid = false;
+//					break;
+//				}
+//			}
+//			
+//			if (is_valid) {
+//				out.add(curr_room_str);
+//			}
+//			
+//			is_valid = true;
+//		}
+//
+//		if (out.size() <= 0) {
+//			query_result.set_message_status(MessageStatus.NO_ROOMS_AVAIL);
+////			set_message_status(MessageStatus.NO_ROOMS_AVAIL);
+//		}
+//		else {
+//			query_result.set_message_status(MessageStatus.SEARCH_SUCCESS);
+//		}
+//				
+//		return out;
+//	}
+
+
+ */
 
 
 

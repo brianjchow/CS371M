@@ -98,8 +98,7 @@ final class Building implements Comparable<Building> {
 			out = new Building(building_name);
 			out.populate(db_file_name);
 			
-			if (Constants.BUILDING_CACHELIST_NEXT_SEMESTER != null &&
-					Constants.BUILDING_CACHELIST_NEXT_SEMESTER.get_building(building_name) == null) {
+			if (Constants.BUILDING_CACHELIST_NEXT_SEMESTER != null) {
 				Constants.BUILDING_CACHELIST_NEXT_SEMESTER.put_building(building_name, out);
 			}
 			
@@ -117,8 +116,7 @@ final class Building implements Comparable<Building> {
 			out = new Building(building_name);
 			out.populate(db_file_name);
 			
-			if (Constants.BUILDING_CACHELIST_THIS_SEMESTER != null &&
-					Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_building(building_name) == null) {
+			if (Constants.BUILDING_CACHELIST_THIS_SEMESTER != null) {
 				Constants.BUILDING_CACHELIST_THIS_SEMESTER.put_building(building_name, out);
 			}
 			

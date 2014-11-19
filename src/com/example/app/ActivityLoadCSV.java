@@ -45,6 +45,13 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		findViewById(R.id.no_cxn_msg).setVisibility(View.GONE);
 		
 //		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+		try {
+			Class.forName("com.example.app.Constants", true, this.getClass().getClassLoader());
+		}
+		catch (ClassNotFoundException e) {
+			throw new RuntimeException("Failed to initialise necessary global constants class");
+		}
 		
 		// http://learniosandroid.blogspot.com/2013/04/android-customising-progress-spinner.html
 		ImageView progressSpinner = (ImageView) findViewById(R.id.progressSpinner);

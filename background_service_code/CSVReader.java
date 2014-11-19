@@ -368,7 +368,7 @@ final class CSVReader {
 //		System.out.println(cal.toString());
 		
 		int current_month = 11;
-		int current_day = 14;
+		int current_day = 19;
 		
 		String db_file = "master_course_schedule_f14";
 
@@ -463,14 +463,19 @@ final class CSVReader {
 		query.set_option_capacity(0);
 //		query.set_option_capacity(new Integer(0));
 		
-		query.set_option_search_building("geb");
+		query.set_option_search_building("gar");
 
-		String random_room = query.search();
+		Query.QueryResult query_result = query.search();
+		String random_room = query_result.get_random_room();
 
 		stopwatch.stop();
 		time_to_exec = stopwatch.time();
-		
+
+		System.out.println("Message status:\t\t" + query_result.get_message_status());
+		System.out.println("All available rooms:\t" + query_result.get_results().toString());
+		System.out.println("Num available rooms:\t" + query_result.get_num_results());
 		System.out.println("Random room chosen:\t" + random_room + "\n");
+		
 		System.out.println("Query:\n" + query.toString() + "\n");
 		
 		System.out.println("Done.\n");
@@ -500,19 +505,25 @@ final class CSVReader {
 		query.set_option_power(false);
 		query.set_option_capacity(0);
 		
+		Query.QueryResult query_result;
 		String random_room;
 		
 		for (String building : Constants.CAMPUS_BUILDINGS) {
 			query.set_option_search_building(building);
 			
 			stopwatch.start();
-			random_room = query.search();
+			query_result = query.search();
+			random_room = query_result.get_random_room();
 			stopwatch.stop();
 			total_time_all_searches += stopwatch.time();
 			
 			time_to_exec = stopwatch.time();
-			
+
+			System.out.println("Message status:\t\t" + query_result.get_message_status());
+			System.out.println("All available rooms:\t" + query_result.get_results().toString());
+			System.out.println("Num available rooms:\t" + query_result.get_num_results());
 			System.out.println("Random room chosen:\t" + random_room + "\n");
+			
 			System.out.println("Query:\n" + query.toString() + "\n");
 			
 			System.out.println("Done.\n");

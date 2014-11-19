@@ -8,6 +8,8 @@ import android.util.Log;
 
 final class Constants {
 	
+	private Constants() { }
+	
 	private static final	String		TAG								=	"Constants";
 
 	protected static		EventList 	CSV_FEEDS_MASTER				=	null;
@@ -53,28 +55,28 @@ final class Constants {
 	protected static final 	String 		ALL_DAY;
 	protected static final 	String 		ATRIUM;
 	protected static final 	String[] 	CAMPUS_BUILDINGS;
-	protected static final	int			CAMPUS_BUILDINGS_GDC_POSITION	=	60;
+	protected static final	int			CAMPUS_BUILDINGS_GDC_POSITION	=	29; // 60;
 	
 	protected static final 	String 		CAPACITY;
 	protected static final 	String 		POWER;
 	protected static final	String		SEARCH_GDC_ONLY;
 	protected static final	String		SEARCH_BUILDING;
 
-	protected static final	String		ALL_ROOMS_AVAIL_MSG;
-	protected static final 	String 		NO_ROOMS_AVAIL_MSG;
-	protected static final 	String 		GO_HOME_MSG;
-	protected static final	String		SUMMER_MSG;
-	protected static final	String		HOLIDAY_MSG;
-	protected static final	String		NO_INFO_AVAIL_MSG;
-	protected static final	String		SEARCH_ERROR_MSG;
-	protected static final	int			ALL_ROOMS_AVAIL					=	0;
-	protected static final	int			NO_ROOMS_AVAIL					=	1;
-	protected static final	int			GO_HOME							=	2;
-	protected static final	int			SUMMER							=	3;
-	protected static final	int			HOLIDAY							=	4;
-	protected static final	int			NO_INFO							=	5;
-	protected static final	int			SEARCH_ERROR					=	6;
-	protected static final	String[]	MESSAGE_STATUS_FLAGS;
+//	protected static final	String		ALL_ROOMS_AVAIL_MSG;
+//	protected static final 	String 		NO_ROOMS_AVAIL_MSG;
+//	protected static final 	String 		GO_HOME_MSG;
+//	protected static final	String		SUMMER_MSG;
+//	protected static final	String		HOLIDAY_MSG;
+//	protected static final	String		NO_INFO_AVAIL_MSG;
+//	protected static final	String		SEARCH_ERROR_MSG;
+//	protected static final	int			ALL_ROOMS_AVAIL					=	0;
+//	protected static final	int			NO_ROOMS_AVAIL					=	1;
+//	protected static final	int			GO_HOME							=	2;
+//	protected static final	int			SUMMER							=	3;
+//	protected static final	int			HOLIDAY							=	4;
+//	protected static final	int			NO_INFO							=	5;
+//	protected static final	int			SEARCH_ERROR					=	6;
+//	protected static final	String[]	MESSAGE_STATUS_FLAGS;
 	
 	protected static final 	int[] 		DAYS_IN_MONTH;
 	protected static final 	String[] 	DAYS_OF_WEEK_LONG;
@@ -147,13 +149,6 @@ final class Constants {
 		
 		CAMPUS_BUILDINGS			=	initialise_campus_buildings();
 		
-		DAYS_IN_MONTH				=	initialise_days_in_month();
-		DAYS_OF_WEEK_LONG			=	initialise_days_of_week_long();
-		DAYS_OF_WEEK_SHORT			=	initialise_days_of_week_short();
-		
-		MONTHS_LONG					=	initialise_months_long();
-		MONTHS_SHORT				=	initialise_months_short();
-
 		CLASS						=	"class";
 		CONFERENCE					=	"conference";
 		LAB							=	"lab";
@@ -184,14 +179,14 @@ final class Constants {
 		SEARCH_GDC_ONLY				=	"search_gdc_only";
 		SEARCH_BUILDING				=	"search_building";
 
-		ALL_ROOMS_AVAIL_MSG			=	"All rooms available.";
-		NO_ROOMS_AVAIL_MSG			=	"No rooms available; please try again.";
-		GO_HOME_MSG					=	"Go home and sleep, you procrastinator";
-		SUMMER_MSG					=	"Some rooms available (summer hours; check course schedules).";
-		HOLIDAY_MSG					=	"All rooms available (campus closed for holidays).";
-		NO_INFO_AVAIL_MSG			=	"Not enough info available for search; please try again.";
-		SEARCH_ERROR_MSG			=	"Unknown search error; please try again.";
-		MESSAGE_STATUS_FLAGS		=	initialise_message_status_flags();
+//		ALL_ROOMS_AVAIL_MSG			=	"All rooms available.";
+//		NO_ROOMS_AVAIL_MSG			=	"No rooms available; please try again.";
+//		GO_HOME_MSG					=	"Go home and sleep, you procrastinator";
+//		SUMMER_MSG					=	"Some rooms available (summer hours); check course schedules).";
+//		HOLIDAY_MSG					=	"All rooms available (campus closed for holidays).";
+//		NO_INFO_AVAIL_MSG			=	"Not enough info available for search; please try again.";
+//		SEARCH_ERROR_MSG			=	"Unknown search error; please try again.";
+//		MESSAGE_STATUS_FLAGS		=	initialise_message_status_flags();
 
 //		MONDAY						=	0;
 //		TUESDAY						=	1;
@@ -210,6 +205,13 @@ final class Constants {
 		FRIDAY						=	6;
 		SATURDAY					=	7;
 		NUM_DAYS_IN_WEEK			=	8;
+
+		DAYS_IN_MONTH				=	initialise_days_in_month();
+		DAYS_OF_WEEK_LONG			=	initialise_days_of_week_long();
+		DAYS_OF_WEEK_SHORT			=	initialise_days_of_week_short();
+		
+		MONTHS_LONG					=	initialise_months_long();
+		MONTHS_SHORT				=	initialise_months_short();
 
 		END_DATE					=	"end_date";
 
@@ -249,6 +251,8 @@ final class Constants {
 
 		DAYBREAK					=	Utilities.get_date(1, 2, 2014, 800);
 		NIGHTFALL					=	Utilities.get_date(1, 1, 2014, 2200);
+		
+		Log.d(TAG, "Reached end of static initialiser block");
 	}
 	
 	protected static int lines_read = 0;
@@ -526,12 +530,12 @@ final class Constants {
 		return IGNORE_ROOMS;
 	}
 	
-	private static final String[] initialise_message_status_flags() {
-		final String[] FLAGS = {
-				ALL_ROOMS_AVAIL_MSG, NO_ROOMS_AVAIL_MSG, GO_HOME_MSG, SUMMER_MSG, HOLIDAY_MSG, NO_INFO_AVAIL_MSG, SEARCH_ERROR_MSG
-		};
-		return FLAGS;
-	}
+//	private static final String[] initialise_message_status_flags() {
+//		final String[] FLAGS = {
+//				ALL_ROOMS_AVAIL_MSG, NO_ROOMS_AVAIL_MSG, GO_HOME_MSG, SUMMER_MSG, HOLIDAY_MSG, NO_INFO_AVAIL_MSG, SEARCH_ERROR_MSG
+//		};
+//		return FLAGS;
+//	}
 	
 	private static final String[] initialise_months_long() {
 		final String[] MONTHS_LONG = {

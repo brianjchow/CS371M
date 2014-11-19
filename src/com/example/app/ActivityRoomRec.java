@@ -17,6 +17,9 @@ import com.example.uis.R;
 /*
  * USE DialogFragment TO REOPEN DIALOG UPON ORIENTATION CHANGE
  *	// OR THIS: http://stackoverflow.com/questions/1111980/how-to-handle-screen-orientation-change-when-progress-dialog-and-background-thre
+ *
+ * ADD this_query_result PARCELABLE HANDLING TO onCreate()
+ * OVERRIDE toString() IN Query.QueryResult; USE IN set_query_textview()
  */
 
 // public class ActivityRoomRec extends ActionBarActivity implements View.OnClickListener {
@@ -25,6 +28,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 	private final String TAG = "RoomRecActivity";
 	
 	private Query this_query;
+	private Query.QueryResult this_query_result;
 	
 	private String curr_recommendation;
 	private int curr_recommendation_res_id;
@@ -46,11 +50,11 @@ public class ActivityRoomRec extends ActionBarActivity {
 				this_query = new Query(ActivityRoomRec.this);
 			}
 			
-			curr_recommendation = savedInstanceState.getString("curr_recommendation", Constants.NO_ROOMS_AVAIL_MSG);
+			curr_recommendation = savedInstanceState.getString("curr_recommendation", Query.MessageStatus.NO_ROOMS_AVAIL.toString());
 			curr_recommendation_res_id = savedInstanceState.getInt("curr_recommendation_res_id", 0);
 
 			View background = findViewById(R.id.background);
-			if (!curr_recommendation.equals(Constants.NO_ROOMS_AVAIL_MSG)) {
+			if (!curr_recommendation.equals(Query.MessageStatus.NO_ROOMS_AVAIL.toString())) {
 				background.setBackgroundResource(curr_recommendation_res_id);
 			}
 			else {
@@ -68,7 +72,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 			if (bundle != null) {
 				Query query = (Query) bundle.getParcelable("this_query");
 				if (query != null) {
-//					Log.d(TAG, "Using transmitted parcelable: " + query.toString());
+//					Log.d(TAG, "Using transmitted parcelable:\n" + query.toString());
 					this_query = query;
 //					this_query.set_context(getApplicationContext());
 					this_query.set_context(ActivityRoomRec.this);
@@ -119,7 +123,8 @@ public class ActivityRoomRec extends ActionBarActivity {
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.start();
 		
-		curr_recommendation = query.search();
+		Query.QueryResult results = query.search();
+		this.curr_recommendation = results.get_random_room();
 		
 		stopwatch.stop();
 		Log.d(TAG, "Took " + stopwatch.time() + " seconds to execute search");
@@ -127,7 +132,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 		setTextViewInfo(curr_recommendation);
 		
 		View background = findViewById(R.id.background);
-		if (!curr_recommendation.equals(Constants.NO_ROOMS_AVAIL_MSG)) {
+		if (!curr_recommendation.equals(Query.MessageStatus.NO_ROOMS_AVAIL.toString())) {
 			String temp = new Location(curr_recommendation).get_room().replaceAll("\\.", "");
 			int res_id = getResId("gdc_" + temp, R.drawable.class);
 			if (res_id != -1) {
@@ -153,34 +158,43 @@ public class ActivityRoomRec extends ActionBarActivity {
 		return id;
 	}
 
-	private boolean rec_is_message_status_flag(String recommendation) {
+//	private boolean rec_is_message_status_flag(String recommendation) {
+//		if (recommendation == null) {
+//			throw new IllegalArgumentException();
+//		}
+//		else if (recommendation.length() <= 0) {
+//			recommendation = Query.MessageStatus.SEARCH_ERROR.toString();
+//			return true;
+//		}
+//		
+//		for (int i = 0; i < Constants.MESSAGE_STATUS_FLAGS.length; i++) {
+//			if (recommendation.equals(Constants.MESSAGE_STATUS_FLAGS[i])) {
+//				return true;
+//			}
+//		}
+//		
+//		return false;
+//	}
+//	
+//	private void setTextViewInfo(String recommendation) {
+//		if (recommendation == null || recommendation.length() <= 0) {
+//			recommendation = Query.MessageStatus.SEARCH_ERROR.toString();
+//		}
+//		else if (!rec_is_message_status_flag(recommendation)) {
+//			recommendation = "Try " + recommendation;
+//		}
+//		
+//		TextView roomRecText = (TextView) findViewById(R.id.room_num);
+//		roomRecText.setText(recommendation);		
+//	}
+	
+	private void setTextViewInfo(String recommendation) {
 		if (recommendation == null) {
 			throw new IllegalArgumentException();
 		}
-		else if (recommendation.length() <= 0) {
-			recommendation = Constants.MESSAGE_STATUS_FLAGS[Constants.SEARCH_ERROR];
-			return true;
-		}
-		
-		for (int i = 0; i < Constants.MESSAGE_STATUS_FLAGS.length; i++) {
-			if (recommendation.equals(Constants.MESSAGE_STATUS_FLAGS[i])) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	private void setTextViewInfo(String recommendation) {
-		if (recommendation == null || recommendation.length() <= 0) {
-			recommendation = Constants.MESSAGE_STATUS_FLAGS[Constants.SEARCH_ERROR];
-		}
-		else if (!rec_is_message_status_flag(recommendation)) {
-			recommendation = "Try " + recommendation;
-		}
 		
 		TextView roomRecText = (TextView) findViewById(R.id.room_num);
-		roomRecText.setText(recommendation);		
+		roomRecText.setText(recommendation);
 	}
 	
 	private void update_query_textview(Query query) {
@@ -193,6 +207,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 		super.onSaveInstanceState(outState);
 		
 		outState.putParcelable("this_query", this_query);
+		outState.putParcelable("this_query_result", this_query_result);
 		outState.putString("curr_recommendation", curr_recommendation);
 		outState.putInt("curr_recommendation_res_id", curr_recommendation_res_id);
 		

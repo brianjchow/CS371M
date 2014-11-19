@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
+// https://github.com/jgilfelt/android-sqlite-asset-helper
 public class CourseScheduleDatabase extends SQLiteAssetHelper {
 
 	private static final String TAG				=	"CourseScheduleDatabase";

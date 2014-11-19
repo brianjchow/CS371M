@@ -2,7 +2,6 @@ package com.example.app;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -63,7 +62,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			if (bundle != null) {
 				Query query = (Query) bundle.getParcelable("this_query");
 				if (query != null) {
-					Log.d(TAG, "Using transmitted parcelable: " + query.toString());
+					Log.d(TAG, "Using transmitted parcelable\n" + query.toString());
 					this_query = query;
 //					this_query.set_context(getApplicationContext());
 					this_query.set_context(ActivityFindRoomLater.this);
@@ -164,13 +163,17 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			return -1;
 		}
 		
-		int out = -1;
+		int out = 0;
 		int i = 0;
-		int stop = Constants.CAMPUS_BUILDINGS_GDC_POSITION;
-		if (building.toLowerCase(Locale.ENGLISH).compareTo(Constants.GDC.toLowerCase(Locale.ENGLISH)) > 0) {
-			i = Constants.CAMPUS_BUILDINGS_GDC_POSITION + 1;
-			stop = Constants.CAMPUS_BUILDINGS.length;
-		}
+		int stop = Constants.CAMPUS_BUILDINGS.length;
+
+//		int out = -1;
+//		int stop = Constants.CAMPUS_BUILDINGS_GDC_POSITION;
+//		if (building.toLowerCase(Locale.ENGLISH).compareTo(Constants.GDC.toLowerCase(Locale.ENGLISH)) > 0) {
+//			i = Constants.CAMPUS_BUILDINGS_GDC_POSITION + 1;
+//			stop = Constants.CAMPUS_BUILDINGS.length;
+//		}
+		
 		for (; i < stop; i++) {
 			if (Constants.CAMPUS_BUILDINGS[i].equalsIgnoreCase(building)) {
 				out = i;
