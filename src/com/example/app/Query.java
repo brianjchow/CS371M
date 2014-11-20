@@ -882,6 +882,10 @@ public class Query implements Parcelable {
 //			this.message_status = message_status.toString();
 //		}
 		
+		protected String get_building_name() {
+			return this.building_name;
+		}
+		
 		protected String get_message_status() {
 			return this.message_status;
 		}

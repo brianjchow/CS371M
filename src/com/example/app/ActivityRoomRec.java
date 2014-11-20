@@ -1,7 +1,5 @@
 package com.example.app;
 
-import java.lang.reflect.Field;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -137,30 +135,67 @@ public class ActivityRoomRec extends ActionBarActivity {
 		setTextViewInfo(curr_recommendation);
 		
 		View background = findViewById(R.id.background);
-		if (!curr_recommendation.equals(Query.MessageStatus.NO_ROOMS_AVAIL.toString())) {
-			String temp = new Location(curr_recommendation).get_room().replaceAll("\\.", "");
-			int res_id = getResId("gdc_" + temp, R.drawable.class);
-			if (res_id != -1) {
-				background.setBackgroundResource(res_id);	// getResources().getDrawable(int id), View.setBackgroundResource(int id)
-				curr_recommendation_res_id = res_id;
+		if (results.get_message_status().equals(Query.MessageStatus.SEARCH_SUCCESS.toString())) {
+			
+			String building_name = results.get_building_name();
+			if (building_name.equalsIgnoreCase(Constants.GDC)) {
+//				String temp = new Location(curr_recommendation).get_room().replaceAll("\\.", "");
+				String building_pic_str = this.curr_recommendation.toLowerCase(Constants.DEFAULT_LOCALE).replaceAll("\\.", "").replaceAll("\\s+", "_");
+				int res_id = Utilities.getResId(building_pic_str, R.drawable.class);
+				if (res_id != -1) {
+					background.setBackgroundResource(res_id);
+					curr_recommendation_res_id = res_id;
+				}
+				else {
+					// display tower?
+					res_id = Utilities.getResId("campus_tower", R.drawable.class);
+					background.setBackgroundResource(res_id);
+					curr_recommendation_res_id = res_id;
+				}
+				
+				Log.d(TAG, "Looking for building picture " + building_pic_str + " with res id " + res_id);
+			}
+			else {
+				// get the building name
+				// get its picture
+				// set res id
+				
+				String building_pic_str = "campus_" + building_name.toLowerCase(Constants.DEFAULT_LOCALE);
+				int res_id = Utilities.getResId(building_pic_str, R.drawable.class);
+				if (res_id != -1) {
+					background.setBackgroundResource(res_id);
+					curr_recommendation_res_id = res_id;
+				}
+				else {
+					// display tower?
+					res_id = Utilities.getResId("campus_tower", R.drawable.class);
+					background.setBackgroundResource(res_id);
+					curr_recommendation_res_id = res_id;
+				}
+				
+				Log.d(TAG, "Looking for building picture " + building_pic_str + " with res id " + res_id);
 			}
 		}
+		else {
+			// display tower
+			int res_id = Utilities.getResId("campus_tower", R.drawable.class);
+			background.setBackgroundResource(res_id);
+			curr_recommendation_res_id = res_id;
+			
+			Log.d(TAG, "Search returned " + results.get_message_status());
+		}
+		
+		
+//		if (!curr_recommendation.equals(Query.MessageStatus.NO_ROOMS_AVAIL.toString())) {
+//			String temp = new Location(curr_recommendation).get_room().replaceAll("\\.", "");
+//			int res_id = getResId("gdc_" + temp, R.drawable.class);
+//			if (res_id != -1) {
+//				background.setBackgroundResource(res_id);	// getResources().getDrawable(int id), View.setBackgroundResource(int id)
+//				curr_recommendation_res_id = res_id;
+//			}
+//		}
 		
 		update_query_textview(query);
-	}
-
-	// http://stackoverflow.com/questions/4427608/android-getting-resource-id-from-string
-	private int getResId(String var_name, Class<?> c) {
-		int id = -1;
-		try {
-			Field id_field = c.getDeclaredField(var_name);
-			id = id_field.getInt(id_field);
-		}
-		catch (Exception e) {
-			id = -1;
-		}
-		
-		return id;
 	}
 
 //	private boolean rec_is_message_status_flag(String recommendation) {

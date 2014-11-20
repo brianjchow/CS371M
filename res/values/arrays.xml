@@ -1,109 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
+
     <string-array name = "campus_buildings">
         <item>@string/ACA</item>
-		<item>@string/ADH</item>
-		<item>@string/AFP</item>
 		<item>@string/AHG</item>
-		<item>@string/ANB</item>
-		<item>@string/AND</item>
-		<item>@string/ARC</item>
 		<item>@string/ART</item>
 		<item>@string/ATT</item>
 		<item>@string/BAT</item>
 		<item>@string/BEL</item>
 		<item>@string/BEN</item>
-		<item>@string/BHD</item>
 		<item>@string/BIO</item>
-		<item>@string/BLD</item>
-		<item>@string/BMA</item>
 		<item>@string/BMC</item>
 		<item>@string/BME</item>
-		<item>@string/BOT</item>
 		<item>@string/BRB</item>
-		<item>@string/BRG</item>
 		<item>@string/BTL</item>
 		<item>@string/BUR</item>
-		<item>@string/BWY</item>
 		<item>@string/CAL</item>
 		<item>@string/CBA</item>
-		<item>@string/CCG</item>
 		<item>@string/CCJ</item>
-		<item>@string/CDA</item>
-		<item>@string/CDL</item>
-		<item>@string/CEE</item>
-		<item>@string/CCF</item>
 		<item>@string/CLA</item>
-		<item>@string/CLK</item>
 		<item>@string/CMA</item>
 		<item>@string/CMB</item>
-		<item>@string/CML</item>
-		<item>@string/COM</item>
-		<item>@string/CPE</item>
-		<item>@string/CRB</item>
 		<item>@string/CRD</item>
-		<item>@string/CRH</item>
-		<item>@string/CSA</item>
-		<item>@string/CTR</item>
-		<item>@string/DEV</item>
-		<item>@string/DCP</item>
 		<item>@string/DFA</item>
-		<item>@string/DFF</item>
-		<item>@string/EAS</item>
 		<item>@string/ECJ</item>
 		<item>@string/ENS</item>
 		<item>@string/EPS</item>
-		<item>@string/ERC</item>
 		<item>@string/ETC</item>
 		<item>@string/FAC</item>
-		<item>@string/FDF</item>
 		<item>@string/FDH</item>
 		<item>@string/FNT</item>
-		<item>@string/FPC</item>
 		<item>@string/GAR</item>
 		<item>@string/GDC</item>
 		<item>@string/GEA</item>
 		<item>@string/GEB</item>
 		<item>@string/GOL</item>
 		<item>@string/GRE</item>
-		<item>@string/GRG</item>
 		<item>@string/GSB</item>
-		<item>@string/GUG</item>
-		<item>@string/HMA</item>
 		<item>@string/HRC</item>
 		<item>@string/HRH</item>
-		<item>@string/HSM</item>
 		<item>@string/INT</item>
-		<item>@string/IPF</item>
-		<item>@string/JCD</item>
 		<item>@string/JES</item>
 		<item>@string/JGB</item>
-		<item>@string/JHH</item>
 		<item>@string/JON</item>
-		<item>@string/KIN</item>
-		<item>@string/LBJ</item>
-		<item>@string/LCH</item>
-		<item>@string/LDH</item>
-		<item>@string/LFH</item>
-		<item>@string/LLA</item>
-		<item>@string/LLB</item>
-		<item>@string/LLC</item>
-		<item>@string/LLD</item>
-		<item>@string/LLE</item>
-		<item>@string/LLF</item>
-		<item>@string/LTD</item>
 		<item>@string/LTH</item>
-		<item>@string/MAG</item>
 		<item>@string/MAI</item>
 		<item>@string/MBB</item>
 		<item>@string/MEZ</item>
-		<item>@string/MFH</item>
-		<item>@string/MHD</item>
-		<item>@string/MMS</item>
-		<item>@string/MNC</item>
 		<item>@string/MRH</item>
-		<item>@string/MSB</item>
 		<item>@string/NEZ</item>
 		<item>@string/NHB</item>
 		<item>@string/NMS</item>
@@ -114,52 +58,28 @@
 		<item>@string/PAR</item>
 		<item>@string/PAT</item>
 		<item>@string/PCL</item>
-		<item>@string/PHD</item>
 		<item>@string/PHR</item>
 		<item>@string/POB</item>
-		<item>@string/PPA</item>
-		<item>@string/PPB</item>
-		<item>@string/PPE</item>
-		<item>@string/PPL</item>
-		<item>@string/RHD</item>
 		<item>@string/RLM</item>
 		<item>@string/RSC</item>
 		<item>@string/SAC</item>
-		<item>@string/SAG</item>
-		<item>@string/SBS</item>
 		<item>@string/SEA</item>
-		<item>@string/SER</item>
-		<item>@string/SJG</item>
-		<item>@string/SJH</item>
 		<item>@string/SRH</item>
 		<item>@string/SSB</item>
 		<item>@string/SSW</item>
 		<item>@string/STD</item>
 		<item>@string/SUT</item>
-		<item>@string/SWG</item>
-		<item>@string/SW7</item>
 		<item>@string/SZB</item>
-		<item>@string/TCC</item>
-		<item>@string/TMM</item>
 		<item>@string/TNH</item>
-		<item>@string/TRG</item>
 		<item>@string/TSC</item>
-		<item>@string/TSG</item>
-		<item>@string/TTC</item>
-		<item>@string/UA9</item>
-		<item>@string/UIL</item>
-		<item>@string/UNB</item>
-		<item>@string/UPB</item>
 		<item>@string/UTA</item>
 		<item>@string/UTC</item>
-		<item>@string/UTX</item>
 		<item>@string/WAG</item>
 		<item>@string/WCH</item>
 		<item>@string/WEL</item>
 		<item>@string/WIN</item>
 		<item>@string/WMB</item>
 		<item>@string/WRW</item>
-		<item>@string/WWH</item>
     </string-array>
     
     
