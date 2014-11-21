@@ -30,11 +30,6 @@ public class Query implements Parcelable {
 	private int duration;					// how long the user needs the room to be available, in minutes; default 60
 	private Map<String, Object> options;	// [capacity, power plugs, search building] for now
 
-//	private static int MESSAGE_STATUS_FLAG = -1;
-	
-//	private String message_status;
-//	private List<String> results;
-
 	/**
 	 * Default constructor. Uses the current system time.
 	 */
@@ -274,25 +269,6 @@ public class Query implements Parcelable {
 		return Utilities.times_overlap(this_start, this_end, Constants.NIGHTFALL, Constants.DAYBREAK);
 	}
 
-//	private String get_message_from_flag() {
-//		if (MESSAGE_STATUS_FLAG >= 0 && MESSAGE_STATUS_FLAG < Constants.MESSAGE_STATUS_FLAGS.length) {
-//			return Constants.MESSAGE_STATUS_FLAGS[MESSAGE_STATUS_FLAG];
-//		}
-//		return Constants.MESSAGE_STATUS_FLAGS[Constants.SEARCH_ERROR];
-//	}
-	
-//	protected String get_message_status() {
-//		return this.message_status;
-//	}
-
-//	private void reset_message_status_flag() {
-//		MESSAGE_STATUS_FLAG = -1;
-//	}
-	
-//	private void reset_message_status() {
-//		set_message_status(MessageStatus.SEARCH_ERROR);
-//	}
-
 	private String get_current_course_schedule(QueryResult query_result) {
 		if (query_result == null) {
 			throw new IllegalArgumentException();
@@ -308,8 +284,6 @@ public class Query implements Parcelable {
 			else if (Utilities.date_is_during_summer(now)) {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
 					query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
-//					set_message_status(MessageStatus.NO_INFO_AVAIL);
-//					MESSAGE_STATUS_FLAG = Constants.NO_INFO;
 				}
 				Log.d(TAG, "pos 2");
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
@@ -317,8 +291,6 @@ public class Query implements Parcelable {
 			else if (Utilities.date_is_during_fall(now)) {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
 					query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
-//					set_message_status(MessageStatus.NO_INFO_AVAIL);
-//					MESSAGE_STATUS_FLAG = Constants.NO_INFO;
 				}
 				Log.d(TAG, "pos 3");
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
@@ -326,8 +298,6 @@ public class Query implements Parcelable {
 			else {
 				Log.d(TAG, "pos 4");
 				query_result.set_message_status(MessageStatus.HOLIDAY);
-//				set_message_status(MessageStatus.HOLIDAY);
-//				MESSAGE_STATUS_FLAG = Constants.HOLIDAY;
 				return null;
 			}
 		}
@@ -335,8 +305,6 @@ public class Query implements Parcelable {
 		else if (Utilities.date_is_during_summer(this.start_date)) {
 			Log.d(TAG, "pos 5");
 			query_result.set_message_status(MessageStatus.SUMMER);
-//			set_message_status(MessageStatus.SUMMER);
-//			MESSAGE_STATUS_FLAG = Constants.SUMMER;
 			return null;
 		}
 
@@ -344,8 +312,6 @@ public class Query implements Parcelable {
 			if (Utilities.date_is_during_spring(now)) {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
 					query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
-//					set_message_status(MessageStatus.NO_INFO_AVAIL);
-//					MESSAGE_STATUS_FLAG = Constants.NO_INFO;
 				}
 				Log.d(TAG, "pos 6");
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
@@ -361,8 +327,6 @@ public class Query implements Parcelable {
 			else {
 				Log.d(TAG, "pos 9");
 				query_result.set_message_status(MessageStatus.HOLIDAY);
-//				set_message_status(MessageStatus.HOLIDAY);
-//				MESSAGE_STATUS_FLAG = Constants.HOLIDAY;
 				return null;
 			}
 		}
@@ -370,8 +334,6 @@ public class Query implements Parcelable {
 		else {
 			Log.d(TAG, "pos 10");
 			query_result.set_message_status(MessageStatus.HOLIDAY);
-//			set_message_status(MessageStatus.HOLIDAY);
-//			MESSAGE_STATUS_FLAG = Constants.HOLIDAY;
 			return null;
 		}
 
@@ -410,22 +372,6 @@ public class Query implements Parcelable {
 
 		return true;
 	}
-
-//	private void set_message_status_flag(int message_code) {
-//		if (message_code < 0 || message_code >= Constants.MESSAGE_STATUS_FLAGS.length) {
-//			throw new IllegalArgumentException();
-//		}
-//
-//		MESSAGE_STATUS_FLAG = message_code;
-//	}
-	
-//	private void set_message_status(MessageStatus status) {
-//		if (status == null) {
-//			throw new IllegalArgumentException();
-//		}
-//		
-//		this.message_status = status.toString();
-//	}
 
 	/**
 	 * @param option
@@ -737,7 +683,6 @@ public class Query implements Parcelable {
 			return query_result;
 		}
 		
-//		reset_message_status_flag();
 		String course_schedule = this.get_current_course_schedule(query_result);
 		if (course_schedule == null) {
 			query_result.set_results(all_valid_rooms);
@@ -846,7 +791,6 @@ public class Query implements Parcelable {
 
 		if (all_valid_rooms.size() <= 0) {
 			query_result.set_message_status(MessageStatus.NO_ROOMS_AVAIL);
-//			set_message_status(MessageStatus.NO_ROOMS_AVAIL);
 		}
 		else {
 			query_result.set_message_status(MessageStatus.SEARCH_SUCCESS);
@@ -871,17 +815,7 @@ public class Query implements Parcelable {
 			this.results = new ArrayList<String>();
 			this.message_status = MessageStatus.SEARCH_ERROR.toString();
 		}
-		
-//		private QueryResult(String building_name, List<String> results, MessageStatus message_status) {
-//			if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH || results == null || message_status == null) {
-//				throw new IllegalArgumentException();
-//			}
-//
-//			this.building_name = building_name.toUpperCase(Constants.DEFAULT_LOCALE);
-//			this.results = results;
-//			this.message_status = message_status.toString();
-//		}
-		
+
 		protected String get_building_name() {
 			return this.building_name;
 		}

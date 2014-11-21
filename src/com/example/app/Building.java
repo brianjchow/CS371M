@@ -32,17 +32,7 @@ final class Building implements Comparable<Building> {
 		
 		return (this.rooms.get(room_num) != null);
 	}
-		
-//	protected static Building get_gdc_instance(String db_file_name) {
-//		if (db_file_name == null || db_file_name.length() <= 0) {
-//			throw new IllegalArgumentException();
-//		}
-//		
-//		Building out = new Building(Constants.GDC);
-//		out.populate(db_file_name);
-//		return out;
-//	}
-	
+
 	protected static final Building get_instance(Context context, String building_name, String db_file_name) {
 		if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH || db_file_name == null || db_file_name.length() <= 0) {
 			throw new IllegalArgumentException("Bad argument, Building.get_instance()");

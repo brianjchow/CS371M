@@ -57,11 +57,14 @@
     <string name = "search_options">Search options</string>
 
     <!-- Find room later activity -->
-    <string name="set_start_date">Set start date</string>
-    <string name="set_start_time">Set start time</string>
-    <string name="set_minimum_duration">Set minimum duration</string>
-    <string name="set_minimum_capacity">Set minimum capacity</string>
-    <string name = "choose_building">Choose building</string>
+    <string name="set_start_date">Start date:</string>
+    <string name="set_start_time">Start time:</string>
+    <string name="set_minimum_duration">Min duration:</string>
+    <string name = "default_duration">60 minutes</string>
+    <string name = "minutes">minutes</string>
+    <string name="set_minimum_capacity">Min capacity:</string>
+    <string name = "zero_capacity">0 (no preference)</string>
+    <string name = "choose_building">Building:</string>
     <string name="power_plugs_question">Is you need power plugs for erryone?</string>
     <string name="get_room">Get room</string>
     <string name="get_room_enthusiastic">Get room!</string>

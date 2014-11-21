@@ -25,16 +25,6 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 	private static final String		START_TIME		=	"start_time";
 	private static final String		END_TIME		=	"end_time";
 	
-//	private static final int COL_BUILDING		=	0;		// String
-//	private static final int COL_ROOM			=	1;		// String
-//	private static final int COL_CAPACITY		=	2;		// Integer
-//	private static final int COL_NAME			=	3;		// String
-//	private static final int COL_MEETING_DAYS	=	4;		// String
-//	private static final int COL_START_TIME		=	5;		// Integer
-//	private static final int COL_END_TIME		=	6;		// Integer
-	
-//	private static final int NUM_COLS			=	7;
-	
 	private String database_name;
 	
 	public CourseScheduleDatabase(Context context, String database_name) {

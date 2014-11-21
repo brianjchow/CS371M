@@ -110,7 +110,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 
 
 	private void setMinDurationOnClickListener() {
-		findViewById(R.id.min_duration).setOnClickListener(new OnClickListener() {
+		findViewById(R.id.min_duration_button).setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -120,7 +120,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	}
 
 	private void setMinCapacityOnClickListener() {
-		findViewById(R.id.min_capacity).setOnClickListener(new OnClickListener() {
+		findViewById(R.id.min_capacity_button).setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -163,16 +163,14 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			return -1;
 		}
 		
-		int out = 0;
 		int i = 0;
-		int stop = Constants.CAMPUS_BUILDINGS.length;
+		int stop = Constants.CAMPUS_BUILDINGS_GDC_POS;
 
-//		int out = -1;
-//		int stop = Constants.CAMPUS_BUILDINGS_GDC_POSITION;
-//		if (building.toLowerCase(Locale.ENGLISH).compareTo(Constants.GDC.toLowerCase(Locale.ENGLISH)) > 0) {
-//			i = Constants.CAMPUS_BUILDINGS_GDC_POSITION + 1;
-//			stop = Constants.CAMPUS_BUILDINGS.length;
-//		}
+		int out = -1;
+		if (building.toLowerCase(Constants.DEFAULT_LOCALE).compareTo(Constants.GDC.toLowerCase(Constants.DEFAULT_LOCALE)) > 0) {
+			i = Constants.CAMPUS_BUILDINGS_GDC_POS + 1;
+			stop = Constants.CAMPUS_BUILDINGS.length;
+		}
 		
 		for (; i < stop; i++) {
 			if (Constants.CAMPUS_BUILDINGS[i].equalsIgnoreCase(building)) {
@@ -256,7 +254,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 
 	private void setTimeButtonOnClickListener() {
 
-		findViewById(R.id.timeButton).setOnClickListener(new OnClickListener() {
+		findViewById(R.id.timepicker_button).setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -273,7 +271,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 
 	private void setDateButtonOnClickListener() {
 
-		findViewById(R.id.dateButton).setOnClickListener(new OnClickListener() {
+		findViewById(R.id.datepicker_button).setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
