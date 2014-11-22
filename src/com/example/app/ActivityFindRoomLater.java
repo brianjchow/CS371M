@@ -1,7 +1,10 @@
 package com.example.app;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -25,15 +28,15 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.example.uis.R;
 
 //public class FindRoomLaterActivity extends ActionBarActivity implements View.OnClickListener {
 public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnDateSetListener, TimePickerDialog.OnTimeSetListener
 
-	private static final String TAG = "FindRoomLaterActivity";
+	private static final String TAG = "ActivityFindRoomLater";
 	private static final int SECS_IN_DAY = 86400;		// 24 * 60 * 60
 
 	private Query this_query;
@@ -62,7 +65,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			if (bundle != null) {
 				Query query = (Query) bundle.getParcelable("this_query");
 				if (query != null) {
-					Log.d(TAG, "Using transmitted parcelable\n" + query.toString());
+//					Log.d(TAG, "Using transmitted parcelable\n" + query.toString());
 					this_query = query;
 //					this_query.set_context(getApplicationContext());
 					this_query.set_context(ActivityFindRoomLater.this);
@@ -70,7 +73,9 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			}
 		}
 		
-		update_query_textview();
+//		update_query_textview();
+		
+		setSearchBuildingSpinnerOnItemSelectedLuistener();
 		
 		setDateButtonOnClickListener();
 		
@@ -79,8 +84,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		setMinDurationOnClickListener();
 		
 		setMinCapacityOnClickListener();
-		
-		setSearchBuildingButtonSpinnerOnItemSelectedListener();
 		
 		setCheckBoxOnCheckedChangeListener();
 		
@@ -110,6 +113,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 
 
 	private void setMinDurationOnClickListener() {
+		set_min_duration_button_text(this_query.get_duration());
+		
 		findViewById(R.id.min_duration_button).setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -120,6 +125,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	}
 
 	private void setMinCapacityOnClickListener() {
+		set_min_capacity_button_text(this_query.get_option_capacity());
+		
 		findViewById(R.id.min_capacity_button).setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -150,109 +157,65 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 					this_query.set_option_power(Boolean.valueOf(false));
 				}
 //				Toast.makeText(FindRoomLaterActivity.this, "Selected power option: " + selected_power, Toast.LENGTH_SHORT).show();
-				update_query_textview();
+//				update_query_textview();
 			}
 		});
 	}
-	
-	private int get_search_building_index(String building) {
-		if (building == null) {
-			throw new IllegalArgumentException();
-		}
-		else if (building.length() != 3) {
-			return -1;
-		}
-		
-		int i = 0;
-		int stop = Constants.CAMPUS_BUILDINGS_GDC_POS;
 
-		int out = -1;
-		if (building.toLowerCase(Constants.DEFAULT_LOCALE).compareTo(Constants.GDC.toLowerCase(Constants.DEFAULT_LOCALE)) > 0) {
-			i = Constants.CAMPUS_BUILDINGS_GDC_POS + 1;
-			stop = Constants.CAMPUS_BUILDINGS.length;
-		}
-		
-		for (; i < stop; i++) {
-			if (Constants.CAMPUS_BUILDINGS[i].equalsIgnoreCase(building)) {
-				out = i;
-				break;
-			}
-		}
-		
-		return out;
-	}
-
-	private void setSearchBuildingButtonSpinnerOnItemSelectedListener() {
-
-
+	private void setSearchBuildingSpinnerOnItemSelectedLuistener() {
 		final Spinner spinner = (Spinner) findViewById(R.id.choose_building_spinner);
-		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ActivityFindRoomLater.this, R.array.campus_buildings, android.R.layout.simple_spinner_item);
+		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ActivityFindRoomLater.this, R.array.campus_buildings, android.R.layout.simple_spinner_dropdown_item);	// or android.R.layout.simple_spinner_item
 //		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(ActivityFindRoomLater.this, android.R.layout.simple_spinner_item, Constants.CAMPUS_BUILDINGS);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
 		
-		String search_building = this_query.get_option_search_building();
-		if (search_building.equalsIgnoreCase(Constants.GDC)) {
-			spinner.setSelection(Constants.CAMPUS_BUILDINGS_GDC_POS);
-		}
-		else {
-			int index = get_search_building_index(search_building);
-			if (index >= 0) {
-				spinner.setSelection(index);
-				Log.d(TAG, "Found index " + index + " for search bldg " + search_building + "; CAMPUS_BUILDINGS[" + index + "] = " + Constants.CAMPUS_BUILDINGS[index]);
-			}
-			else {
-				spinner.setSelection(Constants.CAMPUS_BUILDINGS_GDC_POS);
-			}
-		}
+		spinner.setSelection(Constants.CAMPUS_BUILDINGS.get(Constants.GDC));
 		
-//		spinner.setVisibility(View.GONE);
-		findViewById(R.id.choose_building).setOnClickListener(new OnClickListener() {
+		setSearchBuildingButtonSpinnerOnItemSelectedListener(spinner);
+	}
+
+	// http://stackoverflow.com/questions/21485590/the-final-local-variable-cannot-be-assigned-since-it-is-defined-in-an-enclosing
+	private void setSearchBuildingButtonSpinnerOnItemSelectedListener(final Spinner spinner) {
+
+		spinner.setSelection(Constants.CAMPUS_BUILDINGS.get(this_query.get_option_search_building()));
+		
+		spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			CheckBox has_power = (CheckBox) findViewById(R.id.has_power);
 			
 			@Override
-			public void onClick(View v) {
-//				spinner.setVisibility(View.VISIBLE);
+			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+				Log.d(TAG, "In onItemSelected(); selected " + spinner.getSelectedItem());
 				
-				spinner.performClick();
-//				spinner.getLayoutParams().width = 200;
+				String selected_item = spinner.getSelectedItem().toString().substring(0, 3);
 				
-				spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-					
-					@Override
-					public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-						Log.d(TAG, "In onItemSelected(); selected " + spinner.getSelectedItem());
-						
-						String selected_item = spinner.getSelectedItem().toString().substring(0, 3);
-						
-						this_query.set_option_search_building(selected_item);
+				this_query.set_option_search_building(selected_item);
 
-						if (selected_item.equalsIgnoreCase(Constants.GDC)) {
-							has_power.setVisibility(View.VISIBLE);
-							has_power.setChecked(this_query.get_option_power());
+				if (selected_item.equalsIgnoreCase(Constants.GDC)) {
+					has_power.setVisibility(View.VISIBLE);
+					has_power.setChecked(this_query.get_option_power());
 
-						}
-						else {
-							has_power.setVisibility(View.GONE);
-//							has_power.setChecked(false);
-//							this_query.set_option_power(false);
-						}
+				}
+				else {
+					has_power.setVisibility(View.GONE);
+				}
 
-						update_query_textview();
-					}
-					
-					@Override
-					public void onNothingSelected(AdapterView<?> parentView) {
-						Log.d(TAG, "In onNothingSelected(); nothing selected in spinner");
-//						spinner.setVisibility(View.GONE);
-					}
-				});
+//				update_query_textview();
+				
+			}
+			
+			@Override
+			public void onNothingSelected(AdapterView<?> parentView) {
+				Log.d(TAG, "In onNothingSelected(); nothing selected in spinner");
 			}
 		});
+		
 	}
 
 	private void setTimeButtonOnClickListener() {
+		
+		final Date start_date = this_query.get_start_date();
+		set_start_time_button_text(start_date);
 
 		findViewById(R.id.timepicker_button).setOnClickListener(new OnClickListener() {
 			
@@ -260,7 +223,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			public void onClick(View v) {
 				Calendar calendar = Calendar.getInstance();
 				
-				calendar.setTime(this_query.get_start_date());
+				calendar.setTime(start_date);
 				
 				Dialog timepicker_dialog = new TimePickerDialog(ActivityFindRoomLater.this, timepicker_dialog_listener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
 //				Dialog timepicker_dialog = new TimePickerDialog(ActivityFindRoomLater.this, timepicker_dialog_listener, selected_hour, selected_minute, true);
@@ -270,6 +233,9 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	}
 
 	private void setDateButtonOnClickListener() {
+		
+		final Date start_date = this_query.get_start_date();
+		set_start_date_button_text(start_date);
 
 		findViewById(R.id.datepicker_button).setOnClickListener(new OnClickListener() {
 			
@@ -277,7 +243,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			public void onClick(View v) {
 				Calendar calendar = Calendar.getInstance();
 				
-				calendar.setTime(this_query.get_start_date());
+				calendar.setTime(start_date);
 				
 				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityFindRoomLater.this, datepicker_dialog_listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 //				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityFindRoomLater.this, datepicker_dialog_listener, selected_year, selected_month - 1, selected_day);
@@ -309,7 +275,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 //			Toast.makeText(FindRoomLaterActivity.this, "Date selected: " + year + "/" + (monthOfYear + 1) + "/" + dayOfMonth, Toast.LENGTH_SHORT).show();
 			
 			this_query.set_start_date((monthOfYear + 1), dayOfMonth, year);
-			update_query_textview();
+			set_start_date_button_text(this_query.get_start_date());
+//			update_query_textview();
 			
 //			long time = this_query.get_start_date().getTime();
 //			time = (time / 1000) % SECS_IN_DAY;
@@ -327,14 +294,15 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 //			Toast.makeText(FindRoomLaterActivity.this, "Time selected: " + hourOfDay + ":" + minute, Toast.LENGTH_SHORT).show();
 			
 			this_query.set_start_time(hourOfDay, minute);
-			update_query_textview();
+			set_start_time_button_text(this_query.get_start_date());
+//			update_query_textview();
 		}
 	};
 
-	private void update_query_textview() {
-		TextView temp = (TextView) findViewById(R.id.this_query);
-		temp.setText("Current query:\n" + this_query.toString());
-	}
+//	private void update_query_textview() {
+//		TextView temp = (TextView) findViewById(R.id.this_query);
+//		temp.setText("Current query:\n" + this_query.toString());
+//	}
 
 	public void getRoomRec() {
 		Intent intent = new Intent(getApplicationContext(), ActivityRoomRec.class);
@@ -359,9 +327,11 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		Button set_button = (Button) dialog.findViewById(R.id.set_button);
 		Button cancel_button = (Button) dialog.findViewById(R.id.cancel_button);
 		
+		final String zero_capacity = ActivityFindRoomLater.this.getResources().getString(R.string.zero_capacity);
 		final NumberPicker np = (NumberPicker) dialog.findViewById(R.id.number_picker);
-		String[] nums = new String[51];
-		for (int i = 0; i < nums.length; i++) {
+		String[] nums = new String[Constants.MAX_CAPACITY + 1];
+		nums[0] = zero_capacity;
+		for (int i = 1; i < nums.length; i++) {
 			nums[i] = Integer.toString(i);
 		}
 		
@@ -382,10 +352,15 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			
 			@Override
 			public void onClick(View v) {
-//				Toast.makeText(FindRoomLaterActivity.this, "Capacity selected: " + np.getValue(), Toast.LENGTH_SHORT).show();
+				if (Constants.DEBUG) {
+					Toast.makeText(ActivityFindRoomLater.this, "Capacity selected: " + np.getValue(), Toast.LENGTH_SHORT).show();
+				}
 				
-				this_query.set_option_capacity(np.getValue());
-				update_query_textview();
+				Integer val = Integer.valueOf(np.getValue());
+				this_query.set_option_capacity(val);
+				set_min_capacity_button_text(val);
+				
+//				update_query_textview();
 				dialog.dismiss();
 			}
 		});
@@ -440,8 +415,11 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			public void onClick(View v) {
 //				Toast.makeText(FindRoomLaterActivity.this, "Duration selected: " + np.getValue(), Toast.LENGTH_SHORT).show();
 				
-				this_query.set_duration(np.getValue());
-				update_query_textview();
+				Integer val = Integer.valueOf(np.getValue());
+				this_query.set_duration(val);
+				set_min_duration_button_text(val);
+				
+//				update_query_textview();
 				dialog.dismiss();
 			}
 		});
@@ -456,6 +434,75 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		
 		dialog.show();
 	}
+
+	private String get_res_string(int res_id) {
+		return (ActivityFindRoomLater.this.getResources().getString(res_id));
+	}
+	
+	private void set_start_date_button_text(Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		DateFormat format = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.ENGLISH);
+		String date_str = format.format(date);
+		
+		Button start_date_button = (Button) findViewById(R.id.datepicker_button);
+		start_date_button.setText(date_str);
+	}
+	
+	private void set_start_time_button_text(Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		Button start_time_button = (Button) findViewById(R.id.timepicker_button);
+		start_time_button.setText(Utilities.get_time(date));
+	}
+
+	private void set_min_duration_button_text(Integer val) {
+		if (val < 1) {
+			throw new IllegalArgumentException();
+		}
+		
+		Button min_duration_button = (Button) findViewById(R.id.min_duration_button);
+		
+		if (val == 1) {
+			min_duration_button.setText(val + " " + get_res_string(R.string.minute));
+		}
+		else {
+			min_duration_button.setText(val + " " + get_res_string(R.string.minutes));
+		}
+	}
+	
+	// ASSUMES ARGUMENT COMES ONLY FROM CAPACITY SELECTED IN CAPACITY PICKER
+	private void set_min_capacity_button_text(Integer val) {
+		if (val < 0 || val > Constants.MAX_CAPACITY) {
+			throw new IllegalArgumentException();
+		}
+		
+		Button min_capacity_button = (Button) findViewById(R.id.min_capacity_button);
+		
+		if (val == 0) {
+			min_capacity_button.setText(get_res_string(R.string.zero_capacity));
+		}
+		else if (val == 1) {
+			min_capacity_button.setText(val + " " + get_res_string(R.string.person));
+		}
+		else {
+			min_capacity_button.setText(val + " " + get_res_string(R.string.people));
+		}
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {

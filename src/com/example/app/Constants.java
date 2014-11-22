@@ -1,8 +1,10 @@
 package com.example.app;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 import android.content.Context;
 import android.util.Log;
@@ -49,8 +51,8 @@ final class Constants {
 	
 	protected static final 	String 		ALL_DAY;
 	protected static final 	String 		ATRIUM;
-	protected static final 	String[] 	CAMPUS_BUILDINGS;
-	protected static final	int			CAMPUS_BUILDINGS_GDC_POS;	//	=	60; // 29 in reduced list
+	protected static final 	Map<String, Integer> 	CAMPUS_BUILDINGS;
+//	protected static final	int			CAMPUS_BUILDINGS_GDC_POS;	//	=	60; // 29 in reduced list
 	
 	protected static final	Locale		DEFAULT_LOCALE					=	Locale.US;
 	
@@ -58,6 +60,8 @@ final class Constants {
 	protected static final 	String 		POWER;
 	protected static final	String		SEARCH_GDC_ONLY;
 	protected static final	String		SEARCH_BUILDING;
+	
+	protected static final	int			MAX_CAPACITY					=	50;
 
 	protected static final 	int[] 		DAYS_IN_MONTH;
 	protected static final 	String[] 	DAYS_OF_WEEK_LONG;
@@ -131,7 +135,7 @@ final class Constants {
 		ATRIUM						=	"Atrium";
 		
 		CAMPUS_BUILDINGS			=	initialise_campus_buildings();
-		CAMPUS_BUILDINGS_GDC_POS	=	initialise_campus_buildings_gdc_pos();
+//		CAMPUS_BUILDINGS_GDC_POS	=	initialise_campus_buildings_gdc_pos();
 		
 		CLASS						=	"class";
 		CONFERENCE					=	"conference";
@@ -341,7 +345,7 @@ final class Constants {
 		has_feed_been_read = true;
 	}
 
-	private static final String[] initialise_campus_buildings() {
+	private static final Map<String, Integer> initialise_campus_buildings() {
 //		final String[] CAMPUS_BUILDINGS = {
 //				"ACA", "ADH", "AFP", "AHG", "ANB", "AND", "ARC", "ART", "ATT",
 //				"BAT", "BEL", "BEN", "BHD", "BIO", "BLD", "BMA", "BMC", "BME", "BOT", "BRB", "BRG", "BTL", "BUR", "BWY",
@@ -384,18 +388,24 @@ final class Constants {
 				"UTA", "UTC",
 				"WAG", "WCH", "WEL", "WIN", "WMB", "WRW"
 		};
-		return CAMPUS_BUILDINGS;
-	}
-	
-	private static final int initialise_campus_buildings_gdc_pos() {
+		
+		final Map<String, Integer> CAMPUS_BUILDINGS_MAP = new HashMap<String, Integer>(CAMPUS_BUILDINGS.length);
 		for (int i = 0; i < CAMPUS_BUILDINGS.length; i++) {
-			if (CAMPUS_BUILDINGS[i].equals(GDC)) {
-				return i;
-			}
+			CAMPUS_BUILDINGS_MAP.put(CAMPUS_BUILDINGS[i], i);
 		}
 		
-		throw new IllegalStateException("ERROR: where's GDC in the campus buildings array mang?");
+		return CAMPUS_BUILDINGS_MAP;
 	}
+	
+//	private static final int initialise_campus_buildings_gdc_pos() {
+//		for (int i = 0; i < CAMPUS_BUILDINGS.length; i++) {
+//			if (CAMPUS_BUILDINGS[i].equals(GDC)) {
+//				return i;
+//			}
+//		}
+//		
+//		throw new IllegalStateException("ERROR: where's GDC in the campus buildings array mang?");
+//	}
 	
 	private static final int[] initialise_days_in_month() {
 		final int[] DAYS_IN_MONTH =	{ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };

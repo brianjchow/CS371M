@@ -61,13 +61,20 @@ final class CSVReader {
 		
 		String compare = str.substring(0, 3);
 		
-		for (int i = 0; i < Constants.CAMPUS_BUILDINGS.length; i++) {
-			if (compare.equals(Constants.CAMPUS_BUILDINGS[i]) &&
-				!is_ignored_room(str)) {
-				
+		for (String room : Constants.CAMPUS_BUILDINGS.keySet()) {
+			if (compare.equals(room) && !is_ignored_room(str)) {
 				return true;
 			}
 		}
+		
+//		for (int i = 0; i < Constants.CAMPUS_BUILDINGS.length; i++) {
+//			if (compare.equals(Constants.CAMPUS_BUILDINGS[i]) &&
+//				!is_ignored_room(str)) {
+//				
+//				return true;
+//			}
+//		}
+		
 		return false;
 	}
 

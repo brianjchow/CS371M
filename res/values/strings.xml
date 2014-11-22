@@ -61,9 +61,12 @@
     <string name="set_start_time">Start time:</string>
     <string name="set_minimum_duration">Min duration:</string>
     <string name = "default_duration">60 minutes</string>
+    <string name = "minute">minute</string>
     <string name = "minutes">minutes</string>
     <string name="set_minimum_capacity">Min capacity:</string>
     <string name = "zero_capacity">0 (no preference)</string>
+    <string name = "person">person</string>
+    <string name = "people">people</string>
     <string name = "choose_building">Building:</string>
     <string name="power_plugs_question">Is you need power plugs for erryone?</string>
     <string name="get_room">Get room</string>

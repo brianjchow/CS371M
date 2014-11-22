@@ -49,6 +49,7 @@ final class Building implements Comparable<Building> {
 			Utilities.containsIgnoreCase(Constants.COURSE_SCHEDULE_NEXT_SEMESTER, db_file_name)) {
 
 			if ((out = Constants.BUILDING_CACHELIST_NEXT_SEMESTER.get_building(building_name)) != null) {
+//				return out.clone();
 				return out;
 			}
 			
@@ -67,6 +68,7 @@ final class Building implements Comparable<Building> {
 		else {
 
 			if ((out = Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_building(building_name)) != null) {
+//				return out.clone();
 				return out;
 			}
 			

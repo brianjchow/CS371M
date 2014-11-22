@@ -38,7 +38,7 @@ public class InputReader {
 		if (context == null) {
 			throw new IllegalArgumentException("Error: Context argument is null");
 		}
-		else if (file_name == null || file_name.length() < 0) {
+		else if (file_name == null || file_name.length() <= 0) {
 			throw new IllegalArgumentException("Error: file name is either null or empty, InputReader constructor");
 		}
 		
