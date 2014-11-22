@@ -77,8 +77,8 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 				break;
 		}
 		
-		finish();
-		return;
+//		finish();
+//		return;
 	}
 
 }		// end of file

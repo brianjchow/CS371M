@@ -59,6 +59,7 @@ public class Query implements Parcelable {
 		this.options.put(Constants.CAPACITY, Integer.valueOf(0));
 		this.options.put(Constants.POWER, Boolean.valueOf(false));
 		this.options.put(Constants.SEARCH_BUILDING, Constants.GDC);
+		this.options.put(Constants.SEARCH_ROOM, Constants.RANDOM);
 
 	}
 
@@ -219,6 +220,10 @@ public class Query implements Parcelable {
 
 	protected final String get_option_search_building() {
 		return ((String) this.options.get(Constants.SEARCH_BUILDING));
+	}
+	
+	protected final String get_option_search_room() {
+		return ((String) this.options.get(Constants.SEARCH_ROOM));
 	}
 
 	/**
@@ -403,6 +408,12 @@ public class Query implements Parcelable {
 			}
 			return (set_option_search_building((String) value));
 		}
+		else if (option.equals(Constants.SEARCH_ROOM)) {
+			if (!(value instanceof String)) {
+				return false;
+			}
+			return (set_option_search_room((String) value));
+		}
 		else {
 			return false;
 		}
@@ -443,7 +454,7 @@ public class Query implements Parcelable {
 
 	protected boolean set_option_search_building(String building_code) {
 		if (building_code == null) {
-			//				return false;
+//			return false;
 			throw new IllegalArgumentException("Error: argument cannot be null, set_option_search_for_building()");		
 		}
 
@@ -453,6 +464,16 @@ public class Query implements Parcelable {
 		}
 		this.options.put(Constants.SEARCH_BUILDING, building_code.toUpperCase(Constants.DEFAULT_LOCALE));
 		return true;		
+	}
+	
+	protected boolean set_option_search_room(String room_num) {
+		if (room_num == null) {
+//			return false;
+			throw new IllegalArgumentException("Error: argument cannot be null, set_option_search_for_building()");		
+		}
+		
+		this.options.put(Constants.SEARCH_ROOM, room_num);		
+		return true;
 	}
 
 	protected void reset() {
@@ -478,6 +499,7 @@ public class Query implements Parcelable {
 		this.set_option_capacity(0);
 		this.set_option_power(false);
 		this.set_option_search_building(Constants.GDC);
+		this.set_option_search_room(Constants.RANDOM);
 	}
 
 	/**
@@ -643,11 +665,13 @@ public class Query implements Parcelable {
 	
 	public static final Parcelable.Creator<Query> CREATOR = new Parcelable.Creator<Query>() {
 		
+		@Override
 		public Query createFromParcel(Parcel in) {
 //			Log.d(TAG, "In createFromParcel");
 			return new Query(in);
 		}
 		
+		@Override
 		public Query[] newArray(int size) {
 			return new Query[size];
 		}

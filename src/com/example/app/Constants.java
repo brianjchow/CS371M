@@ -60,6 +60,8 @@ final class Constants {
 	protected static final 	String 		POWER;
 	protected static final	String		SEARCH_GDC_ONLY;
 	protected static final	String		SEARCH_BUILDING;
+	protected static final	String		SEARCH_ROOM						=	"search_room";
+	protected static final	String		RANDOM							=	"Random";
 	
 	protected static final	int			MAX_CAPACITY					=	50;
 
