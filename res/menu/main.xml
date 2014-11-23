@@ -3,10 +3,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.uis.MainActivity" >
 
-    <item
+<!-- 	<item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
+        app:showAsAction="never"/>  -->
+    
+    <item 
+        android:id="@+id/find_a_room_now"
+        android:title="@string/find_a_room_now"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/find_a_room_later"
+        android:title="@string/find_a_room_later"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/exit"
+        android:title="@string/exit"
         app:showAsAction="never"/>
+    
 
 </menu>
+

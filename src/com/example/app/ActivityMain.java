@@ -47,13 +47,26 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		if (id == R.id.find_a_room_now){
+			findRoom();
 			return true;
 		}
-
+		if (id == R.id.find_a_room_later){
+			findRoomLater();
+			return true;
+		}
+		if (id == R.id.exit){
+			exit();
+			return true;
+		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	public void exit() {
+//		startActivityForResult(new Intent(this, ActivityExit.class), 0);
+		startActivity(new Intent(this, ActivityExit.class));
+		finish();
 	}
 
 	private void findRoom() {

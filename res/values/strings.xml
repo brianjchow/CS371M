@@ -13,6 +13,9 @@
     <string name="title_activity_wait_for_cxn">No connection</string>
     <string name="title_activity_get_room_schedule">ActivityGetRoomSchedule</string>
     <string name="home">Home</string>
+    <string name="find_a_room_now">Find a Room Now</string>
+    <string name="find_a_room_later">Find a Room Later</string>
+    <string name="exit">Exit</string>
 
     <!-- Load CSV -->
     <string name="loading_msg">Loading&#8230;</string>
