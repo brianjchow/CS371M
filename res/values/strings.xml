@@ -10,18 +10,19 @@
     <string name="title_activity_find_room_later">Find room later</string>
     <string name="title_activity_exit">Quit</string>
     <string name="title_activity_load_csv">Loading</string>
-    <string name = "title_activity_wait_for_cxn">No connection</string>
-    
-    <string name = "home">Home</string>
+    <string name="title_activity_wait_for_cxn">No connection</string>
+    <string name="title_activity_get_room_schedule">ActivityGetRoomSchedule</string>
+    <string name="home">Home</string>
 
     <!-- Load CSV -->
     <string name="loading_msg">Loading&#8230;</string>
     <string name="need_cxn_msg">Get yoself a wifi/mobile connection</string>
-    <string name = "loading_spinner_desc">Loading spinner image</string>
+    <string name="loading_spinner_desc">Loading spinner image</string>
 
     <!-- Main -->
     <string name="find_room_now">Find a room now</string>
     <string name="find_room_later">Find a room later</string>
+    <string name = "get_room_schedule">Get room schedule</string>
 
     <!-- Number picker dialogs -->
     <string name="cancel">Cancel</string>
@@ -29,23 +30,23 @@
 
     <!-- Load CSV warning/failure dialogs -->
     <string name="load_error_msg">Unknown error during loading.\n\nProceeding may cause incorrect or incomplete search results.\n\nContinue/restart/abort?</string>
-    <string name = "load_warning_msg">"This app uses information obtained directly from the CS department.\n\n"
+    <string name="load_warning_msg">"This app uses information obtained directly from the CS department.\n\n"
 									  "However, it appears you have been blocked from accessing their servers. "
 									  "You may proceed, but search results may be more accurate if you try again later.\n\n"
 									  "Continue/abort?"</string>
-	<string name = "warning">Warning</string>
+    <string name="warning">Warning</string>
     <string name="continue_msg">Continue</string>
     <string name="restart">Restart</string>
     <string name="abort">Abort</string>
-    
+
     <!-- Wait for cxn activity -->
-    <string name = "wait_title">Wait for connection timeout</string>
-    <string name = "timeout_exceeded_msg">"Timeout period exceeded.\n\nRestart/abort?"</string>
-    <string name = "no_cxn_smartass_msg">What is this, 1979?</string>
-    <string name = "no_cxn_msg">No connection</string>
-    <string name = "try_again">Try again</string>
-    <string name = "quit">Quit</string>
-    <string name = "no_cxn_dinosaur_desc">No connection image</string>
+    <string name="wait_title">Wait for connection timeout</string>
+    <string name="timeout_exceeded_msg">"Timeout period exceeded.\n\nRestart/abort?"</string>
+    <string name="no_cxn_smartass_msg">What is this, 1979?</string>
+    <string name="no_cxn_msg">No connection</string>
+    <string name="try_again">Try again</string>
+    <string name="quit">Quit</string>
+    <string name="no_cxn_dinosaur_desc">No connection image</string>
 
     <!-- Find room activity -->
     <string name="ok">OK</string>
@@ -53,116 +54,119 @@
     <string name="new_room_caps">NEW ROOM</string>
     <string name="try_room">Try room</string>
     <string name="try_room_caps">TRY ROOM</string>
-    <string name = "search_later">Search later</string>
-    <string name = "search_options">Search options</string>
+    <string name="search_later">Search later</string>
+    <string name="search_options">Search options</string>
 
     <!-- Find room later activity -->
     <string name="set_start_date">Start date:</string>
     <string name="set_start_time">Start time:</string>
     <string name="set_minimum_duration">Min duration:</string>
-    <string name = "default_duration">60 minutes</string>
-    <string name = "minute">minute</string>
-    <string name = "minutes">minutes</string>
+    <string name="default_duration">60 minutes</string>
+    <string name="minute">minute</string>
+    <string name="minutes">minutes</string>
     <string name="set_minimum_capacity">Min capacity:</string>
-    <string name = "zero_capacity">0 (no preference)</string>
-    <string name = "person">person</string>
-    <string name = "people">people</string>
-    <string name = "choose_building">Building:</string>
+    <string name="zero_capacity">0 (no preference)</string>
+    <string name="person">person</string>
+    <string name="people">people</string>
+    <string name="choose_building">Building:</string>
     <string name="power_plugs_question">Is you need power plugs for erryone?</string>
     <string name="get_room">Get room</string>
     <string name="get_room_enthusiastic">Get room!</string>
     <string name="current_query">Current query:</string>
+    
+    <!-- Get room schedule activity -->
+    <string name = "room">Room:</string>
+    <string name = "no_rooms_found">None (select another building)</string>
+    <string name = "date">Date:</string>
 
     <!-- Exit activity -->
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="quit_question">Are you sure you want to quit?</string>
     <string name="title_activity_activity_wait_for_cxn">ActivityWaitForCxn</string>
-    
+
     <!-- Campus buildings -->
-	<string name = "ACA">ACA &#8211; Academic Annex</string>
-	<string name = "AHG">AHG &#8211; Anna Hiss Gymnasium</string>
-	<string name = "ART">ART &#8211; Art Building and Museum</string>
-	<string name = "ATT">ATT &#8211; AT&amp;T Conference Centre</string>
-	<string name = "BAT">BAT &#8211; Batts Hall</string>
-	<string name = "BEL">BEL &#8211; Bellmont Hall</string>
-	<string name = "BEN">BEN &#8211; Benedict Hall</string>
-	<string name = "BIO">BIO &#8211; Biological Laboratories</string>
-	<string name = "BMC">BMC &#8211; Belo Center for New Media</string>
-	<string name = "BME">BME &#8211; Biomedical Engineering Bldg</string>
-	<string name = "BRB">BRB &#8211; Rapoport Building</string>
-	<string name = "BTL">BTL &#8211; Battle Hall</string>
-	<string name = "BUR">BUR &#8211; Burdine Hall</string>
-	<string name = "CAL">CAL &#8211; Calhoun Hall</string>
-	<string name = "CBA">CBA &#8211; McCombs School of Business</string>
-	<string name = "CCJ">CCJ &#8211; Connally Centre for Justice</string>
-	<string name = "CLA">CLA &#8211; Liberal Arts Building</string>
-	<string name = "CMA">CMA &#8211; Communication Centre Bldg A</string>
-	<string name = "CMB">CMB &#8211; Communication Centre Bldg B</string>
-	<string name = "CRD">CRD &#8211; Carothers Dormitory</string>
-	<string name = "DFA">DFA &#8211; Doty Fine Arts Bldg</string>
-	<string name = "ECJ">ECJ &#8211; Ernest Cockrell Jr. Hall</string>
-	<string name = "ENS">ENS &#8211; Engr-Science Bldg</string>
-	<string name = "EPS">EPS &#8211; Schoch Building</string>
-	<string name = "ETC">ETC &#8211; Engr Teaching Centre II</string>
-	<string name = "FAC">FAC &#8211; Flawn Academic Centre</string>
-	<string name = "FDH">FDH &#8211; Dobie House</string>
-	<string name = "FNT">FNT &#8211; Faulkner Nanosc Tech Bldg</string>
-	<string name = "GAR">GAR &#8211; Garrison Hall</string>
-	<string name = "GDC">GDC &#8211; geeks \'n nerds yo</string>
-	<string name = "GEA">GEA &#8211; Gearing Hall</string>
-	<string name = "GEB">GEB &#8211; Gebauer Building</string>
-	<string name = "GOL">GOL &#8211; Goldsmith Hall</string>
-	<string name = "GRE">GRE &#8211; Gregory Gymnasium</string>
-	<string name = "GSB">GSB &#8211; Grad School of Business Bldg</string>
-	<string name = "HRC">HRC &#8211; Harry Ransom Centre</string>
-	<string name = "HRH">HRH &#8211; Rainey Hall</string>
-	<string name = "INT">INT &#8211; International Office</string>
-	<string name = "JES">JES &#8211; Jester Centre</string>
-	<string name = "JGB">JGB &#8211; Jackson Geosci Bldg (GEO)</string>
-	<string name = "JON">JON &#8211; Jones Hall</string>
-	<string name = "LTH">LTH &#8211; Lab Theatre Building</string>
-	<string name = "MAI">MAI &#8211; Main Building</string>
-	<string name = "MBB">MBB &#8211; Moffett Molecular Bio Bldg</string>
-	<string name = "MEZ">MEZ &#8211; Mezes Hall</string>
-	<string name = "MRH">MRH &#8211; Music Bldg/Recital Hall</string>
-	<string name = "NEZ">NEZ &#8211; North End Zone</string>
-	<string name = "NHB">NHB &#8211; Hackerman Building</string>
-	<string name = "NMS">NMS &#8211; Neural Molecular Sci Bldg</string>
-	<string name = "NOA">NOA &#8211; North Office Bldg A</string>
-	<string name = "NUR">NUR &#8211; Nursing School</string>
-	<string name = "PAC">PAC &#8211; Performing Arts Centre</string>
-	<string name = "PAI">PAI &#8211; Painter Hall</string>
-	<string name = "PAR">PAR &#8211; Parlin Hall</string>
-	<string name = "PAT">PAT &#8211; Patterson Labs Bldg</string>
-	<string name = "PCL">PCL &#8211; where dreams go to die</string>
-	<string name = "PHR">PHR &#8211; Pharmacy Building</string>
-	<string name = "POB">POB &#8211; O\'Donnell Jr. Bldg</string>
-	<string name = "RLM">RLM &#8211; Robert Lee Moore Hall</string>
-	<string name = "RSC">RSC &#8211; Recreational Sports Centre</string>
-	<string name = "SAC">SAC &#8211; Student Activity Centre</string>
-	<string name = "SEA">SEA &#8211; Seay Building</string>
-	<string name = "SRH">SRH &#8211; Richardson Hall</string>
-	<string name = "SSB">SSB &#8211; Student Services Bldg</string>
-	<string name = "SSW">SSW &#8211; School of Social Work Bldg</string>
-	<string name = "STD">STD &#8211; wear protection</string>
-	<string name = "SUT">SUT &#8211; Sutton Hall</string>
-	<string name = "SZB">SZB &#8211; Sanchez Building</string>
-	<string name = "TNH">TNH &#8211; Townes Hall</string>
-	<string name = "TSC">TSC &#8211; Texas Swimming Centre</string>
-	<string name = "UTA">UTA &#8211; UT Admin Building</string>
-	<string name = "UTC">UTC &#8211; University Teaching Centre</string>
-	<string name = "WAG">WAG &#8211; Waggener Hall</string>
-	<string name = "WCH">WCH &#8211; Hogg Building</string>
-	<string name = "WEL">WEL &#8211; Welch Hall</string>
-	<string name = "WIN">WIN &#8211; Winship Drama Bldg</string>
-	<string name = "WMB">WMB &#8211; West Mall Office Bldg</string>
-	<string name = "WRW">WRW &#8211; Woolrich Labs</string>
+    <string name="ACA">ACA &#8211; Academic Annex</string>
+    <string name="AHG">AHG &#8211; Anna Hiss Gymnasium</string>
+    <string name="ART">ART &#8211; Art Building and Museum</string>
+    <string name="ATT">ATT &#8211; AT&amp;T Conference Centre</string>
+    <string name="BAT">BAT &#8211; Batts Hall</string>
+    <string name="BEL">BEL &#8211; Bellmont Hall</string>
+    <string name="BEN">BEN &#8211; Benedict Hall</string>
+    <string name="BIO">BIO &#8211; Biological Laboratories</string>
+    <string name="BMC">BMC &#8211; Belo Center for New Media</string>
+    <string name="BME">BME &#8211; Biomedical Engineering Bldg</string>
+    <string name="BRB">BRB &#8211; Rapoport Building</string>
+    <string name="BTL">BTL &#8211; Battle Hall</string>
+    <string name="BUR">BUR &#8211; Burdine Hall</string>
+    <string name="CAL">CAL &#8211; Calhoun Hall</string>
+    <string name="CBA">CBA &#8211; McCombs School of Business</string>
+    <string name="CCJ">CCJ &#8211; Connally Centre for Justice</string>
+    <string name="CLA">CLA &#8211; Liberal Arts Building</string>
+    <string name="CMA">CMA &#8211; Communication Centre Bldg A</string>
+    <string name="CMB">CMB &#8211; Communication Centre Bldg B</string>
+    <string name="CRD">CRD &#8211; Carothers Dormitory</string>
+    <string name="DFA">DFA &#8211; Doty Fine Arts Bldg</string>
+    <string name="ECJ">ECJ &#8211; Ernest Cockrell Jr. Hall</string>
+    <string name="ENS">ENS &#8211; Engr-Science Bldg</string>
+    <string name="EPS">EPS &#8211; Schoch Building</string>
+    <string name="ETC">ETC &#8211; Engr Teaching Centre II</string>
+    <string name="FAC">FAC &#8211; Flawn Academic Centre</string>
+    <string name="FDH">FDH &#8211; Dobie House</string>
+    <string name="FNT">FNT &#8211; Faulkner Nanosc Tech Bldg</string>
+    <string name="GAR">GAR &#8211; Garrison Hall</string>
+    <string name="GDC">GDC &#8211; geeks \'n nerds yo</string>
+    <string name="GEA">GEA &#8211; Gearing Hall</string>
+    <string name="GEB">GEB &#8211; Gebauer Building</string>
+    <string name="GOL">GOL &#8211; Goldsmith Hall</string>
+    <string name="GRE">GRE &#8211; Gregory Gymnasium</string>
+    <string name="GSB">GSB &#8211; Grad School of Business Bldg</string>
+    <string name="HRC">HRC &#8211; Harry Ransom Centre</string>
+    <string name="HRH">HRH &#8211; Rainey Hall</string>
+    <string name="INT">INT &#8211; International Office</string>
+    <string name="JES">JES &#8211; Jester Centre</string>
+    <string name="JGB">JGB &#8211; Jackson Geosci Bldg (GEO)</string>
+    <string name="JON">JON &#8211; Jones Hall</string>
+    <string name="LTH">LTH &#8211; Lab Theatre Building</string>
+    <string name="MAI">MAI &#8211; Main Building</string>
+    <string name="MBB">MBB &#8211; Moffett Molecular Bio Bldg</string>
+    <string name="MEZ">MEZ &#8211; Mezes Hall</string>
+    <string name="MRH">MRH &#8211; Music Bldg/Recital Hall</string>
+    <string name="NEZ">NEZ &#8211; North End Zone</string>
+    <string name="NHB">NHB &#8211; Hackerman Building</string>
+    <string name="NMS">NMS &#8211; Neural Molecular Sci Bldg</string>
+    <string name="NOA">NOA &#8211; North Office Bldg A</string>
+    <string name="NUR">NUR &#8211; Nursing School</string>
+    <string name="PAC">PAC &#8211; Performing Arts Centre</string>
+    <string name="PAI">PAI &#8211; Painter Hall</string>
+    <string name="PAR">PAR &#8211; Parlin Hall</string>
+    <string name="PAT">PAT &#8211; Patterson Labs Bldg</string>
+    <string name="PCL">PCL &#8211; where dreams go to die</string>
+    <string name="PHR">PHR &#8211; Pharmacy Building</string>
+    <string name="POB">POB &#8211; O\'Donnell Jr. Bldg</string>
+    <string name="RLM">RLM &#8211; Robert Lee Moore Hall</string>
+    <string name="RSC">RSC &#8211; Recreational Sports Centre</string>
+    <string name="SAC">SAC &#8211; Student Activity Centre</string>
+    <string name="SEA">SEA &#8211; Seay Building</string>
+    <string name="SRH">SRH &#8211; Richardson Hall</string>
+    <string name="SSB">SSB &#8211; Student Services Bldg</string>
+    <string name="SSW">SSW &#8211; School of Social Work Bldg</string>
+    <string name="STD">STD &#8211; wear protection</string>
+    <string name="SUT">SUT &#8211; Sutton Hall</string>
+    <string name="SZB">SZB &#8211; Sanchez Building</string>
+    <string name="TNH">TNH &#8211; Townes Hall</string>
+    <string name="TSC">TSC &#8211; Texas Swimming Centre</string>
+    <string name="UTA">UTA &#8211; UT Admin Building</string>
+    <string name="UTC">UTC &#8211; University Teaching Centre</string>
+    <string name="WAG">WAG &#8211; Waggener Hall</string>
+    <string name="WCH">WCH &#8211; Hogg Building</string>
+    <string name="WEL">WEL &#8211; Welch Hall</string>
+    <string name="WIN">WIN &#8211; Winship Drama Bldg</string>
+    <string name="WMB">WMB &#8211; West Mall Office Bldg</string>
+    <string name="WRW">WRW &#8211; Woolrich Labs</string>
 
 </resources>
-
 <!--
-
 	ALL CAMPUS BUILDINGS FOUND IN COURSE SCHEDULES ONLY
 	<string name = "ACA">ACA &#8211; Academic Annex</string>
 	<string name = "AHG">AHG &#8211; Anna Hiss Gymnasium</string>
@@ -403,5 +407,6 @@
 	<string name = "WIN">WIN &#8211; Winship Drama Bldg</string>
 	<string name = "WMB">WMB &#8211; West Mall Office Bldg</string>
 	<string name = "WRW">WRW &#8211; Woolrich Labs</string>
-	<string name = "WWH">WWH &#8211; Webb Hall</string>
+	<string name = "WWH">WWH &#8211; Webb Hall</string>
 -->
+

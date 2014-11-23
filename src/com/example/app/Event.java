@@ -168,7 +168,26 @@ public class Event implements Comparable<Event> {
 		this.location.set_building(temp[0]);
 		this.location.set_room(temp[1]);
 	}
+	
+	protected void set_start_date(Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException();
+		}
 		
+		this.start_date = date;
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(this.start_date);
+//		calendar.add(Calendar.MINUTE, Constants.DEFAULT_EVENT_DURATION);
+//		this.end_date = calendar.getTime();
+		
+		Calendar calendar_end_date = Calendar.getInstance();
+		calendar_end_date.setTime(this.end_date);
+		calendar_end_date.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR));
+		calendar_end_date.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
+		this.end_date = calendar_end_date.getTime();
+	}
+			
 	/**
 	 * @param start_date
 	 */
@@ -181,8 +200,14 @@ public class Event implements Comparable<Event> {
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(this.start_date);
-		calendar.add(Calendar.MINUTE, Constants.DEFAULT_EVENT_DURATION);
-		this.end_date = calendar.getTime();
+//		calendar.add(Calendar.MINUTE, Constants.DEFAULT_EVENT_DURATION);
+//		this.end_date = calendar.getTime();
+		
+		Calendar calendar_end_date = Calendar.getInstance();
+		calendar_end_date.setTime(this.end_date);
+		calendar_end_date.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR));
+		calendar_end_date.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
+		this.end_date = calendar_end_date.getTime();
 	}
 
 	// Mon 20 Oct 2014 1700

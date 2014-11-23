@@ -23,7 +23,7 @@
 	        android:layout_height="50dp"
 	        android:layout_weight = "1"
 	        android:text="@string/find_room_now"
-	        android:textSize = "15sp"
+	        android:textSize = "12sp"
 	        android:textColor = "@color/white" />
 	    
 	    <View
@@ -37,9 +37,23 @@
 	        android:layout_height="50dp"
 	        android:layout_weight = "1"
 	        android:text="@string/find_room_later"
-	        android:textSize = "15sp"
+	        android:textSize = "12sp"
 	        android:textColor = "@color/white" />
-	    	    
+	    
+	    <View
+	        android:layout_height = "fill_parent"
+	        android:layout_width = "2px"
+	        android:background = "@color/white" />
+	    
+	    <Button
+	        android:id="@+id/get_room_schedule"
+	        android:layout_width="0dp"
+	        android:layout_height="50dp"
+	        android:layout_weight = "1"
+	        android:text="@string/get_room_schedule"
+	        android:textSize = "12sp"
+	        android:textColor = "@color/white" />
+	    	    	    	    
     </LinearLayout>
 
     <TextView

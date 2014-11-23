@@ -494,37 +494,37 @@ public class Utilities {
 	}
 	
 //	does not check for extra/erroneous letters or digits
-//	protected static String time_to_12h(String time) {
-//		if (time == null || time.length() <= 0) {
-//			throw new IllegalArgumentException();
-//		}
-//
-//		time = time.replaceAll(":", "");
-//		time = time.replaceAll(" ", "");
-//		time = time.substring(0, 4);
-//		
-//		try {
-//			Integer.parseInt(time);
-//		}
-//		catch (NumberFormatException e) {
-//			e.printStackTrace();
-//			throw new RuntimeException(e);
-//		}
-//
-//		DateFormat format_1 = new SimpleDateFormat("hhmm");
-//		Date date = null;
-//		try {
-//			date = format_1.parse(time);
-//		}
-//		catch (ParseException e) {
-//			e.printStackTrace();
-//			throw new RuntimeException(e);
-//		}
-//		
-//		DateFormat format_2 = new SimpleDateFormat("h:mma");
-//		
-//		return format_2.format(date).toLowerCase();
-//	}
+	protected static String time_to_12h(String time) {
+		if (time == null || time.length() <= 0) {
+			throw new IllegalArgumentException();
+		}
+
+		time = time.replaceAll(":", "");
+		time = time.replaceAll(" ", "");
+		time = time.substring(0, 4);
+		
+		try {
+			Integer.parseInt(time);
+		}
+		catch (NumberFormatException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+
+		DateFormat format_1 = new SimpleDateFormat("hhmm", Locale.ENGLISH);
+		Date date = null;
+		try {
+			date = format_1.parse(time);
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		
+		DateFormat format_2 = new SimpleDateFormat("h:mma", Locale.ENGLISH);
+		
+		return format_2.format(date).toLowerCase(Constants.DEFAULT_LOCALE);
+	}
 
 	// http://hg.openjdk.java.net/jdk7u/jdk7u6/jdk/file/8c2c5d63a17e/src/share/classes/java/lang/String.java
 	// adapted from standard JDK 7 hashCode() implementation (in case future updates change or bork the algorithm)

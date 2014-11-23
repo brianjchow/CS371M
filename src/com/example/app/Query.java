@@ -22,6 +22,7 @@ import android.util.Log;
 public class Query implements Parcelable {
 
 	private static final String TAG = "Query";
+	protected static final String PARCELABLE_QUERY = "query";
 	
 	private Context mContext;
 
@@ -274,6 +275,67 @@ public class Query implements Parcelable {
 		return Utilities.times_overlap(this_start, this_end, Constants.NIGHTFALL, Constants.DAYBREAK);
 	}
 
+	protected String get_current_course_schedule() {
+		Date now = Calendar.getInstance().getTime();
+
+		if (Utilities.date_is_during_spring(this.start_date)) {
+			if (Utilities.date_is_during_spring(now)) {
+				Log.d(TAG, "pos 1");
+				return Constants.COURSE_SCHEDULE_THIS_SEMESTER;
+			}
+			else if (Utilities.date_is_during_summer(now)) {
+				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
+					throw new IllegalArgumentException("Fatal error - next semester's course schedule doesn't exist");
+				}
+				Log.d(TAG, "pos 2");
+				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
+			}
+			else if (Utilities.date_is_during_fall(now)) {
+				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
+					throw new IllegalArgumentException("Fatal error - next semester's course schedule doesn't exist");
+				}
+				Log.d(TAG, "pos 3");
+				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
+			}
+			else {
+				Log.d(TAG, "pos 4");
+				return null;
+			}
+		}
+
+		else if (Utilities.date_is_during_summer(this.start_date)) {
+			Log.d(TAG, "pos 5");
+			return null;
+		}
+
+		else if (Utilities.date_is_during_fall(this.start_date)) {
+			if (Utilities.date_is_during_spring(now)) {
+				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
+					throw new IllegalArgumentException("Fatal error - next semester's course schedule doesn't exist");
+				}
+				Log.d(TAG, "pos 6");
+				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
+			}
+			else if (Utilities.date_is_during_summer(now)) {
+				Log.d(TAG, "pos 7");
+				return Constants.COURSE_SCHEDULE_THIS_SEMESTER;
+			}
+			else if (Utilities.date_is_during_fall(now)) {
+				Log.d(TAG, "pos 8");
+				return Constants.COURSE_SCHEDULE_THIS_SEMESTER;
+			}
+			else {
+				Log.d(TAG, "pos 9");
+				return null;
+			}
+		}
+
+		else {
+			Log.d(TAG, "pos 10");
+			return null;
+		}
+	}
+	
 	private String get_current_course_schedule(QueryResult query_result) {
 		if (query_result == null) {
 			throw new IllegalArgumentException();
@@ -688,7 +750,7 @@ public class Query implements Parcelable {
 			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
 		}
 		
-		QueryResult query_result = new QueryResult(this.get_option_search_building());
+		QueryResult query_result = new QueryResult(SearchType.GET_RANDOM_ROOM.get_enum_val(), this.get_option_search_building());
 		List<String> all_valid_rooms = new ArrayList<String>();
 		
 		if (eolist.get_size() <= 0) {
@@ -823,21 +885,166 @@ public class Query implements Parcelable {
 		
 		return query_result;
 	}
+	
+	protected QueryResult search_get_schedule_by_room() {
+		return (search_get_schedule_by_room(Constants.CSV_FEEDS_CLEANED));
+	}
+	
+	protected QueryResult search_get_schedule_by_room(EventList eolist) {
+		if (eolist == null) {
+			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
+		}
+		
+		QueryResult query_result = new QueryResult(SearchType.GET_ROOM_DETAILS.get_enum_val(), this.get_option_search_building());
+		List<String> schedule = new ArrayList<String>();
+		
+		String course_schedule = this.get_current_course_schedule(query_result);
+		if (course_schedule == null) {
+			query_result.set_results(schedule);
+			return query_result;
+		}
+		
+		Building search_building = Building.get_instance(this.mContext, this.get_option_search_building(), course_schedule);
+		if (search_building == null) {
+			query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
+			query_result.set_results(schedule);
+			return query_result;
+		}
+		
+		Room search_room;
+		if (this.get_option_search_building().equals(Constants.RANDOM)) {
+			search_room = search_building.get_random_room();
+		}
+		else {
+			search_room = search_building.get_room(this.get_option_search_room());
+		}
+		
+		if (search_room == null) {
+			query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
+			query_result.set_results(schedule);
+			return query_result;
+		}
+		
+//		query_result.set_scratch(search_room);
+		
+		int today = this.get_this_day_of_week();
+		Set<Event> all_events = search_room.get_events(today);
+		
+		Calendar cal1 = Calendar.getInstance();
+		cal1.setTime(this.start_date);
+		int day_of_year = cal1.get(Calendar.DAY_OF_YEAR);
+		int year = cal1.get(Calendar.YEAR);
+		
+		for (Event event : all_events) {
+			cal1.setTime(event.get_start_date());
+			cal1.set(Calendar.DAY_OF_YEAR, day_of_year);
+			cal1.set(Calendar.YEAR, year);
+			event.set_start_date(cal1.getTime());
+		}
+		
+		if (all_events.size() <= 0) {
+			query_result.set_message_status(MessageStatus.ROOM_FREE_ALL_DAY);
+			query_result.set_results(schedule);
+			return query_result;
+		}
+		
+		boolean is_valid = true;
+		String event_name, start_time, end_time;
+		StringBuilder event_str = new StringBuilder(50);
+		
+		if (Utilities.str_is_gdc(this.get_option_search_building())) {
+			Iterator<Event> itr = eolist.get_iterator();
+			
+			Event event;
+			while (itr.hasNext()) {
+				event = itr.next();
+				
+				if (event.get_location().equals(search_room.get_location()) &&
+					Utilities.occur_on_same_day(event.get_start_date(), this.start_date)) {
+					
+					/*
+					 * This loop IS necessary. The CSV feeds also list courses occurring, with their
+					 * names prefixed by the word "Registrar"; however, it also files extracurricular
+					 * events (such as tutoring sessions) with the "Registrar" prefix, meaning that for
+					 * maximum accuracy we can't just simply ignore all Events from the CSV feeds
+					 * that are prefixed with "Registrar."
+					 */
+					for (Event course_event : all_events) {
+						if (Utilities.containsIgnoreCase(course_event.get_event_name(), event.get_event_name())) {
+							is_valid = false;
+							break;
+						}
+					}
+					
+					if (is_valid) {
+						all_events.add(event);
+					}
+					
+					is_valid = true;
+				}
+			}
+		}
+		
+		for (Event event : all_events) {
+			event_name = event.get_event_name();
+			start_time = Utilities.get_time(event.get_start_date());	// Utilities.time_to_24h(Utilities.get_time(event.get_start_date()));
+			end_time = Utilities.get_time(event.get_end_date());		// Utilities.time_to_24h(Utilities.get_time(event.get_end_date()));
+			
+			event_str.append(event_name + "\n");
+			event_str.append("Start: " + start_time + "\n");
+			event_str.append("End: " + end_time + "\n");
+			event_str.append("\n");
+			
+			schedule.add(event_str.toString());
+			event_str.setLength(0);
+		}
+
+		if (schedule.size() <= 0) {
+			query_result.set_message_status(MessageStatus.ROOM_FREE_ALL_DAY);
+		}
+		else {
+			query_result.set_message_status(MessageStatus.SEARCH_SUCCESS);
+		}
+		
+		query_result.set_results(schedule);
+		
+		return query_result;
+	}
+	
+	
+	
 
 	protected static class QueryResult implements Parcelable {
 		
+		protected static final String PARCELABLE_QUERY_RESULT = "query_result";
+		
+		/*
+		 * search_type isn't the enum - http://stackoverflow.com/questions/2836256/passing-enum-or-object-through-an-intent-the-best-solution
+		 */
+		
+		private int search_type;
 		private String building_name;
 		private List<String> results;
 		private String message_status;
 		
-		private QueryResult(String building_name) {
+		/*
+		 * Bad coding practice, but done here for performance reasons.
+		 * 
+		 * Currently it is only used by SearchType.GET_ROOM_DETAILS, in which case
+		 * it holds the Room in question.
+		 */
+//		private Object scratch;
+		
+		private QueryResult(int search_type, String building_name) {
 			if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH) {
 				throw new IllegalArgumentException();
 			}
 			
+			this.search_type = search_type;
 			this.building_name = building_name.toUpperCase(Constants.DEFAULT_LOCALE);
 			this.results = new ArrayList<String>();
 			this.message_status = MessageStatus.SEARCH_ERROR.toString();
+//			this.scratch = null;
 		}
 
 		protected String get_building_name() {
@@ -867,6 +1074,14 @@ public class Query implements Parcelable {
 			return this.results;
 		}
 		
+//		protected Object get_scratch() {
+//			return this.scratch;
+//		}
+		
+		protected int get_search_type() {
+			return this.search_type;
+		}
+		
 		private boolean set_message_status(MessageStatus message_status) {
 			if (message_status == null) {
 //				return false;
@@ -886,18 +1101,30 @@ public class Query implements Parcelable {
 			this.results = results;
 			return true;
 		}
+		
+//		private boolean set_scratch(Object object) {
+//			if (results == null) {
+////				return false;
+//				throw new IllegalArgumentException();
+//			}
+//			
+//			this.scratch = object;
+//			return true;
+//		}
 
 /* ############################### BEGIN IMPLEMENTING PARCELABLE ############################### */
 		
 		@SuppressWarnings("unchecked")
 		public QueryResult(Parcel parcel) {
-			Object[] fields = new Object[3];
+			Object[] fields = new Object[4];
 			fields = parcel.readArray(QueryResult.class.getClassLoader());
 			
-			this.building_name = (String) fields[0];
-			this.results = (List<String>) fields[1];
-			this.message_status = (String) fields[2];
-
+			this.search_type = (Integer) fields[0];
+			this.building_name = (String) fields[1];
+			this.results = (List<String>) fields[2];
+			this.message_status = (String) fields[3];
+//			this.scratch = (Object) fields[4];
+			
 		}
 		
 		@Override
@@ -907,7 +1134,7 @@ public class Query implements Parcelable {
 		
 		@Override
 		public void writeToParcel(Parcel out, int flags) {
-			out.writeArray(new Object[] { this.building_name, this.results, this.message_status });
+			out.writeArray(new Object[] { this.search_type, this.building_name, this.results, this.message_status }); // , this.scratch });
 		}
 		
 		public static final Parcelable.Creator<QueryResult> CREATOR = new Parcelable.Creator<QueryResult>() {
@@ -927,11 +1154,13 @@ public class Query implements Parcelable {
 		
 		ALL_ROOMS_AVAIL ("All rooms available."),
 		NO_ROOMS_AVAIL	("No rooms available; please try again."),
-		GO_HOME			("Go home and sleep, you procrastinator."),
+		GO_HOME			("Go home and sleep, you procrastinator"),
 		SUMMER			("Some rooms available (summer hours); check course schedules."),
 		HOLIDAY			("All rooms available (campus closed for holidays)."),
 		NO_INFO_AVAIL	("Not enough info available for search; please try again."),
 		SEARCH_ERROR	("Unknown search error; please try again."),
+		
+		ROOM_FREE_ALL_DAY	("This room has no scheduled events for today."),
 		
 		SEARCH_SUCCESS	("Search successful.")
 		;
@@ -945,6 +1174,28 @@ public class Query implements Parcelable {
 		@Override
 		public String toString() {
 			return this.msg;
+		}
+	}
+	
+	public enum SearchType {
+		
+		GET_RANDOM_ROOM		(0),
+		GET_ROOM_DETAILS	(1)
+		;
+		
+		private final int type;
+		
+		private SearchType(int type) {
+			this.type = type;
+		}
+		
+		// NOT supposed to be an override
+		protected boolean equals(int other) {
+			return (this.type == other);
+		}
+		
+		protected int get_enum_val() {
+			return this.type;
 		}
 	}
 

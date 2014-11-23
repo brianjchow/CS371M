@@ -1,7 +1,10 @@
 package com.example.app;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -110,6 +113,12 @@ final class Building implements Comparable<Building> {
 	
 	protected int get_num_rooms() {
 		return this.rooms.size();
+	}
+	
+	protected Room get_random_room() {
+		List<String> all_rooms = new ArrayList<String>(this.get_keyset());
+		int random_index = new Random().nextInt(all_rooms.size());
+		return (this.get_room(all_rooms.get(random_index)));
 	}
 	
 	protected Room get_room(String room_num) {

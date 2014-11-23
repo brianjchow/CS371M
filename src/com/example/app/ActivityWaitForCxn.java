@@ -1,7 +1,5 @@
 package com.example.app;
 
-import com.example.uis.R;
-
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;

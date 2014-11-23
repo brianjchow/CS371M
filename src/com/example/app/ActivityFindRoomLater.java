@@ -31,13 +31,11 @@ import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.uis.R;
-
 //public class FindRoomLaterActivity extends ActionBarActivity implements View.OnClickListener {
 public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnDateSetListener, TimePickerDialog.OnTimeSetListener
 
 	private static final String TAG = "ActivityFindRoomLater";
-	private static final String PARCELABLE_QUERY = "query";
+
 	private static final int SECS_IN_DAY = 86400;		// 24 * 60 * 60
 
 	private Query query;
@@ -48,7 +46,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		setContentView(R.layout.activity_find_room_later);
 
 		if (savedInstanceState != null) {
-			Query query = (Query) savedInstanceState.getParcelable(PARCELABLE_QUERY);
+			Query query = (Query) savedInstanceState.getParcelable(Query.PARCELABLE_QUERY);
 			if (query != null) {
 				this.query = query;
 				this.query.set_context(ActivityFindRoomLater.this);
@@ -64,7 +62,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			
 			Bundle bundle = getIntent().getExtras();
 			if (bundle != null) {
-				Query query = (Query) bundle.getParcelable(PARCELABLE_QUERY);
+				Query query = (Query) bundle.getParcelable(Query.PARCELABLE_QUERY);
 				if (query != null) {
 //					Log.d(TAG, "Using transmitted parcelable\n" + query.toString());
 					this.query = query;
@@ -167,13 +165,13 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
 		
-		spinner.setSelection(Constants.CAMPUS_BUILDINGS.get(Constants.GDC));
+//		spinner.setSelection(Constants.CAMPUS_BUILDINGS.get(Constants.GDC));
 		
-		setSearchBuildingButtonSpinnerOnItemSelectedListener(spinner);
+		setSearchBuildingSpinnerOnItemSelectedListener(spinner);
 	}
 
 	// http://stackoverflow.com/questions/21485590/the-final-local-variable-cannot-be-assigned-since-it-is-defined-in-an-enclosing
-	private void setSearchBuildingButtonSpinnerOnItemSelectedListener(final Spinner spinner) {
+	private void setSearchBuildingSpinnerOnItemSelectedListener(final Spinner spinner) {
 
 		spinner.setSelection(Constants.CAMPUS_BUILDINGS.get(this.query.get_option_search_building()));
 		
@@ -185,7 +183,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 				Log.d(TAG, "In onItemSelected(); selected " + spinner.getSelectedItem());
 				
-				String selected_item = spinner.getSelectedItem().toString().substring(0, 3);
+				String selected_item = spinner.getSelectedItem().toString().substring(0, 3).toUpperCase(Constants.DEFAULT_LOCALE);
 				
 				query.set_option_search_building(selected_item);
 
@@ -293,20 +291,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		}
 	};
 
-	private void getRoomRec() {
-		Intent intent = new Intent(getApplicationContext(), ActivityRoomRec.class);
-		intent.putExtra(PARCELABLE_QUERY, this.query);
-		
-//		Log.d(TAG, "Transmitting parcelable to RoomRecActivity: " + this.query.toString());
-		
-		startActivity(intent);
-//		startActivityForResult(intent, 0);
-//		startActivityForResult(new Intent(this, RoomRecActivity.class), 0);
-		
-		finish();
-		return;
-	}
-	
 	// http://stackoverflow.com/questions/17805040/how-to-create-a-number-picker-dialog
 	// http://stackoverflow.com/questions/16968111/android-numberpicker-doesn%C2%B4t-work
 	private void show_capacity_picker() {
@@ -489,13 +473,28 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	
 	
 	
-	
-	
+
+	private void getRoomRec() {
+		Query.QueryResult query_result = this.query.search();
+		
+		Intent intent = new Intent(getApplicationContext(), ActivityRoomRec.class);
+		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
+		intent.putExtra(Query.QueryResult.PARCELABLE_QUERY_RESULT, query_result);
+		
+//		Log.d(TAG, "Transmitting parcelable to RoomRecActivity: " + this.query.toString());
+		
+		startActivity(intent);
+//		startActivityForResult(intent, 0);
+//		startActivityForResult(new Intent(this, RoomRecActivity.class), 0);
+		
+		finish();
+	}
+		
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		
-		outState.putParcelable(PARCELABLE_QUERY, this.query);
+		outState.putParcelable(Query.PARCELABLE_QUERY, this.query);
 	}
 
 	@Override

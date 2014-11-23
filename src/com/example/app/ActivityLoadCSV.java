@@ -21,8 +21,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.uis.R;
-
 /*
  * TODO: behaviour when cxn shuts off in the middle of reading
  * 

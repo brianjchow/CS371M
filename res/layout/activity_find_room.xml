@@ -34,12 +34,12 @@
 	        android:background = "@color/white" />
 	    
 	    <Button
-	        android:id="@+id/new_Room"
+	        android:id="@+id/new_room"
 	        android:layout_width="0dp"
 	        android:layout_height="50dp"
 	        android:layout_weight = "1"
-	        android:text="@string/try_again"
-	        android:textSize = "12sp"
+	        android:text="@string/find_room_now"
+	        android:textSize = "10sp"
 	        android:textColor = "@color/white" />
 	    
 	    <View
@@ -55,34 +55,53 @@
 	        android:text="@string/search_options"
 	        android:textSize = "10sp"
 	        android:textColor = "@color/white" />
-	    	    	    	    
+	    
+	    <View
+	        android:layout_height = "fill_parent"
+	        android:layout_width = "2px"
+	        android:background = "@color/white" />
+	    
+	    <Button
+	        android:id="@+id/get_room_schedule"
+	        android:layout_width="0dp"
+	        android:layout_height="50dp"
+	        android:layout_weight = "1"
+	        android:text="@string/get_room_schedule"
+	        android:textSize = "10sp"
+	        android:textColor = "@color/white" />
+	    	    	   	    	    	    	    
     </LinearLayout>
-
-    <TextView
-        android:id = "@+id/this_query"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above = "@+id/bottom_button_bar"
-        android:layout_marginBottom = "10dp"
-        android:text = "@string/current_query"
-        android:textSize="12sp"
-        android:textColor = "@color/white" />
     
     <TextView
         android:id = "@+id/room_num"
         android:layout_width = "wrap_content"
         android:layout_height = "wrap_content"
-        android:layout_marginTop = "15dp"
+        android:layout_marginTop = "10dp"
         android:ems = "10"
         android:gravity = "center"
         android:text = "4.302"
         android:textSize = "40sp"
         android:textColor = "@color/text_colour" />
+    
+    <TextView
+        android:id = "@+id/info_textview"
+        android:layout_below = "@+id/room_num"
+        android:layout_above = "@+id/bottom_button_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom = "15dp"
+        android:layout_marginTop = "15dp"
+        android:layout_marginLeft = "10dp"
+        android:layout_marginRight = "10dp"
+        android:textSize="12sp"
+        android:textColor = "@color/white" />
 
 </RelativeLayout>
 
 <!-- 
 
+        android:text = "@string/current_query"
+        
     <TextView
         android:id = "@+id/title_heading"
         android:layout_width = "wrap_content"

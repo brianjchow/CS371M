@@ -1,7 +1,5 @@
 package com.example.app;
 
-import com.example.uis.R;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -25,8 +23,10 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 		setContentView(R.layout.main);
 		Button find_room_now = (Button) findViewById(R.id.find_room_now);
 		Button find_room_later = (Button) findViewById(R.id.find_room_for_later);
+		Button get_room_schedule = (Button) findViewById(R.id.get_room_schedule);
 		find_room_now.setOnClickListener(this);
 		find_room_later.setOnClickListener(this);
+		get_room_schedule.setOnClickListener(this);
 		
 		if (getIntent().getBooleanExtra("EXIT",  false)) {
 			Log.d(TAG, "Now exiting");
@@ -56,14 +56,23 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void findRoom() {
-//		startActivityForResult(new Intent(this, ActivityRoomRec.class), 0);
-		startActivity(new Intent(ActivityMain.this, ActivityRoomRec.class));
+	private void findRoom() {
+		Query query = new Query(ActivityMain.this);
+		Query.QueryResult query_result = query.search();
+		
+		Intent intent = new Intent(ActivityMain.this, ActivityRoomRec.class);
+		intent.putExtra(Query.PARCELABLE_QUERY, query);
+		intent.putExtra(Query.QueryResult.PARCELABLE_QUERY_RESULT, query_result);
+		
+		startActivity(intent);
 	}
 
-	public void findRoomLater() {
-//		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
+	private void findRoomLater() {
 		startActivity(new Intent(ActivityMain.this, ActivityFindRoomLater.class));
+	}
+	
+	private void get_room_schedule() {
+		startActivity(new Intent(ActivityMain.this, ActivityGetRoomSchedule.class));
 	}
 
 	@Override
@@ -74,6 +83,9 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 				break;
 			case R.id.find_room_for_later:
 				findRoomLater();
+				break;
+			case R.id.get_room_schedule:
+				get_room_schedule();
 				break;
 		}
 		
