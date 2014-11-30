@@ -518,19 +518,18 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			find_room_later();
 			return true;
 		}
+		
+		if (id == R.id.get_room_schedule){
+			get_room_schedule();
+			return true;
+		}
+		
 		if (id == R.id.exit){
-			exit();
+			exitApp();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	public void exit() {
-//		startActivityForResult(new Intent(this, ActivityExit.class), 0);
-		startActivity(new Intent(this, ActivityExit.class));
-		finish();
-	}
-
 
 	
 	private void find_room_later() {
@@ -545,6 +544,13 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 //		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
 		startActivity(intent);
 		finish();
+	}
+	
+	public void exitApp() {
+		Intent intent = new Intent(getApplicationContext(),ActivityMain.class );
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.putExtra("EXIT", true);
+		startActivity(intent);
 	}
 
 /*

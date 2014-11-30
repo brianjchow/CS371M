@@ -56,17 +56,15 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 			findRoomLater();
 			return true;
 		}
+		if (id == R.id.get_room_schedule){
+			get_room_schedule();
+			return true;
+		}
 		if (id == R.id.exit){
-			exit();
+			finish();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	public void exit() {
-//		startActivityForResult(new Intent(this, ActivityExit.class), 0);
-		startActivity(new Intent(this, ActivityExit.class));
-		finish();
 	}
 
 	private void findRoom() {
