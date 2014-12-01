@@ -9,7 +9,10 @@ import java.util.SortedSet;
 
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -17,12 +20,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class ActivityGetRoomSchedule extends ActionBarActivity {
@@ -67,9 +72,22 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 						
 	}		// end onCreate()
 
+	// http://stackoverflow.com/questions/9611220/how-do-you-set-the-spinner-text-color
 	private void setSearchBuildingSpinnerOnItemSelectedListener() {
+		String[] buildings = getResources().getStringArray(R.array.campus_buildings);
+		
 		final Spinner spinner = (Spinner) findViewById(R.id.choose_building_spinner);
-		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ActivityGetRoomSchedule.this, R.array.campus_buildings, android.R.layout.simple_spinner_dropdown_item);	// or android.R.layout.simple_spinner_item
+		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(ActivityGetRoomSchedule.this, android.R.layout.simple_spinner_dropdown_item, buildings) {
+			
+			public View getView(int position, View convertView, ViewGroup parent) {
+				View v = super.getView(position, convertView, parent);
+				((TextView) v).setTextColor(getResources().getColorStateList(R.color.white));
+				return v;
+			}
+			
+		};
+		
+//		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ActivityGetRoomSchedule.this, R.array.campus_buildings, android.R.layout.simple_spinner_dropdown_item);	// or android.R.layout.simple_spinner_item
 //		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(ActivityFindRoomLater.this, android.R.layout.simple_spinner_item, Constants.CAMPUS_BUILDINGS);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
@@ -155,7 +173,15 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 		}
 		
 		final Spinner spinner = (Spinner) findViewById(R.id.choose_room_spinner);
-		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(ActivityGetRoomSchedule.this, android.R.layout.simple_spinner_dropdown_item, rooms);	
+		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(ActivityGetRoomSchedule.this, android.R.layout.simple_spinner_dropdown_item, rooms) {
+			
+			public View getView(int position, View convertView, ViewGroup parent) {
+				View v = super.getView(position, convertView, parent);
+				((TextView) v).setTextColor(getResources().getColorStateList(R.color.white));
+				return v;
+			}
+			
+		};
 		
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
@@ -220,25 +246,48 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 			public void onClick(View v) {
 				Calendar calendar = Calendar.getInstance();
 				
-				calendar.setTime(start_date);
+				Calendar curr_start_date = Calendar.getInstance();
+				curr_start_date.setTime(start_date);
 				
-				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityGetRoomSchedule.this, datepicker_dialog_listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityGetRoomSchedule.this, datepicker_dialog_listener, curr_start_date.get(Calendar.YEAR), curr_start_date.get(Calendar.MONTH), curr_start_date.get(Calendar.DAY_OF_MONTH));
 //				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityFindRoomLater.this, datepicker_dialog_listener, selected_year, selected_month - 1, selected_day);
+				
+				calendar = Calendar.getInstance();
+				
 				if (!Constants.DEBUG) {
-					datepicker_dialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+					DatePicker datepicker = datepicker_dialog.getDatePicker();
+					datepicker.setMinDate(calendar.getTimeInMillis());
 					
-					Calendar temp = Calendar.getInstance();
 					Date date = calendar.getTime();
 					int year = calendar.get(Calendar.YEAR);
+					
+					Calendar temp = Calendar.getInstance();
 					if (Utilities.date_is_during_spring(date)) {
-						date = Utilities.get_date(Constants.FALL_END_MONTH, Constants.FALL_END_DAY, year, 2359);
+						
+						int end_month = Constants.FALL_END_MONTH;
+						int end_day = Constants.FALL_END_DAY;
+						if (Constants.DISABLE_SEARCHES_NEXT_SEMESTER) {
+							end_month = Constants.SPRING_END_MONTH;
+							end_day = Constants.SPRING_END_DAY;
+						}
+						
+						date = Utilities.get_date(end_month, end_day, year, 2359);
 						temp.setTime(date);
-						datepicker_dialog.getDatePicker().setMaxDate(temp.getTimeInMillis());
+						datepicker.setMaxDate(temp.getTimeInMillis());
 					}
 					else {
-						date = Utilities.get_date(Constants.SPRING_END_MONTH, Constants.SPRING_END_DAY, year + 1, 2359);
+						
+						int end_month = Constants.SPRING_END_MONTH;
+						int end_day = Constants.SPRING_END_DAY;
+						if (Constants.DISABLE_SEARCHES_NEXT_SEMESTER) {
+							end_month = Constants.FALL_END_MONTH;
+							end_day = Constants.FALL_END_DAY;
+							year--;
+						}
+						
+						date = Utilities.get_date(end_month, end_day, year + 1, 2359);
 						temp.setTime(date);
-						datepicker_dialog.getDatePicker().setMaxDate(temp.getTimeInMillis());
+						datepicker.setMaxDate(temp.getTimeInMillis());
 					}
 					
 				}
@@ -288,14 +337,115 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 	
 	
 	private void get_room_rec() {
-		Query.QueryResult query_result = this.query.search_get_schedule_by_room();
+//		Query.QueryResult query_result = this.query.search_get_schedule_by_room();
+//		
+//		Intent intent = new Intent(getApplicationContext(), ActivityRoomRec.class);
+//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
+//		intent.putExtra(Query.QueryResult.PARCELABLE_QUERY_RESULT, query_result);
+//		
+//		startActivity(intent);
+//		finish();
 		
-		Intent intent = new Intent(getApplicationContext(), ActivityRoomRec.class);
-		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
-		intent.putExtra(Query.QueryResult.PARCELABLE_QUERY_RESULT, query_result);
+		final SearchTask search_get_room_schedule = new SearchTask();
+		search_get_room_schedule.execute(ActivityGetRoomSchedule.this);
+	}
+	
+	private class SearchTask extends AsyncTask<Context, Void, Query.QueryResult> {
+		private Exception exception = null;
 		
-		startActivity(intent);
-		finish();
+		
+		@Override
+		protected void onPreExecute() {
+			
+		}
+		
+		@Override
+		protected Query.QueryResult doInBackground(Context... context) {
+			Query.QueryResult query_result;
+			
+			try {
+				query_result = query.search_get_schedule_by_room();
+			}
+			catch (Exception e) {
+				Log.d(TAG, "Caught an exception while executing search (" + e.toString() + ")");
+				this.exception = e;
+				query_result = null;
+			}
+			
+			return query_result;
+		}
+		
+		@Override
+		protected void onCancelled(Query.QueryResult query_result) {
+			Log.d(TAG, "onCancelled() was called while executing search");
+			show_failure_dialog();
+		}
+		
+		@Override
+		protected void onPostExecute(Query.QueryResult query_result) {
+			if (exception != null) {
+				Log.d(TAG, "Exception occurred while trying to get room schedule (" + exception.toString() + ")");
+				show_failure_dialog();
+			}
+			else if (query_result == null) {
+				Log.d(TAG, "Unknown error occurred - query_result is null");
+				show_failure_dialog();
+			}
+			else {
+				Log.d(TAG, "Finished search, AsyncTask; now transferring to ActivityRoomRec...");
+				
+				Intent intent = new Intent(getApplicationContext(), ActivityRoomRec.class);
+				intent.putExtra(Query.PARCELABLE_QUERY, query);
+				intent.putExtra(Query.QueryResult.PARCELABLE_QUERY_RESULT, query_result);
+				
+				startActivity(intent);
+				finish();
+				return;
+			}
+		}
+		
+	}
+	
+	private void show_failure_dialog() {
+		final Dialog dialog = new Dialog(ActivityGetRoomSchedule.this);
+		
+		dialog.setTitle("Search failure");
+		dialog.setContentView(R.layout.load_csv_failure_dialog);
+		dialog.setCancelable(false);
+		
+		Button restart_button = (Button) dialog.findViewById(R.id.restart_button);
+		Button abort_button = (Button) dialog.findViewById(R.id.abort_button);
+		
+		dialog.findViewById(R.id.continue_button).setVisibility(View.GONE);
+		
+		restart_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "Failed to complete search, now restarting app...");
+				dialog.dismiss();
+				startActivity(new Intent(ActivityGetRoomSchedule.this, ActivityLoadCSV.class));
+				finish();
+				return;
+			}
+		});
+
+		abort_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "Failed to complete search, now aborting...");
+				dialog.dismiss();
+				finish();
+				return;
+				
+				/*
+				 * TODO - by default, routes back to ActivityMain; kill that as well
+				 */
+			}
+		});
+		
+		dialog.show();
 	}
 	
 	@Override
@@ -308,7 +458,7 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.activity_get_room_schedule, menu);
 		return true;
 	}
 
@@ -318,44 +468,9 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.find_a_room_now){
-			getRoomRec();
-			return true;
-		}
-		if (id == R.id.find_a_room_later){
-			find_room_later();
-			return true;
-		}
-		if (id == R.id.exit){
-			exit();
+		if (id == R.id.action_settings) {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	public void exit() {
-//		startActivityForResult(new Intent(this, ActivityExit.class), 0);
-		startActivity(new Intent(this, ActivityExit.class));
-		finish();
-	}
-
-	public void getRoomRec() {
-//		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
-		startActivity(new Intent(this, ActivityFindRoomLater.class));
-		finish();
-	}
-	
-	private void find_room_later() {
-		Intent intent = new Intent(this, ActivityFindRoomLater.class);
-//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
-		startActivity(intent);
-		finish();
-	}
-	
-	private void get_room_schedule() {
-		Intent intent = new Intent(this, ActivityGetRoomSchedule.class);
-//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
-		startActivity(intent);
-		finish();
 	}
 }

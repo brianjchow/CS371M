@@ -25,7 +25,8 @@
 	        android:layout_weight = "1"
 	        android:text="@string/get_room_enthusiastic"
 	        android:textSize = "24sp"
-	        android:textColor = "@color/white" />
+	        android:textColor = "@color/white"
+        	android:background = "@color/background_transparency" />
 
     </LinearLayout>
 
@@ -39,7 +40,7 @@
 		    android:layout_width = "wrap_content"
 		    android:layout_height = "wrap_content"
 		    android:text = "@string/choose_building"
-		    android:textSize = "15sp"
+		    android:textSize = "17sp"
 	        android:textColor = "@color/white" />
 	
 		<Spinner
@@ -48,7 +49,7 @@
 		    android:layout_height = "wrap_content"
 		    android:dropDownWidth = "wrap_content"
 		    android:spinnerMode = "dropdown"
-		    android:textSize = "12sp"
+		    android:textSize = "14sp"
 	        android:textColor = "@color/white" />
         
 	</LinearLayout>
@@ -65,7 +66,7 @@
 		    android:layout_width = "wrap_content"
 		    android:layout_height = "wrap_content"
 		    android:text = "@string/room"
-		    android:textSize = "15sp"
+		    android:textSize = "17sp"
 	        android:textColor = "@color/white" />
 	
 		<Spinner
@@ -74,7 +75,7 @@
 		    android:layout_height = "wrap_content"
 		    android:dropDownWidth = "wrap_content"
 		    android:spinnerMode = "dropdown"
-		    android:textSize = "12sp"
+		    android:textSize = "14sp"
 	        android:textColor = "@color/white" />
         
 	</LinearLayout>
@@ -91,7 +92,7 @@
 		    android:layout_width = "wrap_content"
 		    android:layout_height = "wrap_content"
 		    android:text = "@string/date"
-		    android:textSize = "15sp"
+		    android:textSize = "17sp"
 	        android:textColor = "@color/white" />
 	        
 	    <Button
@@ -99,7 +100,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="@string/date"
-	        android:textSize = "12sp"
+	        android:textSize = "14sp"
 	        android:textColor = "@color/white" />
 		
     </LinearLayout>

@@ -24,7 +24,8 @@
 	        android:layout_weight = "1"
 	        android:text="@string/find_room_now"
 	        android:textSize = "12sp"
-	        android:textColor = "@color/white" />
+	        android:textColor = "@color/white"
+        	android:background = "@color/background_transparency" />
 	    
 	    <View
 	        android:layout_height = "fill_parent"
@@ -38,7 +39,8 @@
 	        android:layout_weight = "1"
 	        android:text="@string/find_room_later"
 	        android:textSize = "12sp"
-	        android:textColor = "@color/white" />
+	        android:textColor = "@color/white"
+        	android:background = "@color/background_transparency" />
 	    
 	    <View
 	        android:layout_height = "fill_parent"
@@ -52,7 +54,8 @@
 	        android:layout_weight = "1"
 	        android:text="@string/get_room_schedule"
 	        android:textSize = "12sp"
-	        android:textColor = "@color/white" />
+	        android:textColor = "@color/white"
+        	android:background = "@color/background_transparency" />
 	    	    	    	    
     </LinearLayout>
 

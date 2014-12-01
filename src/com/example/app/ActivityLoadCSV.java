@@ -32,9 +32,11 @@ import android.widget.Toast;
 public class ActivityLoadCSV extends ActionBarActivity {
 
 	private static final String TAG = "ActivityLoadCSV";
-	private static final int TIMEOUT_AFTER = 15000;		// milliseconds
+	private static final int TIMEOUT_AFTER = 25000;		// milliseconds
+	
+	private final ReadFeedTask read_csv = new ReadFeedTask();
 
-	private Context mContext;
+//	private Context mContext;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,17 +59,24 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		AnimationDrawable anim_draw = (AnimationDrawable) progressSpinner.getBackground();
 		anim_draw.start();
 
-		mContext = this;
+//		mContext = ActivityLoadCSV.this;
 		
-		if (!has_network_connectivity() && !Constants.DEBUG) {
+//		Intent calling_intent = getIntent();
+//		if (calling_intent == null) {
+//			Log.d(TAG, "App just freshly launched");
+//		}
+//		else {
+//			Log.d(TAG, "App restarted from " + calling_intent.toString());
+//		}
+		
+		if (!has_network_connectivity()) {
 			Log.d(TAG, "No wifi and/or mobile cxn detected on startup, onCreate(), LoadCSV");
 			goto_wait_for_cxn();
 			return;
 		}
 
-		final ReadFeedTask read_csv = new ReadFeedTask();
-		read_csv.execute(getApplicationContext());
-		
+		read_csv.execute(ActivityLoadCSV.this);
+
 		if (!Constants.DEBUG) {
 			Handler handler = new Handler();
 			handler.postDelayed(new Runnable() {
@@ -76,6 +85,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 				public void run() {
 					if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
 						read_csv.cancel(true);
+						show_warning_dialog(getResources().getString(R.string.load_error_msg));
 					}
 				}
 				
@@ -89,9 +99,9 @@ public class ActivityLoadCSV extends ActionBarActivity {
 //		Constants.CSV_FEEDS_MASTER = null;
 //		Constants.CSV_FEEDS_CLEANED = null;
 		
+//		Intent intent = new Intent(ActivityLoadCSV.this, ActivityWaitForCxn.class);
 		startActivity(new Intent(ActivityLoadCSV.this, ActivityWaitForCxn.class));
 		finish();
-		return;
 	}
 	
 	@Override
@@ -102,6 +112,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		Log.d(TAG, "Registering broadcast receiver, onResume()");
 		IntentFilter intent_filter = new IntentFilter();
 		intent_filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);	// SUPPLICANT_CONNECTION_CHANGE_ACTION
+		intent_filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 		registerReceiver(broadcast_receiver, intent_filter);
 	}
 	
@@ -126,24 +137,69 @@ public class ActivityLoadCSV extends ActionBarActivity {
 				NetworkInfo net_info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
 				if (net_info != null) {
 
-//					if (!net_info.getState().equals(NetworkInfo.State.CONNECTED)) {
-//						Log.d(TAG, "Network connectivity just disabled");
+					// call AsyncTask.cancel() here?
+					if (net_info.getType() == ConnectivityManager.TYPE_WIFI && !net_info.isConnected()) {
+						if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
+							read_csv.cancel(true);
+						}
+						else {
+							show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
+						}
+						
 //						goto_wait_for_cxn();
 //						return;
-//					}
-					
-					// call AsyncTask.cancel() here?
-					if ((net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE) && !net_info.isConnected()) {
-						goto_wait_for_cxn();
 					}
 					// else do nothing, because connection was newly established (should never happen within this class)
 				}
 				else {
 					// ??? assume disconnected ???
-					goto_wait_for_cxn();
-					return;
+					
+					if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
+						read_csv.cancel(true);
+					}
+					else {
+						show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
+					}
+					
+//					goto_wait_for_cxn();
+//					return;
 				}
 
+			}
+			else if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+				
+				ConnectivityManager con_man = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+				NetworkInfo net_info = con_man.getActiveNetworkInfo();
+				
+				if (net_info != null) {
+
+					// call AsyncTask.cancel() here?
+					if (net_info.getType() == ConnectivityManager.TYPE_MOBILE && !net_info.isConnected()) {
+						if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
+							read_csv.cancel(true);
+						}
+						else {
+							show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
+						}
+						
+//						goto_wait_for_cxn();
+//						return;
+					}
+					// else do nothing, because connection was newly established (should never happen within this class)
+				}
+				else {
+					// ??? assume disconnected ???
+					
+					if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
+						read_csv.cancel(true);
+					}
+					else {
+						show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
+					}
+					
+//					goto_wait_for_cxn();
+//					return;
+				}
 			}
 		}
 	};
@@ -154,6 +210,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		if (net_info != null) {
 			
 			if (net_info.getState().equals(NetworkInfo.State.CONNECTED)) {
+				Log.d(TAG, "Network connectivity detected, has_network_connectivity()");
 				return true;
 			}
 			
@@ -179,6 +236,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 //			}
 		}
 		
+		Log.d(TAG, "No network connectivity detected, has_network_connectivity()");
 		return false;
 	}
 
@@ -194,6 +252,11 @@ public class ActivityLoadCSV extends ActionBarActivity {
 					Log.d(TAG, "Successfully finished reading CSV");
 					result = true;
 				}
+				else {
+					Log.d(TAG, "FAILED to read CSV");
+					result = false;
+					show_warning_dialog(getResources().getString(R.string.load_error_msg));
+				}
 			}
 			catch (Exception e) {
 //				http://stackoverflow.com/questions/6834106/try-catch-exception-always-returns-null
@@ -203,7 +266,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 //				}
 
 				Log.d(TAG, "Caught an exception while reading CSV: " + e.toString());
-				e.printStackTrace();
 				this.exception = e;
 				result = false;
 			}
@@ -211,11 +273,11 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			return result;
 		}
 		
-		@Override
-		protected void onCancelled(Boolean done) {
-			Log.d(TAG, "Timed out");
-			show_warning_dialog();
-		}
+//		@Override
+//		protected void onCancelled(Boolean done) {
+//			Log.d(TAG, "Timed out");
+//			show_warning_dialog();
+//		}
 		
 		@Override
 		protected void onPostExecute(Boolean done) {
@@ -226,9 +288,13 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			
 			if (done.equals(Boolean.valueOf(true))) {
 				Log.d(TAG, "Done reading CSV, now entering MainActivity...");
-//				Toast.makeText(mContext, "Took " + CSVReader.time_to_read + " seconds to read " + CSVReader.lines_read + " lines", Toast.LENGTH_LONG).show();
-				Toast.makeText(mContext, "Took " + (CSVReader.time_to_read + Constants.time_to_read) + " seconds to read CSV feeds (" + CSVReader.lines_read + " lines) and load GDC course schedule", Toast.LENGTH_LONG).show();
-				startActivity(new Intent(mContext, ActivityMain.class));
+				
+				if (Constants.DEBUG) {
+//					Toast.makeText(ActivityLoadCSV.this, "Took " + CSVReader.time_to_read + " seconds to read " + CSVReader.lines_read + " lines", Toast.LENGTH_LONG).show();
+					Toast.makeText(ActivityLoadCSV.this, "Took " + (CSVReader.time_to_read + Constants.time_to_read) + " seconds to read CSV feeds (" + CSVReader.lines_read + " lines) and load GDC course schedule", Toast.LENGTH_LONG).show();
+				}
+				
+				startActivity(new Intent(ActivityLoadCSV.this, ActivityMain.class));
 				finish();
 				return;
 			}
@@ -240,14 +306,19 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		}
 	}
 
-	private void show_warning_dialog() {
+	private void show_warning_dialog(String msg) {
+		if (msg == null) {
+			throw new IllegalArgumentException();
+		}
+		
 		final Dialog dialog = new Dialog(ActivityLoadCSV.this);
 		dialog.setTitle(R.string.warning);
 		dialog.setContentView(R.layout.load_csv_failure_dialog);
 		dialog.setCancelable(false);		
 		
 		TextView err_msg = (TextView) dialog.findViewById(R.id.error_msg);
-		err_msg.setText(R.string.load_warning_msg);
+//		err_msg.setText(R.string.load_warning_msg);
+		err_msg.setText(msg);
 		
 		dialog.findViewById(R.id.restart_button).setVisibility(View.GONE);
 		
@@ -260,10 +331,10 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			public void onClick(View v) {
 //				Constants.CSV_FEEDS_MASTER = null;
 //				Constants.CSV_FEEDS_CLEANED = null;
-				Constants.init(mContext, true);
+				Constants.init(ActivityLoadCSV.this, true);
 				
 				dialog.dismiss();
-				startActivity(new Intent(mContext, ActivityMain.class));
+				startActivity(new Intent(ActivityLoadCSV.this, ActivityMain.class));
 				finish();
 				return;
 			}
@@ -276,6 +347,10 @@ public class ActivityLoadCSV extends ActionBarActivity {
 				dialog.dismiss();
 				finish();
 				return;
+				
+				/*
+				 * TODO - by default, routes back to ActivityMain; kill that as well
+				 */
 			}
 		});
 		
@@ -297,7 +372,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			public void onClick(View v) {
 				Log.d(TAG, "Failed to complete reading CSV, now entering MainActivity...");
 				dialog.dismiss();
-				startActivity(new Intent(mContext, ActivityMain.class));
+				startActivity(new Intent(ActivityLoadCSV.this, ActivityMain.class));
 				finish();
 				return;
 			}
@@ -309,7 +384,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			public void onClick(View v) {
 				Log.d(TAG, "Failed to complete reading CSV, now restarting app...");
 				dialog.dismiss();
-				startActivity(new Intent(mContext, ActivityLoadCSV.class));
+				startActivity(new Intent(ActivityLoadCSV.this, ActivityLoadCSV.class));
 				finish();
 				return;
 			}

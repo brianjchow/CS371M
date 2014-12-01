@@ -8,14 +8,12 @@ import java.util.Locale;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /*
  * USE DialogFragment TO REOPEN DIALOG UPON ORIENTATION CHANGE
@@ -44,8 +42,8 @@ public class ActivityRoomRec extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_find_room);
 		
-		TextView info_textview = (TextView) findViewById(R.id.info_textview);
-		info_textview.setMovementMethod(new ScrollingMovementMethod());
+//		TextView info_textview = (TextView) findViewById(R.id.info_textview);
+//		info_textview.setMovementMethod(new ScrollingMovementMethod());
 		
 		if (savedInstanceState != null) {
 			/*
@@ -114,139 +112,12 @@ public class ActivityRoomRec extends ActionBarActivity {
 					this.query_result = query_result;
 					
 					if (this.query_result.get_search_type() == Query.SearchType.GET_RANDOM_ROOM.get_enum_val()) {
-						this.curr_recommendation = this.query_result.get_random_room();
-						
-						final String TAB = "  ";
-						
-						StringBuilder msg = new StringBuilder();
-						
-						String message_status = this.query_result.get_message_status();
-						
-						if (message_status.equals(Query.MessageStatus.SEARCH_ERROR.toString())) {
-							msg.append("We're not sure why this is happening, but shoot us an email containing" +
-									"the information below and we'll get it fixed. Thanks!\n\n" + this.query.toString());
-						}
-						else if (message_status.equals(Query.MessageStatus.SEARCH_SUCCESS.toString())) {
-							List<String> results = this.query_result.get_results();
-							
-							if (results.size() == 1) {
-								msg.append("Search found one room available.\n\n");
-							}
-							else {
-								msg.append("Search found " + results.size() + " rooms available.\n\n");
-							}
-							
-							int capacity = this.query.get_option_capacity();
-							
-							msg.append("Search criteria:\n");
-							msg.append(TAB + "Building: " + this.query.get_option_search_building() + "\n");
-							msg.append(TAB + "Start date: " + this.query.get_start_date().toString() + "\n");
-							msg.append(TAB + "Duration: at least " + this.query.get_duration() + " minute(s)\n");
-							
-							if (capacity > 0) {
-								msg.append(TAB + "Capacity: at least " + capacity + " people\n");
-							}
-							else {
-								msg.append(TAB + "Capacity: no preference\n");
-							}
-							
-							if (Utilities.str_is_gdc(this.query.get_option_search_building())) {
-								msg.append(TAB + "Must have power plugs: " + this.query.get_option_power());
-							}
-							
-							msg.append("\n");
-							msg.append("All rooms available under identical search criteria:\n");
-							
-							if (results.size() == 1) {
-								msg.append(TAB + "None\n");
-							}
-							else {
-								for (String room : results) {
-									msg.append(TAB + room + "\n");
-								}
-							}
-						}
-						else if (message_status.equals(Query.MessageStatus.GO_HOME.toString())) {
-							msg.append("You're gonna fail that exam tomorrow anyway.");
-						}
-						else if (!message_status.equals(Query.MessageStatus.NO_ROOMS_AVAIL.toString())) {
-							msg.append("Be sure you have the appropriate authorisation to enter and use" +
-									" the rooms in " + this.query.get_option_search_building() + ".");
-						}
-
-						update_info_textview(msg.toString());
+						handle_search_random_room();
 					}
-					
-					
 					
 					else {
-//						Object query_result_scratch = this.query_result.get_scratch();
-						Room search_room;
-						
-						String search_building_str = this.query.get_option_search_building();
-//						if (query_result_scratch instanceof Room) {
-//							search_room = (Room) query_result_scratch;
-//						}
-//						else {
-							String curr_course_schedule = this.query.get_current_course_schedule();
-							if (curr_course_schedule == null) {
-								throw new IllegalStateException("Fatal error: unable to determine correct course schedule for current Query");
-							}
-							
-							Building search_building = Building.get_instance(ActivityRoomRec.this, search_building_str, curr_course_schedule);
-							search_room = search_building.get_room(this.query.get_option_search_room());
-							
-							if (search_room == null) {
-								throw new IllegalStateException("Fatal error: corrupted Building object");
-							}
-//						}
-						
-						int capacity = search_room.get_capacity();
-						List<String> events = this.query_result.get_results();
-						
-						DateFormat format = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.ENGLISH);
-						String date_str = format.format(this.query.get_start_date());
-						
-						StringBuilder msg = new StringBuilder();
-						
-						if (Utilities.str_is_gdc(search_building_str)) {
-							msg.append("Room type: " + search_room.get_type() + "\n");
-							msg.append("Capacity: " + capacity + " people\n");
-							msg.append("Power plugs: " + search_room.get_has_power() + "\n");
-							msg.append("\n");
-						}
-						else {
-							if (capacity > 0) {
-								msg.append("Capacity: " + capacity + " people\n");
-							}
-							else {
-								msg.append("Capacity: unknown\n");
-							}
-						}
-						
-						if (events.size() <= 0) {
-							msg.append("There are no events scheduled on " + date_str + ".\n\n");
-						}
-						else {
-							if (events.size() == 1) {
-								msg.append("There is one event scheduled on " + date_str + ":\n\n");
-							}
-							else {
-								msg.append("There are " + events.size() + " events scheduled on " + date_str + ":\n\n");
-							}
-							
-							for (String curr_event : events) {
-								msg.append(curr_event);
-							}
-						}
-						
-						this.curr_recommendation = search_building_str + " " + this.query.get_option_search_room();
-						update_info_textview(this.query_result.get_results().toString());
+						handle_search_get_room_schedule();
 					}
-
-					setTextViewInfo(this.curr_recommendation);
-					update_background();
-					
 				}
 				else {
 					search();
@@ -256,61 +127,6 @@ public class ActivityRoomRec extends ActionBarActivity {
 				search();
 			}
 		}
-		
-		
-		
-		
-		
-//		if (savedInstanceState != null) {
-////			Log.d(TAG, "Orientation changed, in onCreate(); bground res id: " + savedInstanceState.getInt("curr_recommendation_res_id", -65));
-//			Query query = (Query) savedInstanceState.getParcelable(PARCELABLE_QUERY);
-//			if (query != null) {
-//				this.query = query;
-//				this.query.set_context(ActivityRoomRec.this);
-//			}
-//			else {
-////				this_query = new Query(getApplicationContext());
-//				this.query = new Query(ActivityRoomRec.this);
-//			}
-//			
-//			Query.QueryResult query_result = (Query.QueryResult) savedInstanceState.getParcelable(PARCELABLE_QUERY_RESULT);
-//			if (query_result != null) {
-//				this.query_result = query_result;
-//				this.curr_recommendation = savedInstanceState.getString(CURR_RECOMMENDATION, Query.MessageStatus.NO_ROOMS_AVAIL.toString());
-//				this.curr_recommendation_res_id = savedInstanceState.getInt(CURR_RECOMMENDATION_RES_ID, Utilities.getResId("campus_tower", R.drawable.class));
-//			}
-//			else {
-//				search();
-//			}
-//			
-//			View background = findViewById(R.id.background);
-//			if (!this.curr_recommendation.equals(Query.MessageStatus.NO_ROOMS_AVAIL.toString())) {
-//				background.setBackgroundResource(curr_recommendation_res_id);
-//			}
-//			else {
-//				background.setBackgroundResource(R.drawable.gdcemptyroom);
-//			}
-//
-//			setTextViewInfo(this.curr_recommendation);
-////			update_query_textview(this.query);
-//		}
-//		else {
-////			this_query = new Query(getApplicationContext());
-//			this.query = new Query(ActivityRoomRec.this);		
-//			
-//			Bundle bundle = getIntent().getExtras();
-//			if (bundle != null) {
-//				Query query = (Query) bundle.getParcelable(PARCELABLE_QUERY);
-//				if (query != null) {
-////					Log.d(TAG, "Using transmitted parcelable:\n" + query.toString());
-//					this.query = query;
-////					this_query.set_context(getApplicationContext());
-//					this.query.set_context(ActivityRoomRec.this);
-//				}
-//			}
-//			
-//			search();
-//		}
 		
 		findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
 			
@@ -367,20 +183,24 @@ public class ActivityRoomRec extends ActionBarActivity {
 		this.curr_recommendation = query_result.get_random_room();
 		
 		stopwatch.stop();
-		Log.d(TAG, "Took " + stopwatch.time() + " seconds to execute search");
+//		Log.d(TAG, "Took " + stopwatch.time() + " seconds to execute search");
+//		
+//		if (Constants.DEBUG) {
+//			Toast.makeText(ActivityRoomRec.this, "Took " + stopwatch.time() + " seconds to execute search", Toast.LENGTH_SHORT).show();
+//		}
+//		
+//		setTextViewInfo(this.curr_recommendation);
+//		
+//		update_background();
+//
+//		update_info_textview(query.toString());
 		
-		if (Constants.DEBUG) {
-			Toast.makeText(ActivityRoomRec.this, "Took " + stopwatch.time() + " seconds to execute search", Toast.LENGTH_SHORT).show();
-		}
-		
-		setTextViewInfo(this.curr_recommendation);
-		
-		update_background();
-
-		update_info_textview(query.toString());
+		handle_search_random_room();
 	}
 	
 	private void update_background() {
+//		final int TRANSPARENCY_VAL = 165;
+		
 		View background = findViewById(R.id.background);
 		if (this.query_result.get_message_status().equals(Query.MessageStatus.SEARCH_SUCCESS.toString())) {
 			
@@ -392,6 +212,9 @@ public class ActivityRoomRec extends ActionBarActivity {
 				if (res_id != -1) {
 					background.setBackgroundResource(res_id);
 					this.curr_recommendation_res_id = res_id;
+					
+//					Drawable background_image = background.getBackground();
+//					background_image.setAlpha(TRANSPARENCY_VAL);	// 0xcc == 204
 				}
 				else {
 					// display tower?
@@ -412,6 +235,9 @@ public class ActivityRoomRec extends ActionBarActivity {
 				if (res_id != -1) {
 					background.setBackgroundResource(res_id);
 					this.curr_recommendation_res_id = res_id;
+					
+//					Drawable background_image = background.getBackground();
+//					background_image.setAlpha(TRANSPARENCY_VAL);	// 0xcc == 204
 				}
 				else {
 					// display tower?
@@ -431,38 +257,12 @@ public class ActivityRoomRec extends ActionBarActivity {
 			
 			Log.d(TAG, "Search returned " + this.query_result.get_message_status());
 		}
+		
+		// http://stackoverflow.com/questions/4968883/opacity-on-a-background-drawable-image-in-view-using-xml-layout
+		// http://stackoverflow.com/questions/2838757/how-to-set-opacity-alpha-for-view-in-android
+//		Drawable background_image = background.getBackground();
+//		background_image.setAlpha(165);	// 0xcc == 204
 	}
-	
-
-//	private boolean rec_is_message_status_flag(String recommendation) {
-//		if (recommendation == null) {
-//			throw new IllegalArgumentException();
-//		}
-//		else if (recommendation.length() <= 0) {
-//			recommendation = Query.MessageStatus.SEARCH_ERROR.toString();
-//			return true;
-//		}
-//		
-//		for (int i = 0; i < Constants.MESSAGE_STATUS_FLAGS.length; i++) {
-//			if (recommendation.equals(Constants.MESSAGE_STATUS_FLAGS[i])) {
-//				return true;
-//			}
-//		}
-//		
-//		return false;
-//	}
-//	
-//	private void setTextViewInfo(String recommendation) {
-//		if (recommendation == null || recommendation.length() <= 0) {
-//			recommendation = Query.MessageStatus.SEARCH_ERROR.toString();
-//		}
-//		else if (!rec_is_message_status_flag(recommendation)) {
-//			recommendation = "Try " + recommendation;
-//		}
-//		
-//		TextView roomRecText = (TextView) findViewById(R.id.room_num);
-//		roomRecText.setText(recommendation);		
-//	}
 	
 	private void setTextViewInfo(String recommendation) {
 		if (recommendation == null) {
@@ -473,22 +273,157 @@ public class ActivityRoomRec extends ActionBarActivity {
 		roomRecText.setText(recommendation);
 	}
 	
-//	private void update_query_textview() {
-//		TextView temp = (TextView) findViewById(R.id.this_query);
-//		temp.setText("Current query:\n" + this.query.toString());
-//	}
-//	
-//	private void update_query_textview(Query query) {
-//		TextView temp = (TextView) findViewById(R.id.this_query);
-//		temp.setText("Current query:\n" + query.toString());
-//	}
-	
 	private void update_info_textview(String text) {
 		if (text == null) {
 			throw new IllegalArgumentException();
 		}
 		TextView temp = (TextView) findViewById(R.id.info_textview);
 		temp.setText(text);
+	}
+	
+	private void handle_search_random_room() {
+		this.curr_recommendation = this.query_result.get_random_room();
+		
+		final String TAB = "    ";
+		
+		StringBuilder msg = new StringBuilder();
+		
+		String message_status = this.query_result.get_message_status();
+		
+		if (message_status.equals(Query.MessageStatus.SEARCH_ERROR.toString())) {
+			msg.append("We're not sure why this is happening, but shoot us an email containing" +
+					"the information below and we'll get it fixed. Thanks!\n\n" + this.query.toString());
+		}
+		else if (message_status.equals(Query.MessageStatus.SEARCH_SUCCESS.toString())) {
+			List<String> results = this.query_result.get_results();
+			
+			if (results.size() == 1) {
+				msg.append("Search found one room available.\n\n");
+			}
+			else {
+				msg.append("Search found " + results.size() + " rooms available.\n\n");
+			}
+			
+			String search_building = this.query.get_option_search_building();
+			int capacity = this.query.get_option_capacity();
+			
+			msg.append("Search criteria:\n");
+			msg.append(TAB + "Building: " + search_building + "\n");
+			msg.append(TAB + "Start date: " + this.query.get_start_date().toString() + "\n");
+			msg.append(TAB + "Duration: at least " + this.query.get_duration() + " minute(s)\n");
+			
+			if (capacity > 0) {
+				msg.append(TAB + "Capacity: at least " + capacity + " people\n");
+			}
+			else {
+				msg.append(TAB + "Capacity: no preference\n");
+			}
+			
+			if (Utilities.str_is_gdc(search_building)) {
+				msg.append(TAB + "Must have power plugs:\t" + this.query.get_option_power() + "\n");
+			}
+			
+			msg.append("\n");
+			msg.append("All rooms available under identical search criteria:\n");
+			
+			if (results.size() == 1) {
+				msg.append(TAB + "None\n");
+			}
+			else {
+				for (String room : results) {
+					msg.append(TAB + search_building + " " + room + "\n");
+				}
+			}
+		}
+		else if (message_status.equals(Query.MessageStatus.GO_HOME.toString())) {
+			msg.append("You're gonna fail that exam tomorrow anyway.");
+		}
+		else if (!message_status.equals(Query.MessageStatus.NO_ROOMS_AVAIL.toString())) {
+			msg.append("Be sure you have the appropriate authorization (if any) to enter and use" +
+					" the rooms in " + this.query.get_option_search_building() + ".");
+		}
+
+		update_info_textview(msg.toString());
+		
+		setTextViewInfo(this.curr_recommendation);
+		update_background();
+		
+//		Log.d(TAG, "PROCESSED regular random-room search - " + msg.toString());
+	}
+	
+	private void handle_search_get_room_schedule() {
+//		Object query_result_scratch = this.query_result.get_scratch();
+		Room search_room;
+		
+		String search_building_str = this.query.get_option_search_building();
+//		if (query_result_scratch instanceof Room) {
+//			search_room = (Room) query_result_scratch;
+//		}
+//		else {
+			String curr_course_schedule = this.query.get_current_course_schedule();
+			if (curr_course_schedule == null) {
+				throw new IllegalStateException("Fatal error: unable to determine correct course schedule for current Query\n\n" + this.query.toString());
+			}
+			
+			Building search_building = Building.get_instance(ActivityRoomRec.this, search_building_str, curr_course_schedule);
+			search_room = search_building.get_room(this.query.get_option_search_room());
+			
+			if (search_room == null) {
+				throw new IllegalStateException("Fatal error: corrupted Building object\n\n" + this.query.toString());
+			}
+//		}
+		
+		int capacity = search_room.get_capacity();
+		List<String> events = this.query_result.get_results();
+		
+//		Log.d(TAG, search_room.toString());
+//		Log.d(TAG, events.toString());
+		
+		DateFormat format = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.ENGLISH);
+		String date_str = format.format(this.query.get_start_date());
+		
+		StringBuilder msg = new StringBuilder();
+		
+		if (Utilities.str_is_gdc(search_building_str)) {
+			msg.append("Room type: " + search_room.get_type() + "\n");
+			msg.append("Capacity: " + capacity + " people\n");
+			msg.append("Power plugs: " + search_room.get_has_power() + "\n");
+			msg.append("\n");
+		}
+		else {
+			if (capacity > 0) {
+				msg.append("Capacity: " + capacity + " people\n");
+			}
+			else {
+				msg.append("Capacity: unknown\n");
+			}
+			msg.append("\n");
+		}
+		
+		if (events.size() <= 0) {
+			msg.append("There are no events scheduled on " + date_str + ".\n\n");
+		}
+		else {
+			if (events.size() == 1) {
+				msg.append("There is one event scheduled on " + date_str + ":\n\n");
+			}
+			else {
+				msg.append("There are " + events.size() + " events scheduled on " + date_str + ":\n\n");
+			}
+			
+			for (String curr_event : events) {
+//				curr_event = curr_event.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(", ", "");
+				msg.append(curr_event);
+			}
+		}
+		
+		this.curr_recommendation = search_building_str + " " + this.query.get_option_search_room();
+		update_info_textview(msg.toString());
+
+		setTextViewInfo(this.curr_recommendation);
+		update_background();
+		
+//		Log.d(TAG, "PROCESSED room course schedule search - " + msg.toString());
 	}
 	
 	@Override
@@ -506,7 +441,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.find_room, menu);
 		return true;
 	}
 
@@ -516,16 +451,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.find_a_room_now){
-			getRoomRec();
-			return true;
-		}
-		if (id == R.id.find_a_room_later){
-			find_room_later();
-			return true;
-		}
-		if (id == R.id.exit){
-			exit();
+		if (id == R.id.action_settings) {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

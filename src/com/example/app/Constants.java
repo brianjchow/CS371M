@@ -10,7 +10,11 @@ import android.content.Context;
 import android.util.Log;
 
 final class Constants {
-	
+
+	protected static final	String		COURSE_SCHEDULE_THIS_SEMESTER	=	"master_course_schedule_f14";
+	protected static final	String		COURSE_SCHEDULE_NEXT_SEMESTER	=	"master_course_schedule_s15";
+	protected static final	String		DEFAULT_DB_EXTENSION			=	"db";
+
 	private Constants() { }
 	
 	private static final	String		TAG								=	"Constants";
@@ -21,14 +25,10 @@ final class Constants {
 
 	protected static	BuildingList	BUILDING_CACHELIST_THIS_SEMESTER	=	null; // new BuildingList();
 	protected static	BuildingList	BUILDING_CACHELIST_NEXT_SEMESTER	=	null; // new BuildingList();
-	protected static		boolean		DISABLE_SEARCHES_NEXT_SEMESTER	=	false;
+	protected static final	boolean		DISABLE_SEARCHES_NEXT_SEMESTER;
 	
 	protected static final	boolean		IGNORE_CONFERENCE_ROOMS			=	true;
 	
-	protected static final	String		COURSE_SCHEDULE_THIS_SEMESTER	=	"master_course_schedule_f14";
-	protected static final	String		COURSE_SCHEDULE_NEXT_SEMESTER	=	"master_course_schedule_s15";
-	protected static final	String		DEFAULT_DB_EXTENSION			=	"db";
-
 	protected static final	int			BUILDING_CODE_LENGTH			=	3;
 
 	protected static final	int			SPRING_START_MONTH				=	1;
@@ -129,7 +129,7 @@ final class Constants {
 	
 	static {
 		
-		DEBUG						=	true;
+		DEBUG						=	false;
 
 		GDC							=	"GDC";
 		
@@ -216,6 +216,13 @@ final class Constants {
 		DAYBREAK					=	Utilities.get_date(1, 2, 2014, 800);
 		NIGHTFALL					=	Utilities.get_date(1, 1, 2014, 2200);
 		
+		if (COURSE_SCHEDULE_NEXT_SEMESTER == null) {
+			DISABLE_SEARCHES_NEXT_SEMESTER = true;
+		}
+		else {
+			DISABLE_SEARCHES_NEXT_SEMESTER = false;
+		}
+		
 		Log.d(TAG, "Reached end of static initialiser block");
 	}
 	
@@ -229,7 +236,7 @@ final class Constants {
 		
 		BUILDING_CACHELIST_THIS_SEMESTER = null;
 		BUILDING_CACHELIST_NEXT_SEMESTER = null;
-		DISABLE_SEARCHES_NEXT_SEMESTER = false;
+//		DISABLE_SEARCHES_NEXT_SEMESTER = false;
 	}
 	
 	protected static void init(Context context) {
@@ -280,7 +287,7 @@ final class Constants {
 		}
 		
 		if (COURSE_SCHEDULE_NEXT_SEMESTER == null) {
-			DISABLE_SEARCHES_NEXT_SEMESTER = true;
+//			DISABLE_SEARCHES_NEXT_SEMESTER = true;
 		}
 		else {
 			BUILDING_CACHELIST_NEXT_SEMESTER = new BuildingList();

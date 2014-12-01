@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -28,6 +29,7 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -159,8 +161,20 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	}
 
 	private void setSearchBuildingSpinnerOnItemSelectedListener() {
+		String[] buildings = getResources().getStringArray(R.array.campus_buildings);
+		
 		final Spinner spinner = (Spinner) findViewById(R.id.choose_building_spinner);
-		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ActivityFindRoomLater.this, R.array.campus_buildings, android.R.layout.simple_spinner_dropdown_item);	// or android.R.layout.simple_spinner_item
+		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(ActivityFindRoomLater.this, android.R.layout.simple_spinner_dropdown_item, buildings) {
+			
+			public View getView(int position, View convertView, ViewGroup parent) {
+				View v = super.getView(position, convertView, parent);
+				((TextView) v).setTextColor(getResources().getColorStateList(R.color.white));
+				return v;
+			}
+			
+		};
+		
+//		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ActivityFindRoomLater.this, R.array.campus_buildings, android.R.layout.simple_spinner_dropdown_item);	// or android.R.layout.simple_spinner_item
 //		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(ActivityFindRoomLater.this, android.R.layout.simple_spinner_item, Constants.CAMPUS_BUILDINGS);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
@@ -237,25 +251,46 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			public void onClick(View v) {
 				Calendar calendar = Calendar.getInstance();
 				
-				calendar.setTime(start_date);
+				Calendar curr_start_date = Calendar.getInstance();
+				curr_start_date.setTime(start_date);
 				
-				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityFindRoomLater.this, datepicker_dialog_listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityFindRoomLater.this, datepicker_dialog_listener, curr_start_date.get(Calendar.YEAR), curr_start_date.get(Calendar.MONTH), curr_start_date.get(Calendar.DAY_OF_MONTH));
 //				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityFindRoomLater.this, datepicker_dialog_listener, selected_year, selected_month - 1, selected_day);
+				
 				if (!Constants.DEBUG) {
-					datepicker_dialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+					DatePicker datepicker = datepicker_dialog.getDatePicker();
+					datepicker.setMinDate(calendar.getTimeInMillis());
 					
-					Calendar temp = Calendar.getInstance();
 					Date date = calendar.getTime();
 					int year = calendar.get(Calendar.YEAR);
+					
+					Calendar temp = Calendar.getInstance();
 					if (Utilities.date_is_during_spring(date)) {
-						date = Utilities.get_date(Constants.FALL_END_MONTH, Constants.FALL_END_DAY, year, 2359);
+						
+						int end_month = Constants.FALL_END_MONTH;
+						int end_day = Constants.FALL_END_DAY;
+						if (Constants.DISABLE_SEARCHES_NEXT_SEMESTER) {
+							end_month = Constants.SPRING_END_MONTH;
+							end_day = Constants.SPRING_END_DAY;
+						}
+						
+						date = Utilities.get_date(end_month, end_day, year, 2359);
 						temp.setTime(date);
-						datepicker_dialog.getDatePicker().setMaxDate(temp.getTimeInMillis());
+						datepicker.setMaxDate(temp.getTimeInMillis());
 					}
 					else {
-						date = Utilities.get_date(Constants.SPRING_END_MONTH, Constants.SPRING_END_DAY, year + 1, 2359);
+						
+						int end_month = Constants.SPRING_END_MONTH;
+						int end_day = Constants.SPRING_END_DAY;
+						if (Constants.DISABLE_SEARCHES_NEXT_SEMESTER) {
+							end_month = Constants.FALL_END_MONTH;
+							end_day = Constants.FALL_END_DAY;
+							year--;
+						}
+						
+						date = Utilities.get_date(end_month, end_day, year + 1, 2359);
 						temp.setTime(date);
-						datepicker_dialog.getDatePicker().setMaxDate(temp.getTimeInMillis());
+						datepicker.setMaxDate(temp.getTimeInMillis());
 					}
 					
 				}
@@ -500,7 +535,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.find_room_later, menu);
 		return true;
 	}
 
@@ -510,41 +545,10 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.find_a_room_now){
-			getRoomRec();
-			return true;
-		}
-		if (id == R.id.find_a_room_later){
-			find_room_later();
-			return true;
-		}
-		if (id == R.id.exit){
-			exit();
+		if (id == R.id.action_settings) {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	public void exit() {
-//		startActivityForResult(new Intent(this, ActivityExit.class), 0);
-		startActivity(new Intent(this, ActivityExit.class));
-		finish();
-	}
-
-
-	
-	private void find_room_later() {
-		Intent intent = new Intent(this, ActivityFindRoomLater.class);
-//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
-		startActivity(intent);
-		finish();
-	}
-	
-	private void get_room_schedule() {
-		Intent intent = new Intent(this, ActivityGetRoomSchedule.class);
-//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
-		startActivity(intent);
-		finish();
 	}
 
 /*

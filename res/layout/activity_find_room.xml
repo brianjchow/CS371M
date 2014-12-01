@@ -26,7 +26,8 @@
 	        android:layout_weight = "1"
 	        android:text="@string/home"
 	        android:textSize = "12sp"
-	        android:textColor = "@color/white" />
+	        android:textColor = "@color/white"
+        	android:background = "@color/background_transparency" />
 	    
 	    <View
 	        android:layout_height = "fill_parent"
@@ -40,7 +41,8 @@
 	        android:layout_weight = "1"
 	        android:text="@string/find_room_now"
 	        android:textSize = "10sp"
-	        android:textColor = "@color/white" />
+	        android:textColor = "@color/white"
+        	android:background = "@color/background_transparency" />
 	    
 	    <View
 	        android:layout_height = "fill_parent"
@@ -54,7 +56,8 @@
 	        android:layout_weight = "1"
 	        android:text="@string/search_options"
 	        android:textSize = "10sp"
-	        android:textColor = "@color/white" />
+	        android:textColor = "@color/white"
+        	android:background = "@color/background_transparency" />
 	    
 	    <View
 	        android:layout_height = "fill_parent"
@@ -68,7 +71,8 @@
 	        android:layout_weight = "1"
 	        android:text="@string/get_room_schedule"
 	        android:textSize = "10sp"
-	        android:textColor = "@color/white" />
+	        android:textColor = "@color/white"
+        	android:background = "@color/background_transparency" />
 	    	    	   	    	    	    	    
     </LinearLayout>
     
@@ -77,28 +81,68 @@
         android:layout_width = "wrap_content"
         android:layout_height = "wrap_content"
         android:layout_marginTop = "10dp"
-        android:ems = "10"
-        android:gravity = "center"
-        android:text = "4.302"
-        android:textSize = "40sp"
-        android:textColor = "@color/text_colour" />
-    
-    <TextView
-        android:id = "@+id/info_textview"
-        android:layout_below = "@+id/room_num"
-        android:layout_above = "@+id/bottom_button_bar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom = "15dp"
-        android:layout_marginTop = "15dp"
         android:layout_marginLeft = "10dp"
         android:layout_marginRight = "10dp"
-        android:textSize="12sp"
-        android:textColor = "@color/white" />
+        android:ems = "10"
+        android:gravity = "center"
+        android:text = "@string/hello_world"
+        android:textSize = "40sp"
+        android:textColor = "@color/white"
+        android:background = "@color/background_transparency" />
+    
+	<ScrollView
+		android:layout_width = "match_parent"
+		android:layout_height = "wrap_content"
+        android:layout_below = "@+id/room_num"
+        android:layout_above = "@+id/bottom_button_bar"
+        android:layout_marginLeft = "10dp"
+        android:layout_marginRight = "10dp"
+        android:layout_marginBottom = "15dp"
+        android:background = "@color/background_transparency" >
+		
+	    <TextView
+	        android:id = "@+id/info_textview"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingLeft = "15dp"
+	        android:paddingRight = "15dp"
+	        android:paddingTop = "15dp"
+	        android:textSize="13sp"
+	        android:text = "@string/load_warning_msg"
+	        android:textColor = "@color/white" />
+	
+	</ScrollView>
 
 </RelativeLayout>
 
 <!-- 
+        android:text = "@string/load_warning_msg"
+
+        android:background = "#ccfbfbfb"
+        
+HEX OPACITY VALUES
+
+100% — FF
+95% — F2
+90% — E6
+85% — D9
+80% — CC
+75% — BF
+70% — B3
+65% — A6
+60% — 99
+55% — 8C
+50% — 80
+45% — 73
+40% — 66
+35% — 59
+30% — 4D
+25% — 40
+20% — 33
+15% — 26
+10% — 1A
+5% — 0D
+0% — 00
 
         android:text = "@string/current_query"
         

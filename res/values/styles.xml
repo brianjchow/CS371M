@@ -17,11 +17,17 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
     
-    <color name = "text_colour">#1975ff</color>
+    <color name = "text_colour">#ff00ff</color>
     <color name = "white">#ffffff</color>
     <color name = "black">#000000</color>
     <color name = "default_background_grey">#838383</color>
     <color name = "grey">#fbfbfb</color>
     <color name = "button_border_grey">#e5e5e5</color> <!-- #d9d9d9 for darker grey, #e5e5e5 for lighter grey -->
+    
+    <color name = "background_transparency">#77000000</color>
 
 </resources>
+
+<!--
+    <color name = "text_colour">#1975ff</color>
+-->

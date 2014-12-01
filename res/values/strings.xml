@@ -13,9 +13,6 @@
     <string name="title_activity_wait_for_cxn">No connection</string>
     <string name="title_activity_get_room_schedule">ActivityGetRoomSchedule</string>
     <string name="home">Home</string>
-    <string name="find_a_room_now">Find a Room Now</string>
-    <string name="find_a_room_later">Find a Room Later</string>
-    <string name="exit">Exit</string>
 
     <!-- Load CSV -->
     <string name="loading_msg">Loading&#8230;</string>
@@ -32,11 +29,9 @@
     <string name="set">Set</string>
 
     <!-- Load CSV warning/failure dialogs -->
-    <string name="load_error_msg">Unknown error during loading.\n\nProceeding may cause incorrect or incomplete search results.\n\nContinue/restart/abort?</string>
-    <string name="load_warning_msg">"This app uses information obtained directly from the CS department.\n\n"
-									  "However, it appears you have been blocked from accessing their servers. "
-									  "You may proceed, but search results may be more accurate if you try again later.\n\n"
-									  "Continue/abort?"</string>
+    <string name="load_error_msg">Timeout or unknown error occurred during loading.\n\nProceeding may cause incorrect or incomplete search results.\n\nContinue/abort?\n\nNOTE: if you are using a mobile connection, try switching to using a wireless (WiFi) connection.</string>
+    <string name="load_warning_msg">"This app uses information obtained directly from the CS department.\n\nHowever, it appears you have been blocked from accessing their servers. You may proceed, but search results may be more accurate if you try again later.\n\nContinue/abort?"</string>
+    <string name="cxn_lost_warning_msg">"This app uses information obtained directly from the CS department.\n\nHowever, it appears you have lost your wireless/mobile connection while downloading that information. You may proceed, but search results may be more accurate if you try again later.\n\nContinue/abort?"</string>
     <string name="warning">Warning</string>
     <string name="continue_msg">Continue</string>
     <string name="restart">Restart</string>
@@ -97,7 +92,7 @@
     <string name="BEL">BEL &#8211; Bellmont Hall</string>
     <string name="BEN">BEN &#8211; Benedict Hall</string>
     <string name="BIO">BIO &#8211; Biological Laboratories</string>
-    <string name="BMC">BMC &#8211; Belo Center for New Media</string>
+    <string name="BMC">BMC &#8211; Belo Centre for New Media</string>
     <string name="BME">BME &#8211; Biomedical Engineering Bldg</string>
     <string name="BRB">BRB &#8211; Rapoport Building</string>
     <string name="BTL">BTL &#8211; Battle Hall</string>

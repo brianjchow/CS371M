@@ -28,16 +28,27 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 	private static final boolean INFINITE_TIMEOUT = true;
 	private static final int TIMEOUT_AFTER = 60000;			// milliseconds
 	
-	private Context mContext;
+	private static final String mHASCXN = "mHasCxn";
+	
 	private boolean mHasCxn;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_wait_for_cxn);
-		
-		mContext = this;
-		mHasCxn = savedInstanceState.getBoolean("mHasCxn", false);
+//		setContentView(R.layout.floor_0_frame_layout);
+//		
+//		ImageView dinosaur = (ImageView) findViewById(R.id.dinosaur);
+//		dinosaur.setBackgroundColor(Color.RED);
+//		
+//		mContext = ActivityWaitForCxn.this;
+//		
+		if (savedInstanceState != null) {
+			mHasCxn = savedInstanceState.getBoolean(mHASCXN, false);
+		}
+		else {
+			mHasCxn = false;
+		}
 
 		final WaitTask wait_task = new WaitTask();
 		wait_task.execute();
@@ -80,7 +91,7 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 			}
 		});
 		
-	}
+	}		// end onCreate()
 	
 	@Override
 	protected void onResume() {
@@ -90,6 +101,7 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		Log.d(TAG, "Registering broadcast receiver, onResume()");
 		IntentFilter intent_filter = new IntentFilter();
 		intent_filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);	// SUPPLICANT_CONNECTION_CHANGE_ACTION
+		intent_filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 		registerReceiver(broadcast_receiver, intent_filter);
 	}
 	
@@ -102,11 +114,20 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		unregisterReceiver(broadcast_receiver);
 	}
 	
+//	@Override
+//	protected void onDestroy() {
+//		super.onDestroy();
+//		
+//		// unregister BroadcastReceiver
+//		Log.d(TAG, "Unregistering broadcast receiver, onDestroy()");
+//		unregisterReceiver(broadcast_receiver);
+//	}
+	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		
-		outState.putBoolean("mHasCxn", mHasCxn);
+		outState.putBoolean(mHASCXN, mHasCxn);
 	}
 	
 	private BroadcastReceiver broadcast_receiver = new BroadcastReceiver() {
@@ -114,45 +135,77 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// http://stackoverflow.com/questions/5888502/how-to-detect-when-wifi-connection-has-been-established-in-android?rq=1
+			// http://stackoverflow.com/questions/2802472/detect-network-connection-type-on-android
 			
 			final String action = intent.getAction();
-			if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {	// SUPPLICANT_CONNECTION_CHANGE_ACTION
-				Log.d(TAG, "Network state just changed");
-				Toast.makeText(ActivityWaitForCxn.this, "Network state just changed", Toast.LENGTH_LONG).show();
+			
+//			Toast.makeText(ActivityWaitForCxn.this, "BroadcastReceiver action was " + action, Toast.LENGTH_LONG).show();
+			
+			if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+				Log.d(TAG, "Network state just changed, broadcast_receiver.onReceive() for WiFi");
+
+//				if (Constants.DEBUG) {
+//					Toast.makeText(ActivityWaitForCxn.this, "Network state just changed", Toast.LENGTH_LONG).show();
+//				}
 				
 				NetworkInfo net_info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
 				if (net_info != null) {
-					
-//					if ((net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE) && net_info.isConnected()) {
-//						if (Constants.DEBUG) {
-//							if (net_info.getType() == ConnectivityManager.TYPE_WIFI) {
-//								Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
-//							}
-//							else {
-//								Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
-//							}
-//						}
-//					}
-//					else {
-//						mHasCxn = false;
-//					}
-					
-//					if (net_info.getState().equals(NetworkInfo.State.CONNECTED)) {
-//						Log.d(TAG, "Network connectivity just enabled");
-//						Toast.makeText(ActivityWaitForCxn.this, "Network connectivity just enabled", Toast.LENGTH_LONG).show();
-//						mHasCxn = true;
-//					}
-//					else {
-//						Toast.makeText(ActivityWaitForCxn.this, "Network connectivity just disabled", Toast.LENGTH_LONG).show();
-//						mHasCxn = false;
-//					}
-					
-					if (net_info.getType() == ConnectivityManager.TYPE_WIFI && net_info.isConnected()) {
+
+					if (net_info.isConnected() && net_info.getType() == ConnectivityManager.TYPE_WIFI) {
 						Log.d(TAG, "Wifi cxn just enabled");
+						
+						if (Constants.DEBUG) {
+							Toast.makeText(ActivityWaitForCxn.this, "Wifi cxn just enabled", Toast.LENGTH_LONG).show();
+						}
+						
 						mHasCxn = true;
 					}
-					else if (net_info.getType() == ConnectivityManager.TYPE_MOBILE && net_info.isConnected()) {
+//					else if (net_info.getType() == ConnectivityManager.TYPE_MOBILE && net_info.isConnected()) {
+//						Log.d(TAG, "Mobile cxn just enabled");
+//						Toast.makeText(ActivityWaitForCxn.this, "Mobile cxn just enabled", Toast.LENGTH_LONG).show();
+//						mHasCxn = true;
+//					}
+					else {
+						mHasCxn = false;
+					}
+				}
+				else {
+					Log.d(TAG, "Net info null, broadcast_receiver.onReceive() for WiFi");
+
+					if (Constants.DEBUG) {
+						Toast.makeText(ActivityWaitForCxn.this, "Net info null, broadcast_receiver.onReceive() for WiFi", Toast.LENGTH_LONG).show();
+					}
+					
+					mHasCxn = false;
+				}
+
+			}
+			else if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+				Log.d(TAG, "Network state just changed, broadcast_receiver.onReceive() for mobile");
+
+//				if (Constants.DEBUG) {
+//					Toast.makeText(ActivityWaitForCxn.this, "Network state just changed", Toast.LENGTH_LONG).show();
+//				}
+				
+//				NetworkInfo net_info = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
+				
+				ConnectivityManager con_man = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+				
+				NetworkInfo net_info = con_man.getActiveNetworkInfo();
+				
+//				int net_type = intent.getExtras().getInt(ConnectivityManager.EXTRA_NETWORK_TYPE);
+//				NetworkInfo net_info = con_man.getNetworkInfo(net_type);
+				
+//				NetworkInfo net_info = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
+				if (net_info != null) {
+
+					if (net_info.isConnected() && net_info.getType() == ConnectivityManager.TYPE_MOBILE) {
 						Log.d(TAG, "Mobile cxn just enabled");
+						
+						if (Constants.DEBUG) {
+							Toast.makeText(ActivityWaitForCxn.this, "Mobile cxn just enabled", Toast.LENGTH_LONG).show();
+						}
+						
 						mHasCxn = true;
 					}
 					else {
@@ -160,34 +213,19 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 					}
 				}
 				else {
-					Log.d(TAG, "Net info null");
-					Toast.makeText(ActivityWaitForCxn.this, "Net info null", Toast.LENGTH_LONG).show();
+					Log.d(TAG, "Net info null, broadcast_receiver.onReceive() for mobile");
+
+					if (Constants.DEBUG) {
+						Toast.makeText(ActivityWaitForCxn.this, "Net info null, broadcast_receiver.onReceive() for mobile", Toast.LENGTH_LONG).show();
+					}
+					
 					mHasCxn = false;
 				}
-				
-//				if (net_info == null) {
-//					boolean no_cxn = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-//					if (no_cxn) {
-//						Toast.makeText(ActivityWaitForCxn.this, "Network connectivity just disabled", Toast.LENGTH_LONG).show();
-//						mHasCxn = false;
-//					}
-//					else {
-//						Toast.makeText(ActivityWaitForCxn.this, "Network connectivity just enabled", Toast.LENGTH_LONG).show();
-//						mHasCxn = true;
-//					}
-//				}
-								
-//				Log.d(TAG, "Wifi state changed to enabled, onReceive()");
-////				Toast.makeText(ActivityWaitForCxn.this, "Wifi state changed to enabled, ActivityWaitForCxn", Toast.LENGTH_SHORT).show();
-//				
-//				mHasCxn = true;
+
 			}
-//			else {
-//				Log.d(TAG, "Wifi state changed to disabled, onReceive()");
-////				Toast.makeText(ActivityWaitForCxn.this, "Wifi state changed to disabled, ActivityWaitForCxn", Toast.LENGTH_SHORT).show();
-//				
-//				mHasCxn = false;
-//			}
+			else {
+				mHasCxn = false;
+			}
 		}
 	};
 
@@ -239,12 +277,11 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		}
 	}
 	
-	@SuppressWarnings("unused")
-	private void start_loading_csv() {
-		startActivity(new Intent(ActivityWaitForCxn.this, ActivityLoadCSV.class));
-		finish();
-		return;
-	}
+//	private void start_loading_csv() {
+//		startActivity(new Intent(ActivityWaitForCxn.this, ActivityLoadCSV.class));
+//		finish();
+//		return;
+//	}
 
 	private void show_failure_dialog() {
 		final Dialog dialog = new Dialog(ActivityWaitForCxn.this);
@@ -266,7 +303,7 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 			public void onClick(View v) {
 				Log.d(TAG, "Timed out while waiting for cxn establishment, now restarting app...");
 				dialog.dismiss();
-				startActivity(new Intent(mContext, ActivityLoadCSV.class));
+				startActivity(new Intent(ActivityWaitForCxn.this, ActivityLoadCSV.class));
 				finish();
 				return;
 			}
@@ -323,7 +360,7 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.activity_wait_for_cxn, menu);
 		return true;
 	}
 
@@ -333,45 +370,10 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.find_a_room_now){
-			getRoomRec();
-			return true;
-		}
-		if (id == R.id.find_a_room_later){
-			find_room_later();
-			return true;
-		}
-		if (id == R.id.exit){
-			exit();
+		if (id == R.id.action_settings) {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	public void exit() {
-//		startActivityForResult(new Intent(this, ActivityExit.class), 0);
-		startActivity(new Intent(this, ActivityExit.class));
-		finish();
-	}
-
-	public void getRoomRec() {
-//		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
-		startActivity(new Intent(this, ActivityFindRoomLater.class));
-		finish();
-	}
-	
-	private void find_room_later() {
-		Intent intent = new Intent(this, ActivityFindRoomLater.class);
-//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
-		startActivity(intent);
-		finish();
-	}
-	
-	private void get_room_schedule() {
-		Intent intent = new Intent(this, ActivityGetRoomSchedule.class);
-//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
-		startActivity(intent);
-		finish();
 	}
 	
 }		// end of file

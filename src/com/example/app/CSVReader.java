@@ -180,12 +180,14 @@ final class CSVReader {
 			
 //			event_strings = reader.read_csv_from_file("calendar_events_today_feed_2710.csv");
 //			event_strings = reader.read_csv_from_file(context, R.raw.calendar_events_today_feed_1411);
-			event_strings = reader.read_csv_from_file(context, "calendar_events_today_feed_1411" + ext);
+//			event_strings = reader.read_csv_from_file(context, "calendar_events_today_feed_1411" + ext);
+			event_strings = reader.read_csv_from_file(context, "calendar_events_today_feed_3011" + ext);
 			events.add(event_strings);
 			
 //			event_strings = reader.read_csv_from_file("calendar_events_feed_2710.csv");
 //			event_strings = reader.read_csv_from_file(context, R.raw.calendar_events_feed_1411);
-			event_strings = reader.read_csv_from_file(context, "calendar_events_feed_1411" + ext);
+//			event_strings = reader.read_csv_from_file(context, "calendar_events_feed_1411" + ext);
+			event_strings = reader.read_csv_from_file(context, "calendar_events_feed_3011" + ext);
 			events.add(event_strings);
 
 //			event_strings = reader.read_csv_from_file("calendar_rooms_feed_2710.csv");
@@ -297,6 +299,9 @@ final class CSVReader {
 	}
 	
 	private List<HashMap<String, String>> read_csv_from_url(URL url) {
+		if (url == null) {
+			throw new IllegalArgumentException("Cannot accept null URL argument");
+		}
 
 		List<HashMap<String, String>> schedules = new ArrayList<HashMap<String, String>>(100);
 		
@@ -307,11 +312,13 @@ final class CSVReader {
 			connection.connect();
 		}
 		catch (IOException e) {
-			Log.d(TAG, "Error establishing connection");
+			Log.d(TAG, "Error establishing connection:1");
 		}
 		
 		if (connection == null) {
-			throw new IllegalStateException();
+//			throw new IllegalStateException();
+			Log.d(TAG, "Error establishing connection:2");
+			return schedules;
 		}
 		
 		InputReader reader = null;
@@ -320,6 +327,8 @@ final class CSVReader {
 		}
 		catch (IOException e) {
 			Log.d(TAG, "Error opening reader");
+			Log.d(TAG, "URL is " + url.toString());
+			return schedules;
 		}
 		
 		int temp = 0;
