@@ -33,8 +33,14 @@ public class Event implements Comparable<Event> {
 		}
 		
 		this.event_name = event_name;
-		this.start_date = to_date(start_date);
 		this.location = new Location(location);
+		
+		Date date = to_date(start_date);
+		Calendar start_temp = Calendar.getInstance();
+		start_temp.setTime(date);
+		start_temp.set(Calendar.SECOND, 0);
+		start_temp.set(Calendar.MILLISECOND, 0);
+		this.start_date = date;		
 		
 		if (end_date == null) {
 			Calendar calendar = Calendar.getInstance();
@@ -43,7 +49,11 @@ public class Event implements Comparable<Event> {
 			this.end_date = calendar.getTime();
 		}
 		else {
-			this.end_date = to_date(end_date);
+			Calendar end_temp = Calendar.getInstance();
+			end_temp.setTime(to_date(end_date));
+			end_temp.set(Calendar.SECOND, 0);
+			end_temp.set(Calendar.MILLISECOND, 0);
+			this.end_date = end_temp.getTime();
 		}
 	}
 	
@@ -63,8 +73,13 @@ public class Event implements Comparable<Event> {
 		}
 		
 		this.event_name = event_name;
-		this.start_date = start_date;
 		this.location = location;
+		
+		Calendar start_temp = Calendar.getInstance();
+		start_temp.setTime(start_date);
+		start_temp.set(Calendar.SECOND, 0);
+		start_temp.set(Calendar.MILLISECOND, 0);
+		this.start_date = start_temp.getTime();
 		
 		if (end_date == null) {
 			Calendar calendar = Calendar.getInstance();
@@ -73,7 +88,11 @@ public class Event implements Comparable<Event> {
 			this.end_date = calendar.getTime();
 		}
 		else {
-			this.end_date = end_date;
+			Calendar end_temp = Calendar.getInstance();
+			end_temp.setTime(end_date);
+			end_temp.set(Calendar.SECOND, 0);
+			end_temp.set(Calendar.MILLISECOND, 0);
+			this.end_date = end_temp.getTime();
 		}
 	}
 
@@ -149,7 +168,13 @@ public class Event implements Comparable<Event> {
 			throw new IllegalArgumentException("Error: end date cannot be null, set_end_date()");
 		}
 		
-		this.end_date = to_date(end_date);
+		Date date = to_date(end_date);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		this.end_date = calendar.getTime();
 	}
 	
 	/**
@@ -178,6 +203,8 @@ public class Event implements Comparable<Event> {
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(this.start_date);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
 //		calendar.add(Calendar.MINUTE, Constants.DEFAULT_EVENT_DURATION);
 //		this.end_date = calendar.getTime();
 		
@@ -191,24 +218,24 @@ public class Event implements Comparable<Event> {
 	/**
 	 * @param start_date
 	 */
-	protected void set_start_date(String start_date) {
-		if (start_date == null) {
-			throw new IllegalArgumentException("Error: event start date cannot be null, set_start_date()");
-		}
-		
-		this.start_date = to_date(start_date);
-		
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(this.start_date);
-//		calendar.add(Calendar.MINUTE, Constants.DEFAULT_EVENT_DURATION);
-//		this.end_date = calendar.getTime();
-		
-		Calendar calendar_end_date = Calendar.getInstance();
-		calendar_end_date.setTime(this.end_date);
-		calendar_end_date.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR));
-		calendar_end_date.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
-		this.end_date = calendar_end_date.getTime();
-	}
+//	protected void set_start_date(String start_date) {
+//		if (start_date == null) {
+//			throw new IllegalArgumentException("Error: event start date cannot be null, set_start_date()");
+//		}
+//		
+//		this.start_date = to_date(start_date);
+//		
+//		Calendar calendar = Calendar.getInstance();
+//		calendar.setTime(this.start_date);
+////		calendar.add(Calendar.MINUTE, Constants.DEFAULT_EVENT_DURATION);
+////		this.end_date = calendar.getTime();
+//		
+//		Calendar calendar_end_date = Calendar.getInstance();
+//		calendar_end_date.setTime(this.end_date);
+//		calendar_end_date.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR));
+//		calendar_end_date.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
+//		this.end_date = calendar_end_date.getTime();
+//	}
 
 	// Mon 20 Oct 2014 1700
 	/**

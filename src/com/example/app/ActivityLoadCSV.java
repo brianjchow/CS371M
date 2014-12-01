@@ -32,7 +32,8 @@ import android.widget.Toast;
 public class ActivityLoadCSV extends ActionBarActivity {
 
 	private static final String TAG = "ActivityLoadCSV";
-	private static final int TIMEOUT_AFTER = 25000;		// milliseconds
+	private static final int TIMEOUT_AFTER = 20000;		// milliseconds
+	private static boolean TIMEOUT_FLAG = false;
 	
 	private final ReadFeedTask read_csv = new ReadFeedTask();
 
@@ -84,8 +85,9 @@ public class ActivityLoadCSV extends ActionBarActivity {
 				@Override
 				public void run() {
 					if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
+						TIMEOUT_FLAG = true;
 						read_csv.cancel(true);
-						show_warning_dialog(getResources().getString(R.string.load_error_msg));
+//						show_warning_dialog(getResources().getString(R.string.load_error_msg));
 					}
 				}
 				
@@ -140,11 +142,12 @@ public class ActivityLoadCSV extends ActionBarActivity {
 					// call AsyncTask.cancel() here?
 					if (net_info.getType() == ConnectivityManager.TYPE_WIFI && !net_info.isConnected()) {
 						if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
-							read_csv.cancel(true);
+							Log.d(TAG, "fail 1");
+//							read_csv.cancel(true);
 						}
-						else {
-							show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
-						}
+//						else {
+//							show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
+//						}
 						
 //						goto_wait_for_cxn();
 //						return;
@@ -155,11 +158,12 @@ public class ActivityLoadCSV extends ActionBarActivity {
 					// ??? assume disconnected ???
 					
 					if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
-						read_csv.cancel(true);
+						Log.d(TAG, "fail 2");
+//						read_csv.cancel(true);
 					}
-					else {
-						show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
-					}
+//					else {
+//						show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
+//					}
 					
 //					goto_wait_for_cxn();
 //					return;
@@ -176,11 +180,12 @@ public class ActivityLoadCSV extends ActionBarActivity {
 					// call AsyncTask.cancel() here?
 					if (net_info.getType() == ConnectivityManager.TYPE_MOBILE && !net_info.isConnected()) {
 						if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
-							read_csv.cancel(true);
+							Log.d(TAG, "fail 3");
+//							read_csv.cancel(true);
 						}
-						else {
-							show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
-						}
+//						else {
+//							show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
+//						}
 						
 //						goto_wait_for_cxn();
 //						return;
@@ -191,11 +196,12 @@ public class ActivityLoadCSV extends ActionBarActivity {
 					// ??? assume disconnected ???
 					
 					if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
-						read_csv.cancel(true);
+						Log.d(TAG, "fail 4");
+//						read_csv.cancel(true);
 					}
-					else {
-						show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
-					}
+//					else {
+//						show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
+//					}
 					
 //					goto_wait_for_cxn();
 //					return;
@@ -252,11 +258,11 @@ public class ActivityLoadCSV extends ActionBarActivity {
 					Log.d(TAG, "Successfully finished reading CSV");
 					result = true;
 				}
-				else {
-					Log.d(TAG, "FAILED to read CSV");
-					result = false;
-					show_warning_dialog(getResources().getString(R.string.load_error_msg));
-				}
+//				else {
+//					Log.d(TAG, "FAILED to read CSV");
+//					result = false;
+////					show_warning_dialog(getResources().getString(R.string.load_error_msg));
+//				}
 			}
 			catch (Exception e) {
 //				http://stackoverflow.com/questions/6834106/try-catch-exception-always-returns-null
@@ -266,6 +272,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 //				}
 
 				Log.d(TAG, "Caught an exception while reading CSV: " + e.toString());
+				e.printStackTrace();
 				this.exception = e;
 				result = false;
 			}
@@ -273,11 +280,16 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			return result;
 		}
 		
-//		@Override
-//		protected void onCancelled(Boolean done) {
+		@Override
+		protected void onCancelled(Boolean done) {
 //			Log.d(TAG, "Timed out");
-//			show_warning_dialog();
-//		}
+			if (!TIMEOUT_FLAG) {
+				show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
+			}
+			else {
+				show_warning_dialog(getResources().getString(R.string.load_error_msg));
+			}
+		}
 		
 		@Override
 		protected void onPostExecute(Boolean done) {
@@ -406,63 +418,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 	
 /*
 	
-	private BroadcastReceiver broadcast_receiver;
-	private boolean has_network_cxn = false;
-	
-	public class WifiReceiver extends BroadcastReceiver {
-		
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// http://stackoverflow.com/questions/5888502/how-to-detect-when-wifi-connection-has-been-established-in-android?rq=1
-			
-			final String action = intent.getAction();
-			if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {	// SUPPLICANT_CONNECTION_CHANGE_ACTION
-				Log.d(TAG, "Wifi state changed to enabled, onReceive()");
-				Toast.makeText(ActivityLoadCSV.this, "Wifi state changed to enabled, ActivityLoadCSV", Toast.LENGTH_SHORT).show();
-			}
-			else {
-				Log.d(TAG, "Wifi state changed to disabled, onReceive()");
-				Toast.makeText(ActivityLoadCSV.this, "Wifi state changed to disabled, ActivityLoadCSV", Toast.LENGTH_SHORT).show();
-			}
-		}
-	}
-	
-	// http://stackoverflow.com/questions/9434235/android-i-want-to-set-listener-to-listen-on-wireless-state-can-anyone-help-me-w
-	private void set_network_state() {
-		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo net_info = manager.getActiveNetworkInfo();
-		if (net_info != null && (net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE)) {
-			if (net_info.isConnected() || net_info.isConnectedOrConnecting()) {
-				
-			}
-			else {
-				Log.d(TAG, "Wifi/mobile network cxn may be enabled, but it isn't connected");
-			}
-			
-			Log.d(TAG, "Wifi/mobile network cxn enabled, not necessarily connected");
-			has_network_cxn = true;
-		}
-		else {
-			Log.d(TAG, "Wifi/mobile network cxn disabled, not necessarily connected");
-			has_network_cxn = false;
-		}
-	}
-				
-		
-//		if (!has_network_cxn) {
-//			findViewById(R.id.loading_msg).setVisibility(View.GONE);
-//			findViewById(R.id.loading_animation).setVisibility(View.GONE);
-//			findViewById(R.id.no_cxn_msg).setVisibility(View.VISIBLE);
-//			
-////			while (!has_network_cxn) {		// set timeout period !!!!!!!!!!!
-////				// do nothing
-////			}
-////
-////			findViewById(R.id.loading_msg).setVisibility(View.VISIBLE);
-////			findViewById(R.id.loading_animation).setVisibility(View.VISIBLE);
-////			findViewById(R.id.no_cxn_msg).setVisibility(View.GONE);
-//		}
-		
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -482,6 +437,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
- */
+*/
 	
 }		// end of file

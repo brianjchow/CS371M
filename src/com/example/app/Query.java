@@ -51,10 +51,8 @@ public class Query implements Parcelable {
 		
 		this.mContext = context;
 
-		this.start_date = start_date;
 		this.duration = Constants.DEFAULT_QUERY_DURATION;
-
-		set_end_date();
+		this.set_start_date(start_date);
 
 		this.options = new HashMap<String, Object>(5);
 		this.options.put(Constants.CAPACITY, Integer.valueOf(0));
@@ -297,15 +295,17 @@ public class Query implements Parcelable {
 				Log.d(TAG, "pos 3");
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
 			}
-			else {
+			else {		// holiday
 				Log.d(TAG, "pos 4");
-				return null;
+				return MessageStatus.HOLIDAY.toString();
+//				return null;
 			}
 		}
 
-		else if (Utilities.date_is_during_summer(this.start_date)) {
+		else if (Utilities.date_is_during_summer(this.start_date)) {		// summer
 			Log.d(TAG, "pos 5");
-			return null;
+			return MessageStatus.SUMMER.toString();
+//			return null;
 		}
 
 		else if (Utilities.date_is_during_fall(this.start_date)) {
@@ -324,15 +324,17 @@ public class Query implements Parcelable {
 				Log.d(TAG, "pos 8");
 				return Constants.COURSE_SCHEDULE_THIS_SEMESTER;
 			}
-			else {
+			else {		// holiday
 				Log.d(TAG, "pos 9");
-				return null;
+				return MessageStatus.HOLIDAY.toString();
+//				return null;
 			}
 		}
 
-		else {
+		else {	// holiday
 			Log.d(TAG, "pos 10");
-			return null;
+			return MessageStatus.HOLIDAY.toString();
+//			return null;
 		}
 	}
 	
@@ -540,7 +542,7 @@ public class Query implements Parcelable {
 
 	protected void reset() {
 		Date start_date = Calendar.getInstance().getTime();
-		this.start_date = start_date;
+		set_start_date(start_date);
 		this.duration = Constants.DEFAULT_QUERY_DURATION;
 
 		set_end_date();
@@ -575,7 +577,12 @@ public class Query implements Parcelable {
 			throw new IllegalArgumentException("Error: starting date of event cannot be null, set_start_date()");
 		}
 
-		this.start_date = start_date;
+		Calendar date = Calendar.getInstance();
+		date.setTime(start_date);
+		date.set(Calendar.SECOND, 0);
+		date.set(Calendar.MILLISECOND, 0);
+		
+		this.start_date = date.getTime();
 		set_end_date();
 
 		return true;
@@ -602,6 +609,8 @@ public class Query implements Parcelable {
 		calendar.set(Calendar.MONTH, month - 1);
 		calendar.set(Calendar.DAY_OF_MONTH, day);
 		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
 		this.start_date = calendar.getTime();
 		set_end_date();
 
@@ -617,6 +626,8 @@ public class Query implements Parcelable {
 		calendar.setTime(this.start_date);
 		calendar.set(Calendar.HOUR_OF_DAY, hour);
 		calendar.set(Calendar.MINUTE, minute);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
 		this.start_date = calendar.getTime();
 		set_end_date();
 
@@ -629,6 +640,8 @@ public class Query implements Parcelable {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(start_date);
 		calendar.add(Calendar.MINUTE, this.duration);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
 		this.end_date = calendar.getTime();
 		return true;
 	}
@@ -801,7 +814,7 @@ public class Query implements Parcelable {
 				if (curr_room == null) {
 					continue;
 				}
-				else if (wanted_power && !curr_room.get_has_power()) {
+				else if (curr_room_str.equals("2.506") || (wanted_power && !curr_room.get_has_power())) {
 					if (valid_rooms.contains(curr_room_str)) {
 						valid_rooms.remove(curr_room_str);
 						continue;
@@ -985,10 +998,22 @@ public class Query implements Parcelable {
 			}
 		}
 		
+		Event prev_event = null;
 		for (Event event : all_events) {
 			event_name = event.get_event_name();
 			start_time = Utilities.get_time(event.get_start_date());	// Utilities.time_to_24h(Utilities.get_time(event.get_start_date()));
 			end_time = Utilities.get_time(event.get_end_date());		// Utilities.time_to_24h(Utilities.get_time(event.get_end_date()));
+			
+			if (prev_event == null) {
+				prev_event = event;
+			}
+			else {
+				
+				/* Allow identical courses listed under different departments */
+				if (event_name.equalsIgnoreCase(prev_event.get_event_name()) && start_time.equals(Utilities.get_time(prev_event.get_start_date()))) {
+					continue;
+				}
+			}
 			
 			event_str.append(event_name + "\n");
 			event_str.append("Start: " + start_time + "\n");

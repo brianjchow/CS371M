@@ -1,10 +1,15 @@
 package com.example.app;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
@@ -25,16 +30,24 @@ import android.util.Log;
  */
 @SuppressWarnings("unused")
 final class CSVReader {
+
+	private static final String CSV_EXT = ".csv";
 	
 	private static final String ALL_EVENTS_SCHEDULE		= "https://www.cs.utexas.edu/calendar/touch/feed";			// events
 	private static final String ALL_ROOMS_SCHEDULE		= "https://www.cs.utexas.edu/calendar/touch/all/feed";		// rooms
 	private static final String ALL_TODAYS_EVENTS		= "https://www.cs.utexas.edu/calendar/touch/today/feed";	// today's events
 	
+	protected static final String ALL_EVENTS_SCHEDULE_FILENAME = "calendar_events_feed" + CSV_EXT;
+	protected static final String ALL_ROOMS_SCHEDULE_FILENAME = "calendar_rooms_feed" + CSV_EXT;
+	protected static final String ALL_TODAYS_EVENTS_FILENAME = "calendar_events_today_feed" + CSV_EXT;
+
 	private static final char DELIMITER = '\"';
 	private static final String TAG = "CSVReader";
 	
 	protected static int lines_read = 0;
 	protected static double time_to_read = 0;
+	
+	private static final boolean CSV_CACHE_DEBUG = true;
 	
 	/**
 	 * Default constructor. Empty.
@@ -151,22 +164,15 @@ final class CSVReader {
 
 		if (!read_from_local_feeds) {
 			Log.d(TAG, "Now reading from UTCS servers");
-//			event_strings = reader.read_csv_from_url(ALL_EVENTS_SCHEDULE);
-//			events.add(event_strings);
-//			
-//			event_strings = reader.read_csv_from_url(ALL_ROOMS_SCHEDULE);
-//			events.add(event_strings);
-//			
-//			event_strings = reader.read_csv_from_url(ALL_TODAYS_EVENTS);
-//			events.add(event_strings);
+
 			try {
-				event_strings = reader.read_csv_from_url(new URL(ALL_EVENTS_SCHEDULE));
+				event_strings = reader.read_csv_from_url(context, new URL(ALL_EVENTS_SCHEDULE));
 				events.add(event_strings);
 
-				event_strings = reader.read_csv_from_url(new URL(ALL_ROOMS_SCHEDULE));
+				event_strings = reader.read_csv_from_url(context, new URL(ALL_ROOMS_SCHEDULE));
 				events.add(event_strings);
 
-				event_strings = reader.read_csv_from_url(new URL(ALL_TODAYS_EVENTS));
+				event_strings = reader.read_csv_from_url(context, new URL(ALL_TODAYS_EVENTS));
 				events.add(event_strings);
 			}
 			catch (IOException e) {
@@ -176,23 +182,21 @@ final class CSVReader {
 		else {
 			Log.d(TAG, "Now reading from local files");
 			
-			String ext = ".csv";
-			
 //			event_strings = reader.read_csv_from_file("calendar_events_today_feed_2710.csv");
 //			event_strings = reader.read_csv_from_file(context, R.raw.calendar_events_today_feed_1411);
-//			event_strings = reader.read_csv_from_file(context, "calendar_events_today_feed_1411" + ext);
-			event_strings = reader.read_csv_from_file(context, "calendar_events_today_feed_3011" + ext);
+//			event_strings = reader.read_csv_from_file(context, "calendar_events_today_feed_1411" + CSV_EXT);
+			event_strings = reader.read_csv_from_file(context, "calendar_events_today_feed_3011" + CSV_EXT, true);
 			events.add(event_strings);
 			
 //			event_strings = reader.read_csv_from_file("calendar_events_feed_2710.csv");
 //			event_strings = reader.read_csv_from_file(context, R.raw.calendar_events_feed_1411);
-//			event_strings = reader.read_csv_from_file(context, "calendar_events_feed_1411" + ext);
-			event_strings = reader.read_csv_from_file(context, "calendar_events_feed_3011" + ext);
+//			event_strings = reader.read_csv_from_file(context, "calendar_events_feed_1411" + CSV_EXT);
+			event_strings = reader.read_csv_from_file(context, "calendar_events_feed_3011" + CSV_EXT, true);
 			events.add(event_strings);
 
 //			event_strings = reader.read_csv_from_file("calendar_rooms_feed_2710.csv");
 //			event_strings = reader.read_csv_from_file(context, R.raw.calendar_rooms_feed_1411);
-			event_strings = reader.read_csv_from_file(context, "calendar_rooms_feed_1411" + ext);
+			event_strings = reader.read_csv_from_file(context, "calendar_rooms_feed_1411" + CSV_EXT, true);
 			events.add(event_strings);	
 		}
 		
@@ -207,7 +211,7 @@ final class CSVReader {
 		return events;		
 	}
 		
-	private List<HashMap<String, String>> read_csv_from_file(Context context, String filename) {
+	private List<HashMap<String, String>> read_csv_from_file(Context context, String filename, boolean file_is_asset) {
 		if (context == null) {
 			throw new IllegalArgumentException();
 		}
@@ -216,8 +220,20 @@ final class CSVReader {
 		}
 
 		List<HashMap<String, String>> schedules = new ArrayList<HashMap<String, String>>(100);
-		InputReader input = new InputReader(context, filename);
-		
+		InputReader input;
+		if (file_is_asset) {
+			input = new InputReader(context, filename);
+		}
+		else {
+			try {
+				input = new InputReader(context.openFileInput(filename));
+			}
+			catch (FileNotFoundException e) {
+				Log.d(TAG, "Failed to open file " + filename + " for reading");
+				return schedules;
+			}
+		}
+				
 		int temp = 0;
 
 		StringBuilder curr_line = new StringBuilder();
@@ -298,9 +314,185 @@ final class CSVReader {
 		return schedules;
 	}
 	
-	private List<HashMap<String, String>> read_csv_from_url(URL url) {
-		if (url == null) {
+	private boolean file_exists(Context context, String filename) {
+		if (context == null) {
+			throw new IllegalArgumentException("Cannot accept null Context argument");
+		}
+		else if (filename == null) {
+			throw new IllegalArgumentException("Null filename specified");
+		}
+		
+		File file = context.getFileStreamPath(filename);
+		return (file.exists());
+	}
+	
+	private boolean file_is_current(Context context, String filename) {
+		if (context == null) {
+			throw new IllegalArgumentException("Cannot accept null Context argument");
+		}
+		else if (filename == null) {
+			throw new IllegalArgumentException("Null filename specified");
+		}
+		
+		if (!file_exists(context, filename)) {
+			return false;
+		}
+		
+		String dir = context.getFilesDir().getAbsolutePath();
+		File file = new File(dir + "/" + filename);
+		
+		Log.d(TAG, "In " + dir + "/" + filename + ", checking if file is current");
+		if (file == null) {
+			return false;
+		}
+		
+		Date last_modified = new Date(file.lastModified());
+				
+		Calendar calendar = Calendar.getInstance();
+		int curr_day_of_year = calendar.get(Calendar.DAY_OF_YEAR);
+		int curr_year = calendar.get(Calendar.YEAR);
+		
+		calendar.setTime(last_modified);
+		if (calendar.get(Calendar.DAY_OF_YEAR) == curr_day_of_year && calendar.get(Calendar.YEAR) == curr_year) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean file_delete(Context context, String filename) {
+		if (context == null) {
+			throw new IllegalArgumentException("Cannot accept null Context argument");
+		}
+		else if (filename == null) {
+			throw new IllegalArgumentException("Null filename specified");
+		}
+		
+//		if (!file_exists(context, filename)) {
+//			return false;
+//		}
+//		
+//		String dir = context.getFilesDir().getAbsolutePath();
+//		File file = new File(dir + "/" + filename);
+//		
+//		return (file.delete());
+		
+		return (context.deleteFile(filename));
+	}
+	
+	private void delete_all(Context context) {
+		if (context == null) {
+			throw new IllegalArgumentException("Cannot accept null Context argument");
+		}
+		
+		String download_filename;
+		boolean deleted = false;
+		
+		download_filename = ALL_EVENTS_SCHEDULE_FILENAME;
+		if (file_exists(context, download_filename)) {
+			deleted = file_delete(context, download_filename);
+			Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory (delete_all()): " + deleted);
+		}
+		
+		download_filename = ALL_ROOMS_SCHEDULE_FILENAME;
+		if (file_exists(context, download_filename)) {
+			deleted = file_delete(context, download_filename);
+			Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory (delete_all()): " + deleted);
+		}
+		
+		download_filename = ALL_TODAYS_EVENTS_FILENAME;
+		if (file_exists(context, download_filename)) {
+			deleted = file_delete(context, download_filename);
+			Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory (delete_all()): " + deleted);
+		}
+	}
+	
+	private List<HashMap<String, String>> read_csv_from_url(Context context, URL url) {
+		if (context == null) {
+			throw new IllegalArgumentException("Cannot accept null Context argument");
+		}
+		else if (url == null) {
 			throw new IllegalArgumentException("Cannot accept null URL argument");
+		}
+		
+		if (CSV_CACHE_DEBUG) {
+			delete_all(context);
+		}
+		
+		boolean download_new_csv_copy = false;
+		String download_filename = null;
+		
+		if (!CSV_CACHE_DEBUG) {
+			String url_str = url.toString();
+			if (url_str.equals(ALL_EVENTS_SCHEDULE)) {
+				download_filename = ALL_EVENTS_SCHEDULE_FILENAME;
+				
+				if (file_exists(context, download_filename)) {
+					if (file_is_current(context, download_filename)) {
+						// return read_from_file()
+						Log.d(TAG, "File " + download_filename + " already exists and is up-to-date in internal storage directory");
+						
+						return (read_csv_from_file(context, download_filename, false));
+					}
+					else {
+						boolean deleted = file_delete(context, download_filename);
+						download_new_csv_copy = true;
+						
+						Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory: " + deleted);
+					}
+				}
+				else {
+					download_new_csv_copy = true;
+					
+					Log.d(TAG, "File " + ALL_EVENTS_SCHEDULE_FILENAME + " does not exist in internal storage directory");
+				}
+			}
+			else if (url_str.equals(ALL_ROOMS_SCHEDULE)) {
+				download_filename = ALL_ROOMS_SCHEDULE_FILENAME;
+				
+				if (file_exists(context, download_filename)) {
+					if (file_is_current(context, download_filename)) {
+						// return read_from_file()
+						Log.d(TAG, "File " + download_filename + " already exists and is up-to-date in internal storage directory");
+						
+						return (read_csv_from_file(context, download_filename, false));
+					}
+					else {
+						boolean deleted = file_delete(context, download_filename);
+						download_new_csv_copy = true;
+						
+						Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory: " + deleted);
+					}
+				}
+				else {
+					download_new_csv_copy = true;
+					
+					Log.d(TAG, "File " + download_filename + " does not exist in internal storage directory");
+				}
+			}
+			else {
+				download_filename = ALL_TODAYS_EVENTS_FILENAME;
+				
+				if (file_exists(context, download_filename)) {
+					if (file_is_current(context, download_filename)) {
+						// return read_from_file()
+						Log.d(TAG, "File " + download_filename + " already exists and is up-to-date in internal storage directory");
+						
+						return (read_csv_from_file(context, download_filename, false));
+					}
+					else {
+						boolean deleted = file_delete(context, download_filename);
+						download_new_csv_copy = true;
+						
+						Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory: " + deleted);
+					}
+				}
+				else {
+					download_new_csv_copy = true;
+
+					Log.d(TAG, "File " + download_filename + " does not exist in internal storage directory");
+				}
+			}			
 		}
 
 		List<HashMap<String, String>> schedules = new ArrayList<HashMap<String, String>>(100);
@@ -330,6 +522,16 @@ final class CSVReader {
 			Log.d(TAG, "URL is " + url.toString());
 			return schedules;
 		}
+
+		FileOutputStream writer = null;
+		if (!CSV_CACHE_DEBUG && download_new_csv_copy) {
+			try {
+				writer = context.openFileOutput(download_filename, Context.MODE_PRIVATE);
+			}
+			catch (IOException e) {
+				return schedules;
+			}
+		}
 		
 		int temp = 0;
 		
@@ -345,11 +547,30 @@ final class CSVReader {
 			// end of line reached in this CSV feed; parse this event
 			else {
 				lines_read++;
+				
+				if (!CSV_CACHE_DEBUG && download_new_csv_copy && writer != null) {
+					try {
+						writer.write(curr_line.toString().getBytes());
+					}
+					catch (IOException e) {
+						return schedules;
+					}
+				}
+				
 				result = split_line(curr_line);
 				if (result != null) {
 					schedules.add(result);
 				}
 				curr_line.setLength(0);
+			}
+		}
+		
+		if (!CSV_CACHE_DEBUG && download_new_csv_copy && writer != null) {
+			try {
+				writer.close();
+			}
+			catch (IOException e) {
+				return schedules;
 			}
 		}
 		

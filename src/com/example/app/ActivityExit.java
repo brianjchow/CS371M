@@ -37,18 +37,8 @@ public class ActivityExit extends ActionBarActivity implements View.OnClickListe
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-<<<<<<< HEAD
 
 		if (id == R.id.exit) {
-=======
-		if (id == R.id.find_a_room_now){
-			getRoomRec();
-			return true;
-		}
-
-		
-		if (id == R.id.exit){
->>>>>>> 1ae0fb1ae134a0a3a921ff52b0a6a7111b0e7a8e
 			finish();
 			return true;
 		}

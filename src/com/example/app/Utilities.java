@@ -153,6 +153,7 @@ public class Utilities {
 		calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(temp.substring(0, 2)));
 		calendar.set(Calendar.MINUTE, Integer.parseInt(temp.substring(2, 4)));
 		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
 //System.out.println("\nfweiojfwe\n");		
 		return (calendar.getTime());
 	}
@@ -312,6 +313,12 @@ public class Utilities {
 		}
 				
 //System.out.println(month_str + " " + day_str + " " + year_str + " " + time_str);
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		date = calendar.getTime();
 		
 		return date;
 	}

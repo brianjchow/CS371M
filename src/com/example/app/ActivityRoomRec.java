@@ -2,6 +2,7 @@ package com.example.app;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -143,6 +144,9 @@ public class ActivityRoomRec extends ActionBarActivity {
 			
 			@Override
 			public void onClick(View v) {
+				Calendar calendar = Calendar.getInstance();
+				query.set_start_date(calendar.getTime());
+				
 				search();
 				return;
 			}
@@ -352,75 +356,77 @@ public class ActivityRoomRec extends ActionBarActivity {
 	}
 	
 	private void handle_search_get_room_schedule() {
-//		Object query_result_scratch = this.query_result.get_scratch();
 		Room search_room;
-		
 		String search_building_str = this.query.get_option_search_building();
-//		if (query_result_scratch instanceof Room) {
-//			search_room = (Room) query_result_scratch;
-//		}
-//		else {
-			String curr_course_schedule = this.query.get_current_course_schedule();
-			if (curr_course_schedule == null) {
-				throw new IllegalStateException("Fatal error: unable to determine correct course schedule for current Query\n\n" + this.query.toString());
-			}
-			
+		
+		String curr_course_schedule = this.query.get_current_course_schedule();
+		if (curr_course_schedule.equals(Query.MessageStatus.SUMMER.toString())) {
+			this.curr_recommendation = curr_course_schedule;
+			setTextViewInfo(Query.MessageStatus.ALL_ROOMS_AVAIL.toString());
+			update_info_textview("Campus closed for holidays; check that you have permission before entering.");
+		}
+		else if (curr_course_schedule.equals(Query.MessageStatus.HOLIDAY.toString())) {
+			this.curr_recommendation = curr_course_schedule;
+			setTextViewInfo("Some rooms available");
+			update_info_textview("Summer hours; check course schedule on UTDirect for more information.");
+		}
+		else {
 			Building search_building = Building.get_instance(ActivityRoomRec.this, search_building_str, curr_course_schedule);
 			search_room = search_building.get_room(this.query.get_option_search_room());
-			
+
 			if (search_room == null) {
 				throw new IllegalStateException("Fatal error: corrupted Building object\n\n" + this.query.toString());
 			}
-//		}
-		
-		int capacity = search_room.get_capacity();
-		List<String> events = this.query_result.get_results();
-		
-//		Log.d(TAG, search_room.toString());
-//		Log.d(TAG, events.toString());
-		
-		DateFormat format = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.ENGLISH);
-		String date_str = format.format(this.query.get_start_date());
-		
-		StringBuilder msg = new StringBuilder();
-		
-		if (Utilities.str_is_gdc(search_building_str)) {
-			msg.append("Room type: " + search_room.get_type() + "\n");
-			msg.append("Capacity: " + capacity + " people\n");
-			msg.append("Power plugs: " + search_room.get_has_power() + "\n");
-			msg.append("\n");
-		}
-		else {
-			if (capacity > 0) {
+
+			int capacity = search_room.get_capacity();
+			List<String> events = this.query_result.get_results();
+			
+//			Log.d(TAG, search_room.toString());
+//			Log.d(TAG, events.toString());
+			
+			DateFormat format = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.ENGLISH);
+			String date_str = format.format(this.query.get_start_date());
+			
+			StringBuilder msg = new StringBuilder();
+			
+			if (Utilities.str_is_gdc(search_building_str)) {
+				msg.append("Room type: " + search_room.get_type() + "\n");
 				msg.append("Capacity: " + capacity + " people\n");
+				msg.append("Power plugs: " + search_room.get_has_power() + "\n");
+				msg.append("\n");
 			}
 			else {
-				msg.append("Capacity: unknown\n");
-			}
-			msg.append("\n");
-		}
-		
-		if (events.size() <= 0) {
-			msg.append("There are no events scheduled on " + date_str + ".\n\n");
-		}
-		else {
-			if (events.size() == 1) {
-				msg.append("There is one event scheduled on " + date_str + ":\n\n");
-			}
-			else {
-				msg.append("There are " + events.size() + " events scheduled on " + date_str + ":\n\n");
+				if (capacity > 0) {
+					msg.append("Capacity: " + capacity + " people\n");
+				}
+				else {
+					msg.append("Capacity: unknown\n");
+				}
+				msg.append("\n");
 			}
 			
-			for (String curr_event : events) {
-//				curr_event = curr_event.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(", ", "");
-				msg.append(curr_event);
+			if (events.size() <= 0) {
+				msg.append("There are no events scheduled on " + date_str + ".\n\n");
 			}
+			else {
+				if (events.size() == 1) {
+					msg.append("There is one event scheduled on " + date_str + ":\n\n");
+				}
+				else {
+					msg.append("There are " + events.size() + " events scheduled on " + date_str + ":\n\n");
+				}
+				
+				for (String curr_event : events) {
+//					curr_event = curr_event.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(", ", "");
+					msg.append(curr_event);
+				}
+			}
+			
+			this.curr_recommendation = search_building_str + " " + this.query.get_option_search_room();
+			setTextViewInfo(this.curr_recommendation);
+			update_info_textview(msg.toString());
 		}
 		
-		this.curr_recommendation = search_building_str + " " + this.query.get_option_search_room();
-		update_info_textview(msg.toString());
-
-		setTextViewInfo(this.curr_recommendation);
 		update_background();
 		
 //		Log.d(TAG, "PROCESSED room course schedule search - " + msg.toString());

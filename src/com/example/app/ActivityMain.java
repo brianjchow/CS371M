@@ -1,5 +1,7 @@
 package com.example.app;
 
+import java.util.Calendar;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -68,9 +70,11 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 	}
 
 	private void findRoom() {
-		Query query = new Query(ActivityMain.this);
-		Query.QueryResult query_result = query.search();
+		Calendar calendar = Calendar.getInstance();
 		
+		Query query = new Query(ActivityMain.this, calendar.getTime());
+		Query.QueryResult query_result = query.search();
+
 		Intent intent = new Intent(ActivityMain.this, ActivityRoomRec.class);
 		intent.putExtra(Query.PARCELABLE_QUERY, query);
 		intent.putExtra(Query.QueryResult.PARCELABLE_QUERY_RESULT, query_result);
