@@ -11,7 +11,11 @@
     <string name="title_activity_exit">Quit</string>
     <string name="title_activity_load_csv">Loading</string>
     <string name="title_activity_wait_for_cxn">No connection</string>
+<<<<<<< HEAD
     <string name="title_activity_get_room_schedule">Get room schedule</string>
+=======
+    <string name="title_activity_get_room_schedule">Get Room Schedule</string>
+>>>>>>> 1ae0fb1ae134a0a3a921ff52b0a6a7111b0e7a8e
     <string name="home">Home</string>
     <string name="exit">Exit</string>
 
@@ -68,7 +72,7 @@
     <string name="person">person</string>
     <string name="people">people</string>
     <string name="choose_building">Building:</string>
-    <string name="power_plugs_question">Is you need power plugs for erryone?</string>
+    <string name="power_plugs_question">Do you need power plugs?</string>
     <string name="get_room">Get room</string>
     <string name="get_room_enthusiastic">Get room!</string>
     <string name="current_query">Current query:</string>
@@ -114,7 +118,7 @@
     <string name="FDH">FDH &#8211; Dobie House</string>
     <string name="FNT">FNT &#8211; Faulkner Nanosc Tech Bldg</string>
     <string name="GAR">GAR &#8211; Garrison Hall</string>
-    <string name="GDC">GDC &#8211; geeks \'n nerds yo</string>
+    <string name="GDC">GDC &#8211; Gates Dell Complex</string>
     <string name="GEA">GEA &#8211; Gearing Hall</string>
     <string name="GEB">GEB &#8211; Gebauer Building</string>
     <string name="GOL">GOL &#8211; Goldsmith Hall</string>

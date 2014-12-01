@@ -5,7 +5,14 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
+<<<<<<< HEAD
 	<classpathentry exported="true" kind="lib" path="libs/guava-18.0.jar"/>
+=======
+	<classpathentry exported="true" kind="lib" path="/android-support-v7-appcompat/bin/android-support-v7-appcompat.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/android-support-v4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/guava-18.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/joda-time-2.4.jar"/>
+>>>>>>> 1ae0fb1ae134a0a3a921ff52b0a6a7111b0e7a8e
 	<classpathentry exported="true" kind="lib" path="libs/sqliteassethelper-2.0.1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
