@@ -491,11 +491,12 @@ public class ActivityRoomRec extends ActionBarActivity {
 		finish();
 	}
 	
-	public void exitApp() {
-		Intent intent = new Intent(getApplicationContext(),ActivityMain.class );
+	private void exitApp() {
+		Intent intent = new Intent(ActivityRoomRec.this, ActivityMain.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.putExtra("EXIT", true);
 		startActivity(intent);
+		finish();
 	}
 
 
