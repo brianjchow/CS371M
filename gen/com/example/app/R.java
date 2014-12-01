@@ -1250,6 +1250,7 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f060016;
         public static final int action_menu_presenter=0x7f060017;
         public static final int action_mode_close_button=0x7f060024;
+        public static final int action_settings=0x7f060076;
         public static final int activity_chooser_view_content=0x7f060025;
         public static final int always=0x7f06000b;
         public static final int background=0x7f06003f;
@@ -1278,13 +1279,13 @@ containing a value of this type.
         public static final int edit_query=0x7f060030;
         public static final int end=0x7f060013;
         public static final int error_msg=0x7f060070;
-        public static final int exit=0x7f060078;
+        public static final int exit=0x7f060079;
         public static final int expand_activities_button=0x7f060026;
         public static final int expanded_menu=0x7f06002c;
         public static final int f0_1304=0x7f06006a;
         public static final int f0_1406=0x7f06006b;
-        public static final int find_a_room_later=0x7f060077;
-        public static final int find_a_room_now=0x7f060076;
+        public static final int find_a_room_later=0x7f060078;
+        public static final int find_a_room_now=0x7f060077;
         public static final int find_room_for_later=0x7f060072;
         public static final int find_room_later=0x7f060043;
         public static final int find_room_now=0x7f060071;
@@ -1423,7 +1424,13 @@ containing a value of this type.
         public static final int support_simple_spinner_dropdown_item=0x7f030022;
     }
     public static final class menu {
-        public static final int main=0x7f0e0000;
+        public static final int activity_get_room_schedule=0x7f0e0000;
+        public static final int activity_wait_for_cxn=0x7f0e0001;
+        public static final int exit=0x7f0e0002;
+        public static final int find_room=0x7f0e0003;
+        public static final int find_room_later=0x7f0e0004;
+        public static final int load_csv=0x7f0e0005;
+        public static final int main=0x7f0e0006;
     }
     public static final class raw {
         public static final int calendar_events_feed_0311=0x7f050000;

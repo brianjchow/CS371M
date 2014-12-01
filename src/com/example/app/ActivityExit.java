@@ -27,7 +27,7 @@ public class ActivityExit extends ActionBarActivity implements View.OnClickListe
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.exit, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -37,22 +37,27 @@ public class ActivityExit extends ActionBarActivity implements View.OnClickListe
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+
+		if (id == R.id.exit) {
+			finish();
 			return true;
 		}
+		
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void getRoomRec() {
+	private void getRoomRec() {
 //		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
 		startActivity(new Intent(ActivityExit.this, ActivityFindRoomLater.class));
+		finish();
 	}
 
-	public void exitApp() {
-		Intent intent = new Intent(getApplicationContext(),ActivityMain.class );
+	private void exitApp() {
+		Intent intent = new Intent(ActivityExit.this, ActivityMain.class );
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.putExtra("EXIT", true);
 		startActivity(intent);
+		finish();
 	}
 
 	@Override

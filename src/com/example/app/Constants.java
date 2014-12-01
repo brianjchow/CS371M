@@ -213,8 +213,8 @@ final class Constants {
 
 		/* ################################# DO NOT MOVE ANYTHING BELOW THIS LINE ABOVE IT ################################# */
 		
-		DAYBREAK					=	Utilities.get_date(1, 2, 2014, 800);
-		NIGHTFALL					=	Utilities.get_date(1, 1, 2014, 2200);
+		DAYBREAK					=	Utilities.get_date(1, 2, 2014, 730);
+		NIGHTFALL					=	Utilities.get_date(1, 1, 2014, 2300);
 		
 		if (COURSE_SCHEDULE_NEXT_SEMESTER == null) {
 			DISABLE_SEARCHES_NEXT_SEMESTER = true;
