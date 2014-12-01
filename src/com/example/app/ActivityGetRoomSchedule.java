@@ -252,8 +252,6 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityGetRoomSchedule.this, datepicker_dialog_listener, curr_start_date.get(Calendar.YEAR), curr_start_date.get(Calendar.MONTH), curr_start_date.get(Calendar.DAY_OF_MONTH));
 //				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityFindRoomLater.this, datepicker_dialog_listener, selected_year, selected_month - 1, selected_day);
 				
-				calendar = Calendar.getInstance();
-				
 				if (!Constants.DEBUG) {
 					DatePicker datepicker = datepicker_dialog.getDatePicker();
 					datepicker.setMinDate(calendar.getTimeInMillis());
@@ -468,56 +466,9 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-<<<<<<< HEAD
 		if (id == R.id.action_settings) {
-=======
-		if (id == R.id.find_a_room_now){
-			getRoomRec();
-			return true;
-		}
-		if (id == R.id.find_a_room_later){
-			find_room_later();
-			return true;
-		}
-		if (id == R.id.get_room_schedule){
-			get_room_schedule();
-			return true;
-		}
-		if (id == R.id.exit){
-			exitApp();
->>>>>>> 87706b27a8ea7adb41961daddcef2e513dced177
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-<<<<<<< HEAD
-=======
-
-
-	public void getRoomRec() {
-//		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
-		startActivity(new Intent(this, ActivityFindRoomLater.class));
-		finish();
-	}
-	
-	private void find_room_later() {
-		Intent intent = new Intent(this, ActivityFindRoomLater.class);
-//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
-		startActivity(intent);
-		finish();
-	}
-	
-	private void get_room_schedule() {
-		Intent intent = new Intent(this, ActivityGetRoomSchedule.class);
-//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
-		startActivity(intent);
-		finish();
-	}
-	public void exitApp() {
-		Intent intent = new Intent(getApplicationContext(),ActivityMain.class );
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		intent.putExtra("EXIT", true);
-		startActivity(intent);
-	}
->>>>>>> 87706b27a8ea7adb41961daddcef2e513dced177
 }
