@@ -494,27 +494,29 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 
 	public void getRoomRec() {
 //		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
-		startActivity(new Intent(this, ActivityFindRoomLater.class));
+		startActivity(new Intent(ActivityGetRoomSchedule.this, ActivityFindRoomLater.class));
 		finish();
 	}
 	
 	private void find_room_later() {
-		Intent intent = new Intent(this, ActivityFindRoomLater.class);
+		Intent intent = new Intent(ActivityGetRoomSchedule.this, ActivityFindRoomLater.class);
 //		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
 		startActivity(intent);
 		finish();
 	}
 	
 	private void get_room_schedule() {
-		Intent intent = new Intent(this, ActivityGetRoomSchedule.class);
+		Intent intent = new Intent(ActivityGetRoomSchedule.this, ActivityGetRoomSchedule.class);
 //		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
 		startActivity(intent);
 		finish();
 	}
-	public void exitApp() {
-		Intent intent = new Intent(getApplicationContext(),ActivityMain.class );
+	
+	private void exitApp() {
+		Intent intent = new Intent(ActivityGetRoomSchedule.this, ActivityMain.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.putExtra("EXIT", true);
 		startActivity(intent);
+		finish();
 	}
 }
