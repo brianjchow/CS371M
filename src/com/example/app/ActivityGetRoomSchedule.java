@@ -252,8 +252,14 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityGetRoomSchedule.this, datepicker_dialog_listener, curr_start_date.get(Calendar.YEAR), curr_start_date.get(Calendar.MONTH), curr_start_date.get(Calendar.DAY_OF_MONTH));
 //				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityFindRoomLater.this, datepicker_dialog_listener, selected_year, selected_month - 1, selected_day);
 				
+				DatePicker datepicker = datepicker_dialog.getDatePicker();
+				CalendarView cal_view = datepicker.getCalendarView();
+				cal_view.setShowWeekNumber(false);
+//				cal_view.setFocusedMonthDateColor(0xff00ff);
+				datepicker.setSpinnersShown(false);
+				datepicker.setCalendarViewShown(true);
+				
 				if (!Constants.DEBUG) {
-					DatePicker datepicker = datepicker_dialog.getDatePicker();
 					datepicker.setMinDate(calendar.getTimeInMillis());
 					
 					Date date = calendar.getTime();
