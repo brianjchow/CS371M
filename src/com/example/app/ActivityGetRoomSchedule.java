@@ -456,7 +456,7 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_get_room_schedule, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -466,9 +466,49 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		if (id == R.id.find_a_room_now){
+			getRoomRec();
+			return true;
+		}
+		if (id == R.id.find_a_room_later){
+			find_room_later();
+			return true;
+		}
+		if (id == R.id.get_room_schedule){
+			get_room_schedule();
+			return true;
+		}
+		if (id == R.id.exit){
+			exitApp();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+
+	public void getRoomRec() {
+//		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
+		startActivity(new Intent(this, ActivityFindRoomLater.class));
+		finish();
+	}
+	
+	private void find_room_later() {
+		Intent intent = new Intent(this, ActivityFindRoomLater.class);
+//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
+		startActivity(intent);
+		finish();
+	}
+	
+	private void get_room_schedule() {
+		Intent intent = new Intent(this, ActivityGetRoomSchedule.class);
+//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
+		startActivity(intent);
+		finish();
+	}
+	public void exitApp() {
+		Intent intent = new Intent(getApplicationContext(),ActivityMain.class );
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.putExtra("EXIT", true);
+		startActivity(intent);
 	}
 }

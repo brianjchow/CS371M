@@ -360,7 +360,7 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_wait_for_cxn, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -370,9 +370,6 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-<<<<<<< HEAD
-		if (id == R.id.action_settings) {
-=======
 		if (id == R.id.find_a_room_now){
 			getRoomRec();
 			return true;
@@ -387,13 +384,10 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		}
 		if (id == R.id.exit){
 			exitApp();
->>>>>>> 87706b27a8ea7adb41961daddcef2e513dced177
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-<<<<<<< HEAD
-=======
 
 	
 
@@ -416,7 +410,6 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		startActivity(intent);
 		finish();
 	}
->>>>>>> 87706b27a8ea7adb41961daddcef2e513dced177
 	
 	public void exitApp() {
 		Intent intent = new Intent(getApplicationContext(),ActivityMain.class );

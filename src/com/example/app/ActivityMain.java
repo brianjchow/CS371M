@@ -47,11 +47,7 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-
 		int id = item.getItemId();
-<<<<<<< HEAD
-		if (id == R.id.action_settings) {
-=======
 		if (id == R.id.find_a_room_now){
 			findRoom();
 			return true;
@@ -66,16 +62,11 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 		}
 		if (id == R.id.exit){
 			finish();
->>>>>>> 87706b27a8ea7adb41961daddcef2e513dced177
 			return true;
 		}
-
-<<<<<<< HEAD
 		return super.onOptionsItemSelected(item);
 	}
 
-=======
->>>>>>> 87706b27a8ea7adb41961daddcef2e513dced177
 	private void findRoom() {
 		Query query = new Query(ActivityMain.this);
 		Query.QueryResult query_result = query.search();
@@ -94,6 +85,7 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 	private void get_room_schedule() {
 		startActivity(new Intent(ActivityMain.this, ActivityGetRoomSchedule.class));
 	}
+
 
 	@Override
 	public void onClick(View v) {

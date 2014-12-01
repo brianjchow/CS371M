@@ -535,7 +535,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.find_room_later, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -545,9 +545,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-<<<<<<< HEAD
-		if (id == R.id.action_settings) {
-=======
 		if (id == R.id.find_a_room_now){
 			getRoomRec();
 			return true;
@@ -564,14 +561,11 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		
 		if (id == R.id.exit){
 			exitApp();
->>>>>>> 87706b27a8ea7adb41961daddcef2e513dced177
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-<<<<<<< HEAD
-=======
 	
 	private void find_room_later() {
 		Intent intent = new Intent(this, ActivityFindRoomLater.class);
@@ -593,8 +587,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		intent.putExtra("EXIT", true);
 		startActivity(intent);
 	}
-
->>>>>>> 87706b27a8ea7adb41961daddcef2e513dced177
 /*
 	// http://stackoverflow.com/questions/11800589/number-picker-dialog
 	LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
