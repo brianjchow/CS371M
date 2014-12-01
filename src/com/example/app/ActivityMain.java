@@ -49,13 +49,33 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 		// as you specify a parent activity in AndroidManifest.xml.
 
 		int id = item.getItemId();
+<<<<<<< HEAD
 		if (id == R.id.action_settings) {
+=======
+		if (id == R.id.find_a_room_now){
+			findRoom();
+			return true;
+		}
+		if (id == R.id.find_a_room_later){
+			findRoomLater();
+			return true;
+		}
+		if (id == R.id.get_room_schedule){
+			get_room_schedule();
+			return true;
+		}
+		if (id == R.id.exit){
+			finish();
+>>>>>>> 87706b27a8ea7adb41961daddcef2e513dced177
 			return true;
 		}
 
+<<<<<<< HEAD
 		return super.onOptionsItemSelected(item);
 	}
 
+=======
+>>>>>>> 87706b27a8ea7adb41961daddcef2e513dced177
 	private void findRoom() {
 		Query query = new Query(ActivityMain.this);
 		Query.QueryResult query_result = query.search();

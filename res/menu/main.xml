@@ -7,6 +7,26 @@
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
+<<<<<<< HEAD
+=======
+        app:showAsAction="never"/>  -->
+    
+    <item 
+        android:id="@+id/find_a_room_now"
+        android:title="@string/find_a_room_now"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/find_a_room_later"
+        android:title="@string/find_a_room_later"
+        app:showAsAction="never" />
+    <item 
+        android:id="@id/get_room_schedule"
+        android:title="@string/get_room_schedule"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/exit"
+        android:title="@string/exit"
+>>>>>>> 87706b27a8ea7adb41961daddcef2e513dced177
         app:showAsAction="never"/>
 
 </menu>
