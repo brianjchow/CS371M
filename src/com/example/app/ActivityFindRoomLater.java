@@ -574,24 +574,25 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 
 	
 	private void find_room_later() {
-		Intent intent = new Intent(this, ActivityFindRoomLater.class);
+		Intent intent = new Intent(ActivityFindRoomLater.this, ActivityFindRoomLater.class);
 //		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
 		startActivity(intent);
 		finish();
 	}
 	
 	private void get_room_schedule() {
-		Intent intent = new Intent(this, ActivityGetRoomSchedule.class);
+		Intent intent = new Intent(ActivityFindRoomLater.this, ActivityGetRoomSchedule.class);
 //		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
 		startActivity(intent);
 		finish();
 	}
 	
-	public void exitApp() {
-		Intent intent = new Intent(getApplicationContext(),ActivityMain.class );
+	private void exitApp() {
+		Intent intent = new Intent(ActivityFindRoomLater.this, ActivityMain.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.putExtra("EXIT", true);
 		startActivity(intent);
+		finish();
 	}
 /*
 	// http://stackoverflow.com/questions/11800589/number-picker-dialog
