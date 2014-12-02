@@ -1,6 +1,7 @@
 package com.example.app;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -226,7 +227,23 @@ final class CSVReader {
 		}
 		else {
 			try {
-				input = new InputReader(context.openFileInput(filename));
+				FileInputStream input_stream = context.openFileInput(filename);
+				if (input_stream == null) {
+					Log.d(TAG, "Failed to get FileInputStream for file " + filename);
+					return schedules;
+				}
+								
+				input = new InputReader(input_stream);
+				
+//				int curr_byte;
+//				StringBuilder temp = new StringBuilder(10000);
+//				while ((curr_byte = input.read()) != -1) {
+//					temp.append((char) curr_byte);
+//				}
+//				
+//				Log.d(TAG, temp.toString());
+//				
+//				return schedules;
 			}
 			catch (FileNotFoundException e) {
 				Log.d(TAG, "Failed to open file " + filename + " for reading");
@@ -241,6 +258,11 @@ final class CSVReader {
 
 		while ((temp = input.read()) != -1) {
 			char curr_byte = (char) temp;
+			
+//			if (!file_is_asset) {
+//				Log.d(TAG, "" + curr_byte);
+//			}
+			
 			if (curr_byte != '\n') {
 				curr_line.append(curr_byte);
 			}
@@ -248,6 +270,10 @@ final class CSVReader {
 			// end of line reached in file; parse this event
 			else {
 // System.out.println(curr_line.toString());
+				
+//				if (!file_is_asset) {
+//					Log.d(TAG, curr_line.toString());
+//				}
 				
 				lines_read++;
 				result = split_line(curr_line);
@@ -533,7 +559,8 @@ final class CSVReader {
 			}
 		}
 		
-		int temp = 0;
+		int temp;
+		String line_to_write;
 		
 		HashMap<String, String> result;
 		StringBuilder curr_line = new StringBuilder();
@@ -550,7 +577,8 @@ final class CSVReader {
 				
 				if (!CSV_CACHE_DEBUG && download_new_csv_copy && writer != null) {
 					try {
-						writer.write(curr_line.toString().getBytes());
+						line_to_write = curr_line.toString() + "\n";
+						writer.write(line_to_write.getBytes());
 					}
 					catch (IOException e) {
 						return schedules;
