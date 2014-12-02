@@ -225,6 +225,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 	private class ReadFeedTask extends AsyncTask<Context, Void, Boolean> {
 		private Exception exception = null;
 		
+		@Override
 		protected Boolean doInBackground(Context... context) {
 			boolean result = false;
 			try {

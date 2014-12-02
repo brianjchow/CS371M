@@ -771,16 +771,16 @@ public class Query implements Parcelable {
 			query_result.set_results(all_valid_rooms);
 			return query_result;
 		}
-		else if (this.search_is_on_weekend()) {
-			query_result.set_message_status(MessageStatus.ALL_ROOMS_AVAIL);
-			query_result.set_results(all_valid_rooms);
-			return query_result;
-		}
-		else if (this.search_is_at_night()) {
-			query_result.set_message_status(MessageStatus.GO_HOME);
-			query_result.set_results(all_valid_rooms);
-			return query_result;
-		}
+//		else if (this.search_is_on_weekend()) {
+//			query_result.set_message_status(MessageStatus.ALL_ROOMS_AVAIL);
+//			query_result.set_results(all_valid_rooms);
+//			return query_result;
+//		}
+//		else if (this.search_is_at_night()) {
+//			query_result.set_message_status(MessageStatus.GO_HOME);
+//			query_result.set_results(all_valid_rooms);
+//			return query_result;
+//		}
 		
 		String course_schedule = this.get_current_course_schedule(query_result);
 		if (course_schedule == null) {
@@ -811,30 +811,46 @@ public class Query implements Parcelable {
 				curr_room_str = curr_event.get_location().get_room();
 				curr_room = search_building.get_room(curr_room_str);
 				
+//				Log.d(TAG, curr_room_str);
+				
 				if (curr_room == null) {
 					continue;
 				}
 				else if (curr_room_str.equals("2.506") || (wanted_power && !curr_room.get_has_power())) {
+					
+//					Log.d(TAG, "Removing " + curr_room_str + " due to options");
+					
 					if (valid_rooms.contains(curr_room_str)) {
 						valid_rooms.remove(curr_room_str);
 						continue;
 					}
 				}
 				
-				if (!Utilities.occur_on_same_day(curr_event.get_start_date(), this.start_date)) {
-					if (valid_rooms.contains(curr_room_str)) {
-						valid_rooms.remove(curr_room_str);
-						continue;
-					}
-				}
+//				if (!Utilities.occur_on_same_day(curr_event.get_start_date(), this.start_date)) {
+//					
+//					Log.d(TAG, "Removing " + curr_room_str + " due to diff dates; curre: " + curr_event.get_event_name() + "; curre start: " + curr_event.get_start_date().toString() + "; currq start: " + this.start_date.toString());
+//					
+//					if (valid_rooms.contains(curr_room_str)) {
+//						valid_rooms.remove(curr_room_str);
+//						continue;
+//					}
+//				}
 				
 				if (Utilities.times_overlap(curr_event.get_start_date(), curr_event.get_end_date(), this.start_date, this.end_date)) {
+					
+//					Log.d(TAG, "Removing " + curr_room_str + " due to overlap; curre: " + curr_event.get_event_name() + "; curre start: " +
+//								curr_event.get_start_date().toString() + "; curre end: " + curr_event.get_end_date() + "; currq start: " +
+//								this.start_date.toString() + "; currq end: " + this.end_date.toString());
+					
 					if (valid_rooms.contains(curr_room_str)) {
 						valid_rooms.remove(curr_room_str);
 						continue;
 					}
 				}
 			}
+			
+//			Log.d(TAG, valid_rooms.toString());
+			
 		}
 		
 		final Calendar cal1 = Calendar.getInstance();
@@ -888,6 +904,9 @@ public class Query implements Parcelable {
 			is_valid = true;
 		}
 
+//		Log.d(TAG, "DONE; valid_rooms: " + valid_rooms.toString());
+//		Log.d(TAG, this.toString());
+		
 		if (all_valid_rooms.size() <= 0) {
 			query_result.set_message_status(MessageStatus.NO_ROOMS_AVAIL);
 		}

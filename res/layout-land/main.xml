@@ -23,8 +23,9 @@
 	        android:layout_height="50dp"
 	        android:layout_weight = "1"
 	        android:text="@string/find_room_now"
-	        android:textSize = "15sp"
-	        android:textColor = "@color/white" />
+	        android:textSize = "12sp"
+	        android:textColor = "@color/white"
+        	android:background = "@color/background_transparency" />
 	    
 	    <View
 	        android:layout_height = "fill_parent"
@@ -37,9 +38,25 @@
 	        android:layout_height="50dp"
 	        android:layout_weight = "1"
 	        android:text="@string/find_room_later"
-	        android:textSize = "15sp"
-	        android:textColor = "@color/white" />
-	    	    
+	        android:textSize = "12sp"
+	        android:textColor = "@color/white"
+        	android:background = "@color/background_transparency" />
+	    
+	    <View
+	        android:layout_height = "fill_parent"
+	        android:layout_width = "2px"
+	        android:background = "@color/white" />
+	    
+	    <Button
+	        android:id="@+id/get_room_schedule"
+	        android:layout_width="0dp"
+	        android:layout_height="50dp"
+	        android:layout_weight = "1"
+	        android:text="@string/get_room_schedule"
+	        android:textSize = "12sp"
+	        android:textColor = "@color/white"
+        	android:background = "@color/background_transparency" />
+	    	    	    	    
     </LinearLayout>
 
     <TextView
@@ -55,45 +72,4 @@
 
 </RelativeLayout>
 
-<!--
-	    
-	    <View
-	        android:layout_height = "fill_parent"
-	        android:layout_width = "2px"
-	        android:background = "#ffffff" />
 
-    <Button
-        android:id="@+id/find_room_now"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="103dp"
-        android:layout_marginRight="10dp"        
-        android:background="#1975FF"
-        android:text="@string/find_room_now" />
-
-    <Button
-        android:id="@+id/find_room_for_later"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/find_room_now"
-        android:layout_toRightOf="@+id/find_room_now"
-        android:background="#1975FF"
-        android:text="@string/find_room_later" />
-    
-
-    <EditText
-		android:id="@+id/title_heading"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:gravity="center"
-		android:editable="false" 
-        android:layout_above="@+id/find_room_now"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="106dp"
-        android:textSize="48dp"
-        android:background="#1975FF"
-        android:text="@string/app_name_caps" />
-    
--->

@@ -591,7 +591,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	private void exitApp() {
 		Intent intent = new Intent(ActivityFindRoomLater.this, ActivityMain.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		intent.putExtra("EXIT", true);
+		intent.putExtra(Constants.EXIT, true);
 		startActivity(intent);
 		finish();
 	}

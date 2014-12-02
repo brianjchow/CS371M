@@ -27,15 +27,17 @@ import android.widget.TextView;
 // public class ActivityRoomRec extends ActionBarActivity implements View.OnClickListener {
 public class ActivityRoomRec extends ActionBarActivity {
 
-	private static final String TAG = "RoomRecActivity";
+	private static final String TAG = "ActivityRoomRec";
 	
 	private static final String CURR_RECOMMENDATION = "curr_recommendation";
+	private static final String CURR_RECOMMENDATION_INFO_TEXTVIEW = "curr_recommendation_info_textview";
 	private static final String CURR_RECOMMENDATION_RES_ID = "curr_recommendation_res_id";
 	
 	private Query query;
 	private Query.QueryResult query_result;
 	
 	private String curr_recommendation;
+	private String curr_recommendation_info_textview;
 	private int curr_recommendation_res_id;
 
 	@Override
@@ -68,11 +70,12 @@ public class ActivityRoomRec extends ActionBarActivity {
 			if (query_result != null) {
 				this.query_result = query_result;
 				this.curr_recommendation = savedInstanceState.getString(CURR_RECOMMENDATION, Query.MessageStatus.NO_ROOMS_AVAIL.toString());
+				this.curr_recommendation_info_textview = savedInstanceState.getString(CURR_RECOMMENDATION_INFO_TEXTVIEW, "");
 				this.curr_recommendation_res_id = savedInstanceState.getInt(CURR_RECOMMENDATION_RES_ID, Utilities.getResId("campus_tower", R.drawable.class));
 
 				setTextViewInfo(this.curr_recommendation);
 				update_background();
-				update_info_textview(this.query.toString());
+				update_info_textview(this.curr_recommendation_info_textview);
 				
 				// CHECK QUERYRESULT'S SEARCHTYPE HERE; UPDATE LOWER TEXTVIEW AS NECESSARY
 			}
@@ -290,6 +293,8 @@ public class ActivityRoomRec extends ActionBarActivity {
 		else if (message_status.equals(Query.MessageStatus.SEARCH_SUCCESS.toString())) {
 			List<String> results = this.query_result.get_results();
 			
+//			Log.d(TAG, results.toString());
+			
 			if (results.size() == 1) {
 				msg.append("Search found one room available.\n\n");
 			}
@@ -337,6 +342,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 		}
 
 		update_info_textview(msg.toString());
+		this.curr_recommendation_info_textview = msg.toString();
 		
 		setTextViewInfo(this.curr_recommendation);
 		update_background();
@@ -414,6 +420,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 			this.curr_recommendation = search_building_str + " " + this.query.get_option_search_room();
 			setTextViewInfo(this.curr_recommendation);
 			update_info_textview(msg.toString());
+			this.curr_recommendation_info_textview = msg.toString();
 		}
 		
 		update_background();
@@ -428,6 +435,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 		outState.putParcelable(Query.PARCELABLE_QUERY, this.query);
 		outState.putParcelable(Query.QueryResult.PARCELABLE_QUERY_RESULT, this.query_result);
 		outState.putString(CURR_RECOMMENDATION, this.curr_recommendation);
+		outState.putString(CURR_RECOMMENDATION_INFO_TEXTVIEW, this.curr_recommendation_info_textview);
 		outState.putInt(CURR_RECOMMENDATION_RES_ID, this.curr_recommendation_res_id);
 		
 //		Log.d(TAG, "Orientation changed, in onSaveInstanceState(); bground res id: " + outState.getInt("curr_recommendation_res_id", -64));
@@ -489,7 +497,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 	private void exitApp() {
 		Intent intent = new Intent(ActivityRoomRec.this, ActivityMain.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		intent.putExtra("EXIT", true);
+		intent.putExtra(Constants.EXIT, true);
 		startActivity(intent);
 		finish();
 	}

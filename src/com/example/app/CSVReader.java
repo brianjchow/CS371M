@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -15,13 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -29,7 +21,7 @@ import android.util.Log;
  * @author Fatass
  *
  */
-@SuppressWarnings("unused")
+//@SuppressWarnings("unused")
 final class CSVReader {
 
 	private static final String CSV_EXT = ".csv";
@@ -234,16 +226,6 @@ final class CSVReader {
 				}
 								
 				input = new InputReader(input_stream);
-				
-//				int curr_byte;
-//				StringBuilder temp = new StringBuilder(10000);
-//				while ((curr_byte = input.read()) != -1) {
-//					temp.append((char) curr_byte);
-//				}
-//				
-//				Log.d(TAG, temp.toString());
-//				
-//				return schedules;
 			}
 			catch (FileNotFoundException e) {
 				Log.d(TAG, "Failed to open file " + filename + " for reading");
@@ -251,7 +233,7 @@ final class CSVReader {
 			}
 		}
 				
-		int temp = 0;
+		int temp;
 
 		StringBuilder curr_line = new StringBuilder();
 		HashMap<String, String> result;
@@ -259,77 +241,15 @@ final class CSVReader {
 		while ((temp = input.read()) != -1) {
 			char curr_byte = (char) temp;
 			
-//			if (!file_is_asset) {
-//				Log.d(TAG, "" + curr_byte);
-//			}
-			
 			if (curr_byte != '\n') {
 				curr_line.append(curr_byte);
 			}
 			
 			// end of line reached in file; parse this event
-			else {
-// System.out.println(curr_line.toString());
-				
-//				if (!file_is_asset) {
-//					Log.d(TAG, curr_line.toString());
-//				}
-				
+			else {				
 				lines_read++;
 				result = split_line(curr_line);
 				if (result != null) {
-// System.out.println(result.toString());
-					schedules.add(result);
-				}
-				curr_line.setLength(0);
-			}
-		}
-		
-		input.close();
-		return schedules;
-	}
-	
-	
-	/**
-	 * @param filename
-	 * @return a List of Maps of Strings; each Map contains Strings for one
-	 * 		   event parsed from the CSV feed given by filename
-	 */
-	private List<HashMap<String, String>> read_csv_from_file(Context context, int res_id) {
-//		if (filename == null || filename.length() <= 0) {
-//			throw new IllegalArgumentException("Error: cannot read from null or empty file name, read_csv_from_file()");
-//		}
-//
-//		Log.d("CSVReader", "filename is " + filename + ", read_csv_from_file");
-		
-		List<HashMap<String, String>> schedules = new ArrayList<HashMap<String, String>>(100);
-//		InputReader input = new InputReader(filename);
-		InputReader input = new InputReader(context, res_id);
-		
-		int temp = 0;
-
-		StringBuilder curr_line = new StringBuilder();
-		HashMap<String, String> result;
-
-		while ((temp = input.read()) != -1) {
-			char curr_byte = (char) temp;
-			if (curr_byte != '\n') {
-				curr_line.append(curr_byte);
-			}
-			
-			// end of line reached in file; parse this event
-			else {
-//Log.d(TAG, curr_line.toString());
-				
-				if (curr_line.toString().equals("Location") || curr_line.toString().equals("Title")) {
-					curr_line.setLength(0);
-					continue;
-				}
-				
-				lines_read++;
-				result = split_line(curr_line);
-				if (result != null) {
-//Log.d(TAG, result.toString());
 					schedules.add(result);
 				}
 				curr_line.setLength(0);
@@ -368,9 +288,6 @@ final class CSVReader {
 		File file = new File(dir + "/" + filename);
 		
 		Log.d(TAG, "In " + dir + "/" + filename + ", checking if file is current");
-		if (file == null) {
-			return false;
-		}
 		
 		Date last_modified = new Date(file.lastModified());
 				
@@ -565,7 +482,6 @@ final class CSVReader {
 		HashMap<String, String> result;
 		StringBuilder curr_line = new StringBuilder();
 		while ((temp = reader.read()) != -1) {
-//Log.d(TAG, Character.toString((char) temp));
 			char curr_byte = (char) temp;
 			if (curr_byte != '\n') {
 				curr_line.append(curr_byte);
@@ -609,72 +525,6 @@ final class CSVReader {
 		Log.d(TAG, "Now exiting reading from URL");
 		
 //		reader.close();
-		return schedules;
-	}
-	
-	/**
-	 * @param site
-	 * @return a List of Maps of Strings; each Map contains Strings for one
-	 * 		   event parsed from the CSV feed given by site (a URL)
-	 */
-	private List<HashMap<String, String>> read_csv_from_url(String site) {
-		if (site == null || site.length() <= 0) {
-			throw new IllegalArgumentException("Error: cannot read from null or empty site name, read_csv_from_url()");
-		}
-
-		List<HashMap<String, String>> schedules = new ArrayList<HashMap<String, String>>(100);
-		
-		HttpClient http_client = new DefaultHttpClient();
-		HttpContext local_context = new BasicHttpContext();
-		HttpGet http_get = new HttpGet(site);
-
-		HttpResponse http_response = null;
-		try {
-			http_response = http_client.execute(http_get, local_context);
-			Log.d(TAG, "HTTP request processed with status code " + http_response.getStatusLine().getStatusCode());
-		}
-		catch (IOException e) {
-			Log.d(TAG, "Unable to execute client request");
-			e.printStackTrace();
-		}
-		
-		if (http_response == null) {
-			throw new IllegalStateException();
-		}
-		
-		InputReader reader = null;
-		try {
-			reader = new InputReader(new InputStreamReader(http_response.getEntity().getContent()));
-		}
-		catch (IOException e) {
-			Log.d(TAG, "Unable to open reader");
-			e.printStackTrace();
-		}
-		
-		int temp = 0;
-		
-		HashMap<String, String> result;
-		StringBuilder curr_line = new StringBuilder();
-		while ((temp = reader.read()) != -1) {
-//Log.d(TAG, Character.toString((char) temp));
-			char curr_byte = (char) temp;
-			if (curr_byte != '\n') {
-				curr_line.append(curr_byte);
-			}
-			
-			// end of line reached in this CSV feed; parse this event
-			else {
-				result = split_line(curr_line);
-				if (result != null) {
-					schedules.add(result);
-				}
-				curr_line.setLength(0);
-			}
-		}
-		
-		Log.d(TAG, "Now exiting reading from URL");
-		
-		reader.close();
 		return schedules;
 	}
 
@@ -804,6 +654,117 @@ final class CSVReader {
 
 }		// end of file
 
+/*
 
+	DEPRECATE
+	
+	private List<HashMap<String, String>> read_csv_from_file(Context context, int res_id) {
+//		if (filename == null || filename.length() <= 0) {
+//			throw new IllegalArgumentException("Error: cannot read from null or empty file name, read_csv_from_file()");
+//		}
+//
+//		Log.d("CSVReader", "filename is " + filename + ", read_csv_from_file");
+		
+		List<HashMap<String, String>> schedules = new ArrayList<HashMap<String, String>>(100);
+//		InputReader input = new InputReader(filename);
+		InputReader input = new InputReader(context, res_id);
+		
+		int temp = 0;
+
+		StringBuilder curr_line = new StringBuilder();
+		HashMap<String, String> result;
+
+		while ((temp = input.read()) != -1) {
+			char curr_byte = (char) temp;
+			if (curr_byte != '\n') {
+				curr_line.append(curr_byte);
+			}
+			
+			// end of line reached in file; parse this event
+			else {
+//Log.d(TAG, curr_line.toString());
+				
+				if (curr_line.toString().equals("Location") || curr_line.toString().equals("Title")) {
+					curr_line.setLength(0);
+					continue;
+				}
+				
+				lines_read++;
+				result = split_line(curr_line);
+				if (result != null) {
+//Log.d(TAG, result.toString());
+					schedules.add(result);
+				}
+				curr_line.setLength(0);
+			}
+		}
+		
+		input.close();
+		return schedules;
+	}
+
+	private List<HashMap<String, String>> read_csv_from_url(String site) {
+		if (site == null || site.length() <= 0) {
+			throw new IllegalArgumentException("Error: cannot read from null or empty site name, read_csv_from_url()");
+		}
+
+		List<HashMap<String, String>> schedules = new ArrayList<HashMap<String, String>>(100);
+		
+		HttpClient http_client = new DefaultHttpClient();
+		HttpContext local_context = new BasicHttpContext();
+		HttpGet http_get = new HttpGet(site);
+
+		HttpResponse http_response = null;
+		try {
+			http_response = http_client.execute(http_get, local_context);
+			Log.d(TAG, "HTTP request processed with status code " + http_response.getStatusLine().getStatusCode());
+		}
+		catch (IOException e) {
+			Log.d(TAG, "Unable to execute client request");
+			e.printStackTrace();
+		}
+		
+		if (http_response == null) {
+			throw new IllegalStateException();
+		}
+		
+		InputReader reader = null;
+		try {
+			reader = new InputReader(new InputStreamReader(http_response.getEntity().getContent()));
+		}
+		catch (IOException e) {
+			Log.d(TAG, "Unable to open reader");
+			e.printStackTrace();
+		}
+		
+		int temp = 0;
+		
+		HashMap<String, String> result;
+		StringBuilder curr_line = new StringBuilder();
+		while ((temp = reader.read()) != -1) {
+//Log.d(TAG, Character.toString((char) temp));
+			char curr_byte = (char) temp;
+			if (curr_byte != '\n') {
+				curr_line.append(curr_byte);
+			}
+			
+			// end of line reached in this CSV feed; parse this event
+			else {
+				result = split_line(curr_line);
+				if (result != null) {
+					schedules.add(result);
+				}
+				curr_line.setLength(0);
+			}
+		}
+		
+		Log.d(TAG, "Now exiting reading from URL");
+		
+		reader.close();
+		return schedules;
+	}
+
+
+ */
 
 

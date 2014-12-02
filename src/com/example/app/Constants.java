@@ -49,6 +49,8 @@ final class Constants {
 	protected static final 	Date 		DAYBREAK;
 	protected static final 	Date 		NIGHTFALL;
 	
+	protected static final	String		EXIT							=	"EXIT";
+	
 	protected static final 	String 		ALL_DAY;
 	protected static final 	String 		ATRIUM;
 	protected static final 	Map<String, Integer> 	CAMPUS_BUILDINGS;
@@ -526,7 +528,7 @@ final class Constants {
 	private static final String[] initialise_valid_gdc_rooms() {
 		final String[] VALID_GDC_ROOMS = {
 				"1.304", "1.406",
-				"2.104", "2.210", "2.216", "2.402", "2.410", "2.502", "2.506", "2.712", "2.902",
+				"2.104", "2.21", "2.216", "2.402", "2.41", "2.502", "2.506", "2.712", "2.902",
 				"3.416", "3.516", "3.816", "3.828",
 				"4.202", "4.302", "4.304", "4.314", "4.416", "4.516", "4.816", "4.828",
 				"5.302", "5.304", "5.416", "5.516", "5.816", "5.828",

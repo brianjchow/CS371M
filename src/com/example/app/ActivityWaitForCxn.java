@@ -414,7 +414,7 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 	private void exitApp() {
 		Intent intent = new Intent(ActivityWaitForCxn.this, ActivityMain.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		intent.putExtra("EXIT", true);
+		intent.putExtra(Constants.EXIT, true);
 		startActivity(intent);
 		finish();
 	}

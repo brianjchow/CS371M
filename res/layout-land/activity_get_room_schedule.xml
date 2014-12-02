@@ -8,7 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:gravity = "fill_horizontal"
     android:background="@drawable/campus_tower"
-    tools:context="com.example.app.ActivityFindRoomLater"
+    tools:context="com.example.app.ActivityGetRoomSchedule"
     android:orientation="horizontal"
     >
 	
@@ -16,10 +16,11 @@
         android:id = "@+id/bottom_button_bar"
         android:layout_width = "match_parent"
         android:layout_height = "wrap_content"
-        android:layout_alignParentBottom = "true" >
+        android:layout_alignParentBottom = "true"
+        android:layout_alignParentRight = "true" >
 
 	    <Button
-	        android:id="@+id/get_Room"
+	        android:id="@+id/get_room"
 	        android:layout_width="0dp"
 	        android:layout_height="50dp"
 	        android:layout_weight = "1"
@@ -45,7 +46,7 @@
 	
 		<Spinner
 		    android:id = "@+id/choose_building_spinner"
-		    android:layout_width = "match_parent"
+		    android:layout_width = "wrap_content"
 		    android:layout_height = "wrap_content"
 		    android:dropDownWidth = "wrap_content"
 		    android:spinnerMode = "dropdown"
@@ -53,96 +54,56 @@
 	        android:textColor = "@color/white" />
         
 	</LinearLayout>
+
+	<LinearLayout
+	    android:id = "@+id/choose_room_row"
+        android:layout_width = "match_parent"
+        android:layout_height = "wrap_content"
+        android:layout_below = "@+id/choose_building_row"
+	    android:layout_marginTop="5dp" >
+        
+		<TextView
+		    android:id = "@+id/choose_room_text"
+		    android:layout_width = "wrap_content"
+		    android:layout_height = "wrap_content"
+		    android:text = "@string/room"
+		    android:textSize = "17sp"
+	        android:textColor = "@color/white" />
 	
+		<Spinner
+		    android:id = "@+id/choose_room_spinner"
+		    android:layout_width = "wrap_content"
+		    android:layout_height = "wrap_content"
+		    android:dropDownWidth = "wrap_content"
+		    android:spinnerMode = "dropdown"
+		    android:textSize = "14sp"
+	        android:textColor = "@color/white" />
+        
+	</LinearLayout>
+		
     <LinearLayout
         android:id = "@+id/datepicker_row"
         android:layout_width = "match_parent"
         android:layout_height = "wrap_content"
-        android:layout_below = "@+id/choose_building_row"
-	    android:layout_marginTop="10dp" >
+        android:layout_below = "@+id/choose_room_row"
+	    android:layout_marginTop="5dp" >
         
 		<TextView
 		    android:id = "@+id/datepicker_text"
 		    android:layout_width = "wrap_content"
 		    android:layout_height = "wrap_content"
-		    android:text = "@string/set_start_date"
-		    android:textSize = "15sp"
+		    android:text = "@string/date"
+		    android:textSize = "17sp"
 	        android:textColor = "@color/white" />
 	        
 	    <Button
 	        android:id="@+id/datepicker_button"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="@string/set_start_date"
-	        android:textSize = "12sp"
+	        android:text="@string/date"
+	        android:textSize = "14sp"
 	        android:textColor = "@color/white" />
-
-		<TextView
-		    android:id = "@+id/timepicker_text"
-		    android:layout_width = "wrap_content"
-		    android:layout_height = "wrap_content"
-		    android:text = "@string/set_start_time"
-		    android:textSize = "15sp"
-	        android:textColor = "@color/white" />
-    
-	    <Button
-	        android:id="@+id/timepicker_button"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="@string/set_start_time"
-	        android:textSize = "12sp"
-	        android:textColor = "@color/white" />	    
-        
-		<TextView
-		    android:id = "@+id/min_duration_text"
-		    android:layout_width = "wrap_content"
-		    android:layout_height = "wrap_content"
-		    android:text = "@string/set_minimum_duration"
-		    android:textSize = "15sp"
-	        android:textColor = "@color/white" />
-    
-		<Button
-		    android:id = "@+id/min_duration_button"
-		    android:layout_width = "wrap_content"
-		    android:layout_height = "wrap_content"
-		    android:text = "@string/default_duration"
-	        android:textSize = "12sp"
-	        android:textColor = "@color/white" />
-        	    		
-    </LinearLayout>
-
-    <LinearLayout
-        android:id = "@+id/min_capacity_row"
-        android:layout_width = "match_parent"
-        android:layout_height = "wrap_content"
-	    android:layout_below="@+id/datepicker_row"
-	    android:layout_marginTop="10dp" >
-
-		<TextView
-		    android:id = "@+id/min_capacity_text"
-		    android:layout_width = "wrap_content"
-		    android:layout_height = "wrap_content"
-		    android:text = "@string/set_minimum_capacity"
-		    android:textSize = "15sp"
-	        android:textColor = "@color/white" />
-    
-		<Button
-		    android:id = "@+id/min_capacity_button"
-		    android:layout_width = "wrap_content"
-		    android:layout_height = "wrap_content"
-		    android:text = "@string/zero_capacity"
-	        android:textSize = "12sp"
-	        android:textColor = "@color/white" />
-
-		<CheckBox
-	        android:id="@+id/has_power"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="@string/power_plugs_question"
-	        android:textSize="15sp"
-		    android:textColor = "@color/white"
-	        android:checked="false" />
-			            	
+		
     </LinearLayout>
 
 </RelativeLayout>
