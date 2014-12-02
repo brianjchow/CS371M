@@ -187,21 +187,10 @@ public class ActivityRoomRec extends ActionBarActivity {
 		this.curr_recommendation = query_result.get_random_room();
 		
 		stopwatch.stop();
-//		Log.d(TAG, "Took " + stopwatch.time() + " seconds to execute search");
-//		
-//		if (Constants.DEBUG) {
-//			Toast.makeText(ActivityRoomRec.this, "Took " + stopwatch.time() + " seconds to execute search", Toast.LENGTH_SHORT).show();
-//		}
-//		
-//		setTextViewInfo(this.curr_recommendation);
-//		
-//		update_background();
-//
-//		update_info_textview(query.toString());
-		
 		handle_search_random_room();
 	}
 	
+	// http://androidcocktail.blogspot.in/2012/05/solving-bitmap-size-exceeds-vm-budget.html
 	private void update_background() {
 //		final int TRANSPARENCY_VAL = 165;
 		

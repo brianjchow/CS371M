@@ -213,33 +213,9 @@ public class ActivityLoadCSV extends ActionBarActivity {
 	private boolean has_network_connectivity() {
 		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo net_info = manager.getActiveNetworkInfo();
-		if (net_info != null) {
-			
-			if (net_info.getState().equals(NetworkInfo.State.CONNECTED)) {
-				Log.d(TAG, "Network connectivity detected, has_network_connectivity()");
-				return true;
-			}
-			
-//			if ((net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE) && net_info.isConnected()) {
-//				if (Constants.DEBUG) {
-//					if (net_info.getType() == ConnectivityManager.TYPE_WIFI) {
-//						Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
-//					}
-//					else {
-//						Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
-//					}
-//				}
-//				return true;
-//			}
-			
-//			if (net_info.getType() == ConnectivityManager.TYPE_WIFI && net_info.isConnected()) {
-//				Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
-//				return true;
-//			}
-//			else if (net_info.getType() == ConnectivityManager.TYPE_MOBILE && net_info.isConnected()) {
-//				Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
-//				return true;		
-//			}
+		if (net_info != null && net_info.getState().equals(NetworkInfo.State.CONNECTED)) {
+			Log.d(TAG, "Network connectivity detected, has_network_connectivity()");
+			return true;
 		}
 		
 		Log.d(TAG, "No network connectivity detected, has_network_connectivity()");
@@ -283,6 +259,9 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		@Override
 		protected void onCancelled(Boolean done) {
 //			Log.d(TAG, "Timed out");
+			
+			delete_all_feeds();
+			
 			if (!TIMEOUT_FLAG) {
 				show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
 			}
@@ -343,6 +322,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			public void onClick(View v) {
 //				Constants.CSV_FEEDS_MASTER = null;
 //				Constants.CSV_FEEDS_CLEANED = null;
+				
 				Constants.init(ActivityLoadCSV.this, true);
 				
 				dialog.dismiss();
@@ -395,6 +375,9 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG, "Failed to complete reading CSV, now restarting app...");
+				
+				delete_all_feeds();
+				
 				dialog.dismiss();
 				startActivity(new Intent(ActivityLoadCSV.this, ActivityLoadCSV.class));
 				finish();
@@ -407,6 +390,9 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG, "Failed to complete reading CSV, now aborting...");
+				
+				delete_all_feeds();
+				
 				dialog.dismiss();
 				finish();
 				return;
@@ -414,6 +400,30 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		});
 		
 		dialog.show();
+	}
+	
+	// DO NOT CALL UNLESS ASYNCTASK WAS CANCELLED
+	private void delete_all_feeds() {
+		String download_filename;
+		boolean deleted = false;
+		
+		download_filename = CSVReader.ALL_EVENTS_SCHEDULE_FILENAME;
+		if (ActivityLoadCSV.this.getFileStreamPath(download_filename).exists()) {
+			deleted = ActivityLoadCSV.this.deleteFile(download_filename);
+			Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory (delete_all()): " + deleted);
+		}
+		
+		download_filename = CSVReader.ALL_ROOMS_SCHEDULE_FILENAME;
+		if (ActivityLoadCSV.this.getFileStreamPath(download_filename).exists()) {
+			deleted = ActivityLoadCSV.this.deleteFile(download_filename);
+			Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory (delete_all()): " + deleted);
+		}
+		
+		download_filename = CSVReader.ALL_TODAYS_EVENTS_FILENAME;
+		if (ActivityLoadCSV.this.getFileStreamPath(download_filename).exists()) {
+			deleted = ActivityLoadCSV.this.deleteFile(download_filename);
+			Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory (delete_all()): " + deleted);
+		}
 	}
 	
 /*

@@ -47,7 +47,7 @@ final class CSVReader {
 	protected static int lines_read = 0;
 	protected static double time_to_read = 0;
 	
-	private static final boolean CSV_CACHE_DEBUG = true;
+	private static final boolean CSV_CACHE_DEBUG = false;
 	
 	/**
 	 * Default constructor. Empty.
@@ -380,7 +380,7 @@ final class CSVReader {
 		return (context.deleteFile(filename));
 	}
 	
-	private void delete_all(Context context) {
+	protected void delete_all_feeds(Context context) {
 		if (context == null) {
 			throw new IllegalArgumentException("Cannot accept null Context argument");
 		}
@@ -416,7 +416,7 @@ final class CSVReader {
 		}
 		
 		if (CSV_CACHE_DEBUG) {
-			delete_all(context);
+			delete_all_feeds(context);
 		}
 		
 		boolean download_new_csv_copy = false;
