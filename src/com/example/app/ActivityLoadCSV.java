@@ -45,6 +45,8 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		setContentView(R.layout.activity_load_csv);
 		findViewById(R.id.no_cxn_msg).setVisibility(View.GONE);
 		
+		getActionBar().setTitle(getResources().getString(R.string.loading));
+		
 //		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		try {

@@ -222,7 +222,11 @@ public class Query implements Parcelable {
 	}
 	
 	protected final String get_option_search_room() {
-		return ((String) this.options.get(Constants.SEARCH_ROOM));
+		String search_room = (String) this.options.get(Constants.SEARCH_ROOM);
+//		if (Utilities.str_is_gdc(this.get_option_search_building()) && (search_room.equals("2.21") || search_room.equals("2.41"))) {
+//			return (search_room + "0");
+//		}
+		return search_room;
 	}
 
 	/**
@@ -246,31 +250,6 @@ public class Query implements Parcelable {
 	 */
 	protected Date get_start_date() {
 		return (this.start_date);
-	}
-
-	protected boolean search_is_at_night() {
-		int this_start_time = Utilities.get_time_from_date(this.start_date);
-		int this_end_time = Utilities.get_time_from_date(this.end_date);
-
-		if (this_start_time >= Constants.LAST_TIME_OF_DAY && this_start_time < 2359) {
-			return true;
-		}
-		else if (this_start_time >= 0 && this_start_time < Constants.LAST_TIME_OF_NIGHT - 1 && this_end_time < Constants.LAST_TIME_OF_NIGHT) {
-			return true;
-		}
-
-		Date this_start, this_end;
-
-		this_start = Utilities.get_date(1, 1, 2014, this_start_time);
-		if (this_end_time > this_start_time) {
-			this_end = Utilities.get_date(1, 1, 2014, this_end_time);
-		}
-		else {
-			this_end = Utilities.get_date(1, 2, 2014, this_end_time);
-		}
-		// note: the times will never be the same; query duration must be >= 1 minute
-
-		return Utilities.times_overlap(this_start, this_end, Constants.NIGHTFALL, Constants.DAYBREAK);
 	}
 
 	protected String get_current_course_schedule() {
@@ -415,6 +394,57 @@ public class Query implements Parcelable {
 
 		return today;
 	}
+	
+	private boolean is_truncated_gdc_room(String room) {
+		if (room == null) {
+			return false;
+//			throw new IllegalArgumentException();
+		}
+
+		if (Utilities.str_is_gdc(this.get_option_search_building()) && (room.equals("2.21") || room.equals("2.41"))) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean needs_truncation_gdc_room(String room) {
+		if (room == null) {
+			return false;
+//			throw new IllegalArgumentException();
+		}
+		
+		if (Utilities.str_is_gdc(this.get_option_search_building()) && (room.equals("2.210") || room.equals("2.410"))) {
+			return true;
+		}		
+		return false;
+		
+//		return !is_truncated_gdc_room(room);
+	}
+
+	protected boolean search_is_at_night() {
+		int this_start_time = Utilities.get_time_from_date(this.start_date);
+		int this_end_time = Utilities.get_time_from_date(this.end_date);
+
+		if (this_start_time >= Constants.LAST_TIME_OF_DAY && this_start_time < 2359) {
+			return true;
+		}
+		else if (this_start_time >= 0 && this_start_time < Constants.LAST_TIME_OF_NIGHT - 1 && this_end_time < Constants.LAST_TIME_OF_NIGHT) {
+			return true;
+		}
+
+		Date this_start, this_end;
+
+		this_start = Utilities.get_date(1, 1, 2014, this_start_time);
+		if (this_end_time > this_start_time) {
+			this_end = Utilities.get_date(1, 1, 2014, this_end_time);
+		}
+		else {
+			this_end = Utilities.get_date(1, 2, 2014, this_end_time);
+		}
+		// note: the times will never be the same; query duration must be >= 1 minute
+
+		return Utilities.times_overlap(this_start, this_end, Constants.NIGHTFALL, Constants.DAYBREAK);
+	}
 
 	protected boolean search_is_on_weekend() {
 		int today = get_this_day_of_week();
@@ -536,7 +566,13 @@ public class Query implements Parcelable {
 			throw new IllegalArgumentException("Error: argument cannot be null, set_option_search_for_building()");		
 		}
 		
-		this.options.put(Constants.SEARCH_ROOM, room_num);		
+		if (this.needs_truncation_gdc_room(room_num)) {
+			this.options.put(Constants.SEARCH_ROOM, room_num.substring(0, 4));		// [0, 4) is guaranteed; see needs_truncation_gdc_room()
+		}
+		else {
+			this.options.put(Constants.SEARCH_ROOM, room_num);	
+		}
+		
 		return true;
 	}
 
@@ -763,7 +799,9 @@ public class Query implements Parcelable {
 			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
 		}
 		
-		QueryResult query_result = new QueryResult(SearchType.GET_RANDOM_ROOM.get_enum_val(), this.get_option_search_building());
+		String search_building_str = this.get_option_search_building();
+		
+		QueryResult query_result = new QueryResult(SearchType.GET_RANDOM_ROOM.get_enum_val(), search_building_str);
 		List<String> all_valid_rooms = new ArrayList<String>();
 		
 		if (eolist.get_size() <= 0) {
@@ -778,7 +816,7 @@ public class Query implements Parcelable {
 				query_result.set_results(all_valid_rooms);
 				return query_result;
 			}
-			else if (this.search_is_at_night()) {
+			if (this.search_is_at_night()) {
 				query_result.set_search_status(SearchStatus.GO_HOME);
 				query_result.set_results(all_valid_rooms);
 				return query_result;
@@ -793,7 +831,7 @@ public class Query implements Parcelable {
 		
 		int wanted_capacity = this.get_option_capacity();
 		
-		Building search_building = Building.get_instance(this.mContext, this.get_option_search_building(), course_schedule);
+		Building search_building = Building.get_instance(this.mContext, search_building_str, course_schedule);
 		if (search_building == null) {
 			query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
 			query_result.set_results(all_valid_rooms);
@@ -802,7 +840,7 @@ public class Query implements Parcelable {
 		
 		SortedSet<String> valid_rooms = search_building.get_keyset();
 		
-		if (this.get_option_search_building().equalsIgnoreCase(Constants.GDC)) {
+		if (Utilities.str_is_gdc(search_building_str)) {
 			boolean wanted_power = this.get_option_power();
 			
 			Iterator<Event> itr = eolist.get_iterator();
@@ -901,7 +939,12 @@ public class Query implements Parcelable {
 			}
 			
 			if (is_valid) {
-				all_valid_rooms.add(curr_room_str);
+				if (is_truncated_gdc_room(curr_room_str)) {
+					all_valid_rooms.add(curr_room_str + "0");
+				}
+				else {
+					all_valid_rooms.add(curr_room_str);
+				}
 			}
 			
 			is_valid = true;

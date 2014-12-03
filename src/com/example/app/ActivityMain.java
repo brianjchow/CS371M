@@ -22,7 +22,7 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.main);
+		setContentView(R.layout.activity_main);
 		Button find_room_now = (Button) findViewById(R.id.find_room_now);
 		Button find_room_later = (Button) findViewById(R.id.find_room_for_later);
 		Button get_room_schedule = (Button) findViewById(R.id.get_room_schedule);

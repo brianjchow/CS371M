@@ -39,11 +39,11 @@
         </activity>
         <activity
             android:name=".ActivityRoomRec"
-            android:label="@string/title_activity_find_room" >
+            android:label="@string/search_results" >
         </activity>
         <activity
             android:name=".ActivityFindRoomLater"
-            android:label="@string/title_activity_find_room_later" >
+            android:label="@string/search_options" >
         </activity>
         <activity
             android:name=".ActivityExit"

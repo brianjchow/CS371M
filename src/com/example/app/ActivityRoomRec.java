@@ -43,7 +43,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_find_room);
+		setContentView(R.layout.activity_room_rec);
 		
 //		TextView info_textview = (TextView) findViewById(R.id.info_textview);
 //		info_textview.setMovementMethod(new ScrollingMovementMethod());
@@ -193,6 +193,30 @@ public class ActivityRoomRec extends ActionBarActivity {
 		handle_search_random_room();
 	}
 	
+//	private boolean is_truncated_gdc_room(String room) {
+//		if (room == null) {
+//			return false;
+////			throw new IllegalArgumentException();
+//		}
+//
+//		if (room.equalsIgnoreCase("gdc 2.21") || room.equalsIgnoreCase("gdc 2.41")) {
+//			return true;
+//		}
+//		return false;
+//	}	
+	
+	private boolean needs_truncation_gdc_room(String room) {
+		if (room == null) {
+			return false;
+//			throw new IllegalArgumentException();
+		}
+
+		if (room.equalsIgnoreCase("gdc 2.210") || room.equalsIgnoreCase("gdc 2.410")) {
+			return true;
+		}		
+		return false;
+	}
+	
 	// http://androidcocktail.blogspot.in/2012/05/solving-bitmap-size-exceeds-vm-budget.html
 	private void update_background() {
 //		final int TRANSPARENCY_VAL = 165;
@@ -203,7 +227,13 @@ public class ActivityRoomRec extends ActionBarActivity {
 			String building_name = this.query_result.get_building_name();
 			if (building_name.equalsIgnoreCase(Constants.GDC)) {
 //				String temp = new Location(curr_recommendation).get_room().replaceAll("\\.", "");
-				String building_pic_str = this.curr_recommendation.toLowerCase(Constants.DEFAULT_LOCALE).replaceAll("\\.", "").replaceAll("\\s+", "_");
+				
+				String room_rec = this.curr_recommendation.toLowerCase(Constants.DEFAULT_LOCALE);
+				if (needs_truncation_gdc_room(room_rec)) {
+					room_rec = room_rec.substring(0, 8);		// substring length guaranteed to be 9 if true (see needs_truncation_gdc_room())
+				}
+				
+				String building_pic_str = room_rec.replaceAll("\\.", "").replaceAll("\\s+", "_");
 				int res_id = Utilities.getResId(building_pic_str, R.drawable.class);
 				if (res_id != -1) {
 					background.setBackgroundResource(res_id);
@@ -264,9 +294,15 @@ public class ActivityRoomRec extends ActionBarActivity {
 		if (recommendation == null) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		TextView roomRecText = (TextView) findViewById(R.id.room_num);
-		roomRecText.setText(recommendation);
+		
+		if (recommendation.equals("GDC 2.21") || recommendation.equals("GDC 2.41")) {
+			roomRecText.setText(recommendation + "0");
+		}
+		else {
+			roomRecText.setText(recommendation);
+		}
 	}
 	
 	private void update_info_textview(String text) {
@@ -303,11 +339,11 @@ public class ActivityRoomRec extends ActionBarActivity {
 			}
 			
 			if (!Constants.SHORT_CIRCUIT_SEARCH_FOR_ROOM) {
-				if (this.query.search_is_at_night()) {
-					msg.append("NOTE: search occurs partly through or during after hours; you may not be able to enter without the appropriate authorization.\n\n");
-				}
-				else if (this.query.search_is_on_weekend()) {
+				if (this.query.search_is_on_weekend()) {
 					msg.append("NOTE: search occurs partly through or during the weekend; you may not be able to enter without the appropriate authorization.\n\n");
+				}
+				else if (this.query.search_is_at_night()) {
+					msg.append("NOTE: search occurs partly through or during after hours; you may not be able to enter without the appropriate authorization.\n\n");
 				}
 			}
 			
@@ -327,7 +363,13 @@ public class ActivityRoomRec extends ActionBarActivity {
 			}
 			
 			if (Utilities.str_is_gdc(search_building)) {
-				msg.append(TAB + "Must have power plugs:\t" + this.query.get_option_power() + "\n");
+				boolean must_have_power = this.query.get_option_power();
+				String choice = "no";
+				if (must_have_power) {
+					choice = "yes";
+				}
+				
+				msg.append(TAB + "Must have power plugs: " + choice + "\n");
 			}
 			
 			msg.append("\n");

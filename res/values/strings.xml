@@ -16,12 +16,14 @@
     <string name="exit">Exit</string>
 
     <!-- Load CSV -->
+    <string name = "loading">Loading</string>
     <string name="loading_msg">Loading&#8230;</string>
     <string name="need_cxn_msg">Get yoself a wifi/mobile connection</string>
     <string name="loading_spinner_desc">Loading spinner image</string>
 
     <!-- Main -->
     <string name="find_room_now">Find a room now</string>
+    <string name = "find_random_room_now">Find random room now</string>
     <string name="find_room_later">Find a room later</string>
     <string name = "get_room_schedule">Get room schedule</string>
 
@@ -55,8 +57,10 @@
     <string name="try_room_caps">TRY ROOM</string>
     <string name="search_later">Search later</string>
     <string name="search_options">Search options</string>
+    <string name = "search_results">Search results</string>
 
     <!-- Find room later activity -->
+    <string name = "search">Search</string>
     <string name="set_start_date">Start date:</string>
     <string name="set_start_time">Start time:</string>
     <string name="set_minimum_duration">Min duration:</string>

@@ -2,6 +2,7 @@ package com.example.app;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -66,6 +67,28 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 				}
 			}
 		}
+		
+		
+		findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(ActivityGetRoomSchedule.this, ActivityMain.class);
+				startActivity(intent);
+				finish();
+				return;
+			}
+		});
+
+		findViewById(R.id.find_room_later).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				find_room_later();
+				return;
+			}
+		});
+		
 
 		setSearchBuildingSpinnerOnItemSelectedListener();
 		
@@ -144,22 +167,38 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 			}
 			else {
 				rooms = roomset.toArray(new String[roomset.size()]);
+				
+				if (Utilities.str_is_gdc(this.query.get_option_search_building())) {
+					int index;
+					
+					index = Arrays.asList(rooms).indexOf("2.21");
+					if (index != -1) {
+						rooms[index] = "2.210";
+					}
+					
+					index = Arrays.asList(rooms).indexOf("2.41");
+					if (index != -1) {
+						rooms[index] = "2.410";
+					}
+				}
 			}
 		}
 		
 		Button get_room_button = (Button) findViewById(R.id.get_room);
 		if (rooms.length == 0 || (rooms.length == 1 && rooms[0].equals(no_rooms_found))) {
-			get_room_button.setText(getResources().getString(R.string.home));
-			get_room_button.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					Intent intent = new Intent(ActivityGetRoomSchedule.this, ActivityMain.class);
-					startActivity(intent);
-					finish();
-					return;
-				}
-			});
+			get_room_button.setVisibility(View.GONE);
+			
+//			get_room_button.setText(getResources().getString(R.string.home));
+//			get_room_button.setOnClickListener(new OnClickListener() {
+//				
+//				@Override
+//				public void onClick(View v) {
+//					Intent intent = new Intent(ActivityGetRoomSchedule.this, ActivityMain.class);
+//					startActivity(intent);
+//					finish();
+//					return;
+//				}
+//			});
 		}
 		else {
 			get_room_button.setText(getResources().getString(R.string.get_room_enthusiastic));

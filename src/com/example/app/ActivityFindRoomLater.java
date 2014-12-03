@@ -75,6 +75,26 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			}
 		}
 		
+		findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(ActivityFindRoomLater.this, ActivityMain.class);
+				startActivity(intent);
+				finish();
+				return;
+			}
+		});
+		
+		findViewById(R.id.get_room_schedule).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				get_room_schedule();
+				return;
+			}
+		});
+
 		setSearchBuildingSpinnerOnItemSelectedListener();
 		
 		setDateButtonOnClickListener();
