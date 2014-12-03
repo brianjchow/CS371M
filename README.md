@@ -1,4 +1,4 @@
 GDC Study Hall
 ======
 
-Still worst app ever
+Still the worst app ever
