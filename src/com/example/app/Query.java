@@ -248,7 +248,7 @@ public class Query implements Parcelable {
 		return (this.start_date);
 	}
 
-	private boolean search_is_at_night() {
+	protected boolean search_is_at_night() {
 		int this_start_time = Utilities.get_time_from_date(this.start_date);
 		int this_end_time = Utilities.get_time_from_date(this.end_date);
 
@@ -297,14 +297,14 @@ public class Query implements Parcelable {
 			}
 			else {		// holiday
 				Log.d(TAG, "pos 4");
-				return MessageStatus.HOLIDAY.toString();
+				return SearchStatus.HOLIDAY.toString();
 //				return null;
 			}
 		}
 
 		else if (Utilities.date_is_during_summer(this.start_date)) {		// summer
 			Log.d(TAG, "pos 5");
-			return MessageStatus.SUMMER.toString();
+			return SearchStatus.SUMMER.toString();
 //			return null;
 		}
 
@@ -326,14 +326,14 @@ public class Query implements Parcelable {
 			}
 			else {		// holiday
 				Log.d(TAG, "pos 9");
-				return MessageStatus.HOLIDAY.toString();
+				return SearchStatus.HOLIDAY.toString();
 //				return null;
 			}
 		}
 
 		else {	// holiday
 			Log.d(TAG, "pos 10");
-			return MessageStatus.HOLIDAY.toString();
+			return SearchStatus.HOLIDAY.toString();
 //			return null;
 		}
 	}
@@ -352,35 +352,35 @@ public class Query implements Parcelable {
 			}
 			else if (Utilities.date_is_during_summer(now)) {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
-					query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
+					query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
 				}
 				Log.d(TAG, "pos 2");
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
 			}
 			else if (Utilities.date_is_during_fall(now)) {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
-					query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
+					query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
 				}
 				Log.d(TAG, "pos 3");
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
 			}
 			else {
 				Log.d(TAG, "pos 4");
-				query_result.set_message_status(MessageStatus.HOLIDAY);
+				query_result.set_search_status(SearchStatus.HOLIDAY);
 				return null;
 			}
 		}
 
 		else if (Utilities.date_is_during_summer(this.start_date)) {
 			Log.d(TAG, "pos 5");
-			query_result.set_message_status(MessageStatus.SUMMER);
+			query_result.set_search_status(SearchStatus.SUMMER);
 			return null;
 		}
 
 		else if (Utilities.date_is_during_fall(this.start_date)) {
 			if (Utilities.date_is_during_spring(now)) {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
-					query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
+					query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
 				}
 				Log.d(TAG, "pos 6");
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
@@ -395,14 +395,14 @@ public class Query implements Parcelable {
 			}
 			else {
 				Log.d(TAG, "pos 9");
-				query_result.set_message_status(MessageStatus.HOLIDAY);
+				query_result.set_search_status(SearchStatus.HOLIDAY);
 				return null;
 			}
 		}
 
 		else {
 			Log.d(TAG, "pos 10");
-			query_result.set_message_status(MessageStatus.HOLIDAY);
+			query_result.set_search_status(SearchStatus.HOLIDAY);
 			return null;
 		}
 
@@ -416,7 +416,7 @@ public class Query implements Parcelable {
 		return today;
 	}
 
-	private boolean search_is_on_weekend() {
+	protected boolean search_is_on_weekend() {
 		int today = get_this_day_of_week();
 		
 		if (today == Constants.SATURDAY || today == Constants.SUNDAY) {
@@ -767,20 +767,23 @@ public class Query implements Parcelable {
 		List<String> all_valid_rooms = new ArrayList<String>();
 		
 		if (eolist.get_size() <= 0) {
-			query_result.set_message_status(MessageStatus.NO_ROOMS_AVAIL);
+			query_result.set_search_status(SearchStatus.NO_ROOMS_AVAIL);
 			query_result.set_results(all_valid_rooms);
 			return query_result;
 		}
-//		else if (this.search_is_on_weekend()) {
-//			query_result.set_message_status(MessageStatus.ALL_ROOMS_AVAIL);
-//			query_result.set_results(all_valid_rooms);
-//			return query_result;
-//		}
-//		else if (this.search_is_at_night()) {
-//			query_result.set_message_status(MessageStatus.GO_HOME);
-//			query_result.set_results(all_valid_rooms);
-//			return query_result;
-//		}
+		
+		if (Constants.SHORT_CIRCUIT_SEARCH_FOR_ROOM) {
+			if (this.search_is_on_weekend()) {
+				query_result.set_search_status(SearchStatus.ALL_ROOMS_AVAIL);
+				query_result.set_results(all_valid_rooms);
+				return query_result;
+			}
+			else if (this.search_is_at_night()) {
+				query_result.set_search_status(SearchStatus.GO_HOME);
+				query_result.set_results(all_valid_rooms);
+				return query_result;
+			}
+		}
 		
 		String course_schedule = this.get_current_course_schedule(query_result);
 		if (course_schedule == null) {
@@ -792,7 +795,7 @@ public class Query implements Parcelable {
 		
 		Building search_building = Building.get_instance(this.mContext, this.get_option_search_building(), course_schedule);
 		if (search_building == null) {
-			query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
+			query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
 			query_result.set_results(all_valid_rooms);
 			return query_result;
 		}
@@ -836,7 +839,7 @@ public class Query implements Parcelable {
 //					}
 //				}
 				
-				if (Utilities.times_overlap(curr_event.get_start_date(), curr_event.get_end_date(), this.start_date, this.end_date)) {
+				if (Utilities.occur_on_same_day(curr_event.get_start_date(), this.start_date) && Utilities.times_overlap(curr_event.get_start_date(), curr_event.get_end_date(), this.start_date, this.end_date)) {
 					
 //					Log.d(TAG, "Removing " + curr_room_str + " due to overlap; curre: " + curr_event.get_event_name() + "; curre start: " +
 //								curr_event.get_start_date().toString() + "; curre end: " + curr_event.get_end_date() + "; currq start: " +
@@ -908,10 +911,10 @@ public class Query implements Parcelable {
 //		Log.d(TAG, this.toString());
 		
 		if (all_valid_rooms.size() <= 0) {
-			query_result.set_message_status(MessageStatus.NO_ROOMS_AVAIL);
+			query_result.set_search_status(SearchStatus.NO_ROOMS_AVAIL);
 		}
 		else {
-			query_result.set_message_status(MessageStatus.SEARCH_SUCCESS);
+			query_result.set_search_status(SearchStatus.SEARCH_SUCCESS);
 			query_result.set_results(all_valid_rooms);
 		}
 		
@@ -938,7 +941,7 @@ public class Query implements Parcelable {
 		
 		Building search_building = Building.get_instance(this.mContext, this.get_option_search_building(), course_schedule);
 		if (search_building == null) {
-			query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
+			query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
 			query_result.set_results(schedule);
 			return query_result;
 		}
@@ -952,7 +955,7 @@ public class Query implements Parcelable {
 		}
 		
 		if (search_room == null) {
-			query_result.set_message_status(MessageStatus.NO_INFO_AVAIL);
+			query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
 			query_result.set_results(schedule);
 			return query_result;
 		}
@@ -975,7 +978,7 @@ public class Query implements Parcelable {
 		}
 		
 		if (all_events.size() <= 0) {
-			query_result.set_message_status(MessageStatus.ROOM_FREE_ALL_DAY);
+			query_result.set_search_status(SearchStatus.ROOM_FREE_ALL_DAY);
 			query_result.set_results(schedule);
 			return query_result;
 		}
@@ -1044,10 +1047,10 @@ public class Query implements Parcelable {
 		}
 
 		if (schedule.size() <= 0) {
-			query_result.set_message_status(MessageStatus.ROOM_FREE_ALL_DAY);
+			query_result.set_search_status(SearchStatus.ROOM_FREE_ALL_DAY);
 		}
 		else {
-			query_result.set_message_status(MessageStatus.SEARCH_SUCCESS);
+			query_result.set_search_status(SearchStatus.SEARCH_SUCCESS);
 		}
 		
 		query_result.set_results(schedule);
@@ -1071,14 +1074,6 @@ public class Query implements Parcelable {
 		private List<String> results;
 		private String message_status;
 		
-		/*
-		 * Bad coding practice, but done here for performance reasons.
-		 * 
-		 * Currently it is only used by SearchType.GET_ROOM_DETAILS, in which case
-		 * it holds the Room in question.
-		 */
-//		private Object scratch;
-		
 		private QueryResult(int search_type, String building_name) {
 			if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH) {
 				throw new IllegalArgumentException();
@@ -1087,16 +1082,11 @@ public class Query implements Parcelable {
 			this.search_type = search_type;
 			this.building_name = building_name.toUpperCase(Constants.DEFAULT_LOCALE);
 			this.results = new ArrayList<String>();
-			this.message_status = MessageStatus.SEARCH_ERROR.toString();
-//			this.scratch = null;
+			this.message_status = SearchStatus.SEARCH_ERROR.toString();
 		}
 
 		protected String get_building_name() {
 			return this.building_name;
-		}
-		
-		protected String get_message_status() {
-			return this.message_status;
 		}
 		
 		protected int get_num_results() {
@@ -1104,7 +1094,7 @@ public class Query implements Parcelable {
 		}
 		
 		protected String get_random_room() {
-			if (this.results.size() <= 0 || !this.message_status.equals(MessageStatus.SEARCH_SUCCESS.toString())) {
+			if (this.results.size() <= 0 || !this.message_status.equals(SearchStatus.SEARCH_SUCCESS.toString())) {
 				return this.message_status;
 			}
 			
@@ -1118,24 +1108,14 @@ public class Query implements Parcelable {
 			return this.results;
 		}
 		
-//		protected Object get_scratch() {
-//			return this.scratch;
-//		}
+		protected String get_search_status() {
+			return this.message_status;
+		}
 		
 		protected int get_search_type() {
 			return this.search_type;
 		}
-		
-		private boolean set_message_status(MessageStatus message_status) {
-			if (message_status == null) {
-//				return false;
-				throw new IllegalArgumentException();
-			}
-			
-			this.message_status = message_status.toString();
-			return true;
-		}
-		
+
 		private boolean set_results(List<String> results) {
 			if (results == null) {
 //				return false;
@@ -1146,15 +1126,15 @@ public class Query implements Parcelable {
 			return true;
 		}
 		
-//		private boolean set_scratch(Object object) {
-//			if (results == null) {
-////				return false;
-//				throw new IllegalArgumentException();
-//			}
-//			
-//			this.scratch = object;
-//			return true;
-//		}
+		private boolean set_search_status(SearchStatus message_status) {
+			if (message_status == null) {
+//				return false;
+				throw new IllegalArgumentException();
+			}
+			
+			this.message_status = message_status.toString();
+			return true;
+		}
 
 /* ############################### BEGIN IMPLEMENTING PARCELABLE ############################### */
 		
@@ -1194,7 +1174,7 @@ public class Query implements Parcelable {
 				
 	}
 	
-	public enum MessageStatus {
+	public enum SearchStatus {
 		
 		ALL_ROOMS_AVAIL ("All rooms available."),
 		NO_ROOMS_AVAIL	("No rooms available; please try again."),
@@ -1211,7 +1191,7 @@ public class Query implements Parcelable {
 		
 		private final String msg;
 		
-		private MessageStatus(String msg) {
+		private SearchStatus(String msg) {
 			this.msg = msg;
 		}
 	

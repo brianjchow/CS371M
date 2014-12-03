@@ -200,15 +200,9 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 		String gdc_str = Constants.GDC + " ";
 		Room room;
 		for (int i = 0; i < Constants.VALID_GDC_ROOMS.length; i++) {
-			if ((Constants.IGNORE_CONFERENCE_ROOMS && 
-					room_types[i]
-							.equals(Constants.CONFERENCE)) ||
-					
-					room_types[i]
-							.equals(Constants.LOBBY) ||
-					
-					room_types[i]
-							.equals(Constants.LOUNGE)) {
+			if ((!Constants.INCLUDE_GDC_CONFERENCE_ROOMS && room_types[i].equals(Constants.CONFERENCE)) ||
+				(!Constants.INCLUDE_GDC_LOBBY_ROOMS && room_types[i].equals(Constants.LOBBY)) ||
+				(!Constants.INCLUDE_GDC_LOUNGE_ROOMS && room_types[i].equals(Constants.LOUNGE))) {
 				continue;
 			}
 			room = new Room(new Location(gdc_str + Constants.VALID_GDC_ROOMS[i]), room_types[i], room_capacities[i], room_powers[i]);

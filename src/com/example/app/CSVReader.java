@@ -1,10 +1,13 @@
 package com.example.app;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,7 +43,7 @@ final class CSVReader {
 	protected static int lines_read = 0;
 	protected static double time_to_read = 0;
 	
-	private static final boolean CSV_CACHE_DEBUG = false;
+//	private static final boolean CSV_CACHE_DEBUG = false;
 	
 	/**
 	 * Default constructor. Empty.
@@ -215,7 +218,7 @@ final class CSVReader {
 		List<HashMap<String, String>> schedules = new ArrayList<HashMap<String, String>>(100);
 		InputReader input;
 		if (file_is_asset) {
-			input = new InputReader(context, filename);
+			input = InputReader.get_asset_reader(context, filename);
 		}
 		else {
 			try {
@@ -358,14 +361,14 @@ final class CSVReader {
 			throw new IllegalArgumentException("Cannot accept null URL argument");
 		}
 		
-		if (CSV_CACHE_DEBUG) {
+		if (!Constants.STORE_LOCAL_COPY_CSV_FEEDS) {
 			delete_all_feeds(context);
 		}
 		
 		boolean download_new_csv_copy = false;
 		String download_filename = null;
 		
-		if (!CSV_CACHE_DEBUG) {
+		if (Constants.STORE_LOCAL_COPY_CSV_FEEDS) {
 			String url_str = url.toString();
 			if (url_str.equals(ALL_EVENTS_SCHEDULE)) {
 				download_filename = ALL_EVENTS_SCHEDULE_FILENAME;
@@ -456,22 +459,27 @@ final class CSVReader {
 			return schedules;
 		}
 		
-		InputReader reader = null;
+		InputStream conn_stream = null;
 		try {
-			reader = new InputReader(connection.getInputStream());
+			conn_stream = connection.getInputStream();
 		}
 		catch (IOException e) {
-			Log.d(TAG, "Error opening reader");
-			Log.d(TAG, "URL is " + url.toString());
-			return schedules;
+			Log.w(TAG, "WARNING: failed to get InputStream from connection!");
 		}
-
-		FileOutputStream writer = null;
-		if (!CSV_CACHE_DEBUG && download_new_csv_copy) {
-			try {
-				writer = context.openFileOutput(download_filename, Context.MODE_PRIVATE);
+		finally {
+			if (conn_stream == null) {
+				Log.d(TAG, "Error getting connection InputStream");
+				Log.d(TAG, "URL is " + url.toString());
+				return schedules;
 			}
-			catch (IOException e) {
+		}
+				
+		InputReader reader = new InputReader(conn_stream);
+		
+		FileOutputWriter writer = null;
+		if (Constants.STORE_LOCAL_COPY_CSV_FEEDS && download_new_csv_copy) {
+			writer = FileOutputWriter.get_instance(context, download_filename);
+			if (writer == null) {
 				return schedules;
 			}
 		}
@@ -491,14 +499,9 @@ final class CSVReader {
 			else {
 				lines_read++;
 				
-				if (!CSV_CACHE_DEBUG && download_new_csv_copy && writer != null) {
-					try {
-						line_to_write = curr_line.toString() + "\n";
-						writer.write(line_to_write.getBytes());
-					}
-					catch (IOException e) {
-						return schedules;
-					}
+				if (Constants.STORE_LOCAL_COPY_CSV_FEEDS && download_new_csv_copy && writer != null) {
+					line_to_write = curr_line.toString() + "\n";
+					writer.write(line_to_write);
 				}
 				
 				result = split_line(curr_line);
@@ -509,14 +512,10 @@ final class CSVReader {
 			}
 		}
 		
-		if (!CSV_CACHE_DEBUG && download_new_csv_copy && writer != null) {
-			try {
-				writer.close();
-			}
-			catch (IOException e) {
-				return schedules;
-			}
+		if (Constants.STORE_LOCAL_COPY_CSV_FEEDS && download_new_csv_copy && writer != null) {
+			writer.close();
 		}
+		reader.close();
 		
 		if (connection != null) {
 			connection.disconnect();
@@ -524,7 +523,6 @@ final class CSVReader {
 		
 		Log.d(TAG, "Now exiting reading from URL");
 		
-//		reader.close();
 		return schedules;
 	}
 
@@ -652,6 +650,188 @@ final class CSVReader {
 		return tuple;
 	}
 
+	@SuppressWarnings("unused")
+	private static class InputReader {
+		
+		private static final String TAG = "InputReader";
+		
+		private static final String CHAR_ENCODING = "UTF-8";
+		private static final int BUF_SIZE = 8192;	// bytes
+		
+		private BufferedReader reader;
+		
+		private InputReader(Context context, String filename, boolean is_asset) {
+			if (context == null || filename == null || filename.length() <= 0) {
+				throw new IllegalArgumentException("Invalid argument, InputReader constructor");
+			}
+			
+			try {
+				if (is_asset) {
+					this.reader = new BufferedReader(new InputStreamReader(context.getAssets().open(filename), CHAR_ENCODING));
+				}
+				else {
+					/* TODO: THIS WILL FAIL - DO NOT USE !!!!! */
+					
+					Log.e(TAG, "ERROR: do NOT use constructor if not reading asset!");
+//					this.reader = new BufferedReader(new FileReader(filename));
+					this.reader = null;
+				}
+			}
+			catch (IOException e) {
+				this.reader = null;
+			}			
+		}
+		
+		protected static InputReader get_asset_reader(Context context, String filename) {
+			if (context == null || filename == null || filename.length() <= 0) {
+				throw new IllegalArgumentException("Invalid argument, get_asset_reader()");
+			}
+			
+			InputReader out = new InputReader(context, filename, true);
+			
+			if (out.reader == null) {
+				return null;
+			}
+			return out;
+		}
+		
+		protected InputReader(InputStream stream) {
+			if (stream == null) {
+				throw new IllegalArgumentException("InputStream argument cannot be null, InputReader constructor");
+			}
+			
+			this.reader = new BufferedReader(new InputStreamReader(stream), BUF_SIZE);
+		}
+		
+		protected InputReader(Context context, int res_id) {
+			if (context == null) {
+				throw new IllegalArgumentException("Context argument cannot be null, InputReader constructor");
+			}
+			
+			InputStream input_stream = context.getResources().openRawResource(res_id);
+			if (input_stream == null) {
+				throw new IllegalArgumentException("Invalid resource ID specified (" + res_id + ")");
+			}
+			
+			InputStreamReader input_stream_reader = new InputStreamReader(input_stream);
+			this.reader = new BufferedReader(input_stream_reader, BUF_SIZE);
+		}
+		
+		protected int read() {
+			if (this.reader == null) {
+				Log.w(TAG, "WARNING: BufferedReader reader is uninitialised!");
+				return -1;
+			}
+			
+			try {
+				return (this.reader.read());
+			}
+			catch (IOException e) {
+				return -1;
+			}
+		}
+		
+		protected String read_line() {
+			if (this.reader == null) {
+				Log.w(TAG, "WARNING: BufferedReader reader is uninitialised!");
+				return null;
+			}
+			
+			try {
+				return (this.reader.readLine());
+			}
+			catch (IOException e) {
+				return null;
+			}
+		}
+		
+		protected boolean close() {
+			if (this.reader == null) {
+				Log.w(TAG, "WARNING: BufferedReader reader is uninitialised!");
+				return false;
+			}
+			
+			try {
+				this.reader.close();
+			}
+			catch (IOException e) {
+				return false;
+			}
+			
+			return true;
+		}
+	}
+	
+	private static class FileOutputWriter {
+		
+		private static final String TAG = "FileOutputWriter";
+		
+		private FileOutputStream writer;
+		
+		protected static FileOutputWriter get_instance(Context context, String filename) {
+			if (context == null || filename == null || filename.length() <= 0) {
+				throw new IllegalArgumentException("Invalid argument, get_instance()");
+			}
+			
+			FileOutputWriter out = new FileOutputWriter(context, filename);
+			
+			if (out.writer == null) {
+				return null;
+			}
+			return out;
+		}
+		
+		private FileOutputWriter(Context context, String filename) {
+			if (context == null || filename == null || filename.length() <= 0) {
+				throw new IllegalArgumentException("Invalid argument, FileOutputWriter constructor");
+			}
+			
+			try {
+				this.writer = context.openFileOutput(filename, Context.MODE_PRIVATE);
+			}
+			catch (IOException e) {
+				this.writer = null;
+			}
+		}
+		
+		protected boolean write(String line) {
+			if (line == null) {
+				throw new IllegalArgumentException("Argument cannot be null, write_line()");
+			}
+			else if (this.writer == null) {
+				Log.w(TAG, "WARNING: FileOutputWriter writer is uninitialised!");
+				return false;
+			}
+			
+			try {
+				this.writer.write(line.getBytes());
+			}
+			catch (IOException e) {
+				return false;
+			}
+			
+			return true;
+		}
+		
+		protected boolean close() {
+			if (this.writer == null) {
+				Log.w(TAG, "WARNING: FileOutputWriter writer is uninitialised!");
+				return false;
+			}
+			
+			try {
+				this.writer.close();
+			}
+			catch (IOException e) {
+				return false;
+			}
+			
+			return true;
+		}
+		
+	}
+	
+	
 }		// end of file
 
 /*

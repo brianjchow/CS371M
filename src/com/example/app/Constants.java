@@ -27,8 +27,6 @@ final class Constants {
 	protected static	BuildingList	BUILDING_CACHELIST_NEXT_SEMESTER	=	null; // new BuildingList();
 	protected static final	boolean		DISABLE_SEARCHES_NEXT_SEMESTER;
 	
-	protected static final	boolean		IGNORE_CONFERENCE_ROOMS			=	true;
-	
 	protected static final	int			BUILDING_CODE_LENGTH			=	3;
 
 	protected static final	int			SPRING_START_MONTH				=	1;
@@ -127,6 +125,13 @@ final class Constants {
 	protected static final	String		LOUNGE;
 	protected static final	String		SEMINAR;
 	
+	/* Optimization flags */
+	protected static final	boolean		STORE_LOCAL_COPY_CSV_FEEDS		=	true;
+	protected static final	boolean		INCLUDE_GDC_CONFERENCE_ROOMS	=	false;
+	protected static final	boolean		INCLUDE_GDC_LOBBY_ROOMS			=	false;
+	protected static final	boolean		INCLUDE_GDC_LOUNGE_ROOMS		=	false;
+	protected static final	boolean		SHORT_CIRCUIT_SEARCH_FOR_ROOM	=	false;
+	
 	protected static final	double		DEFAULT_HASHMAP_LOAD_FACTOR		=	0.7;
 	
 	static {
@@ -201,8 +206,8 @@ final class Constants {
 		MINUTES_IN_HOUR				=	60;
 		MINUTES_IN_DAY				=	1440;
 		HOURS_IN_DAY				=	24;
-		LAST_TIME_OF_DAY			=	2200;
-		LAST_TIME_OF_NIGHT			=	800;
+		LAST_TIME_OF_DAY			=	2300;
+		LAST_TIME_OF_NIGHT			=	730;
 		
 		UTCS_CSV_FEED_FORMAT		=	"EEE dd MMM yyyy HHmm";
 		US_DATE_24H_TIME_FORMAT		=	"MMM dd yyyy HHmm";
@@ -215,8 +220,8 @@ final class Constants {
 
 		/* ################################# DO NOT MOVE ANYTHING BELOW THIS LINE ABOVE IT ################################# */
 		
-		DAYBREAK					=	Utilities.get_date(1, 2, 2014, 730);
-		NIGHTFALL					=	Utilities.get_date(1, 1, 2014, 2300);
+		DAYBREAK					=	Utilities.get_date(1, 2, 2014, LAST_TIME_OF_NIGHT);
+		NIGHTFALL					=	Utilities.get_date(1, 1, 2014, LAST_TIME_OF_DAY);
 		
 		if (COURSE_SCHEDULE_NEXT_SEMESTER == null) {
 			DISABLE_SEARCHES_NEXT_SEMESTER = true;

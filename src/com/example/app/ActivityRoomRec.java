@@ -69,7 +69,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 			Query.QueryResult query_result = (Query.QueryResult) savedInstanceState.getParcelable(Query.QueryResult.PARCELABLE_QUERY_RESULT);
 			if (query_result != null) {
 				this.query_result = query_result;
-				this.curr_recommendation = savedInstanceState.getString(CURR_RECOMMENDATION, Query.MessageStatus.NO_ROOMS_AVAIL.toString());
+				this.curr_recommendation = savedInstanceState.getString(CURR_RECOMMENDATION, Query.SearchStatus.NO_ROOMS_AVAIL.toString());
 				this.curr_recommendation_info_textview = savedInstanceState.getString(CURR_RECOMMENDATION_INFO_TEXTVIEW, "");
 				this.curr_recommendation_res_id = savedInstanceState.getInt(CURR_RECOMMENDATION_RES_ID, Utilities.getResId("campus_tower", R.drawable.class));
 
@@ -198,7 +198,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 //		final int TRANSPARENCY_VAL = 165;
 		
 		View background = findViewById(R.id.background);
-		if (this.query_result.get_message_status().equals(Query.MessageStatus.SEARCH_SUCCESS.toString())) {
+		if (this.query_result.get_search_status().equals(Query.SearchStatus.SEARCH_SUCCESS.toString())) {
 			
 			String building_name = this.query_result.get_building_name();
 			if (building_name.equalsIgnoreCase(Constants.GDC)) {
@@ -251,7 +251,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 			background.setBackgroundResource(res_id);
 			this.curr_recommendation_res_id = res_id;
 			
-			Log.d(TAG, "Search returned " + this.query_result.get_message_status());
+			Log.d(TAG, "Search returned " + this.query_result.get_search_status());
 		}
 		
 		// http://stackoverflow.com/questions/4968883/opacity-on-a-background-drawable-image-in-view-using-xml-layout
@@ -284,13 +284,13 @@ public class ActivityRoomRec extends ActionBarActivity {
 		
 		StringBuilder msg = new StringBuilder();
 		
-		String message_status = this.query_result.get_message_status();
+		String message_status = this.query_result.get_search_status();
 		
-		if (message_status.equals(Query.MessageStatus.SEARCH_ERROR.toString())) {
+		if (message_status.equals(Query.SearchStatus.SEARCH_ERROR.toString())) {
 			msg.append("We're not sure why this is happening, but shoot us an email containing" +
 					"the information below and we'll get it fixed. Thanks!\n\n" + this.query.toString());
 		}
-		else if (message_status.equals(Query.MessageStatus.SEARCH_SUCCESS.toString())) {
+		else if (message_status.equals(Query.SearchStatus.SEARCH_SUCCESS.toString())) {
 			List<String> results = this.query_result.get_results();
 			
 //			Log.d(TAG, results.toString());
@@ -300,6 +300,15 @@ public class ActivityRoomRec extends ActionBarActivity {
 			}
 			else {
 				msg.append("Search found " + results.size() + " rooms available.\n\n");
+			}
+			
+			if (!Constants.SHORT_CIRCUIT_SEARCH_FOR_ROOM) {
+				if (this.query.search_is_at_night()) {
+					msg.append("NOTE: search occurs partly through or during after hours; you may not be able to enter without the appropriate authorization.\n\n");
+				}
+				else if (this.query.search_is_on_weekend()) {
+					msg.append("NOTE: search occurs partly through or during the weekend; you may not be able to enter without the appropriate authorization.\n\n");
+				}
 			}
 			
 			String search_building = this.query.get_option_search_building();
@@ -333,10 +342,10 @@ public class ActivityRoomRec extends ActionBarActivity {
 				}
 			}
 		}
-		else if (message_status.equals(Query.MessageStatus.GO_HOME.toString())) {
+		else if (message_status.equals(Query.SearchStatus.GO_HOME.toString())) {
 			msg.append("You're gonna fail that exam tomorrow anyway.");
 		}
-		else if (!message_status.equals(Query.MessageStatus.NO_ROOMS_AVAIL.toString())) {
+		else if (!message_status.equals(Query.SearchStatus.NO_ROOMS_AVAIL.toString())) {
 			msg.append("Be sure you have the appropriate authorization (if any) to enter and use" +
 					" the rooms in " + this.query.get_option_search_building() + ".");
 		}
@@ -355,12 +364,12 @@ public class ActivityRoomRec extends ActionBarActivity {
 		String search_building_str = this.query.get_option_search_building();
 		
 		String curr_course_schedule = this.query.get_current_course_schedule();
-		if (curr_course_schedule.equals(Query.MessageStatus.SUMMER.toString())) {
+		if (curr_course_schedule.equals(Query.SearchStatus.SUMMER.toString())) {
 			this.curr_recommendation = curr_course_schedule;
-			setTextViewInfo(Query.MessageStatus.ALL_ROOMS_AVAIL.toString());
+			setTextViewInfo(Query.SearchStatus.ALL_ROOMS_AVAIL.toString());
 			update_info_textview("Campus closed for holidays; check that you have permission before entering.");
 		}
-		else if (curr_course_schedule.equals(Query.MessageStatus.HOLIDAY.toString())) {
+		else if (curr_course_schedule.equals(Query.SearchStatus.HOLIDAY.toString())) {
 			this.curr_recommendation = curr_course_schedule;
 			setTextViewInfo("Some rooms available");
 			update_info_textview("Summer hours; check course schedule on UTDirect for more information.");
