@@ -1,4 +1,4 @@
-CS371M
+GDC Study Hall
 ======
 
 Still worst app ever
