@@ -52,7 +52,6 @@ final class Constants {
 	protected static final 	String 		ALL_DAY;
 	protected static final 	String 		ATRIUM;
 	protected static final 	Map<String, Integer> 	CAMPUS_BUILDINGS;
-//	protected static final	int			CAMPUS_BUILDINGS_GDC_POS;	//	=	60; // 29 in reduced list
 	
 	protected static final	Locale		DEFAULT_LOCALE					=	Locale.US;
 	
@@ -132,7 +131,7 @@ final class Constants {
 	protected static final	boolean		INCLUDE_GDC_LOUNGE_ROOMS		=	false;
 	protected static final	boolean		SHORT_CIRCUIT_SEARCH_FOR_ROOM	=	false;
 	
-	protected static final	double		DEFAULT_HASHMAP_LOAD_FACTOR		=	0.7;
+	protected static final	double		DEFAULT_HASHMAP_LOAD_FACTOR		=	0.75;
 	
 	static {
 		
@@ -144,7 +143,6 @@ final class Constants {
 		ATRIUM						=	"Atrium";
 		
 		CAMPUS_BUILDINGS			=	initialise_campus_buildings();
-//		CAMPUS_BUILDINGS_GDC_POS	=	initialise_campus_buildings_gdc_pos();
 		
 		CLASS						=	"class";
 		CONFERENCE					=	"conference";
@@ -206,7 +204,7 @@ final class Constants {
 		MINUTES_IN_HOUR				=	60;
 		MINUTES_IN_DAY				=	1440;
 		HOURS_IN_DAY				=	24;
-		LAST_TIME_OF_DAY			=	2300;
+		LAST_TIME_OF_DAY			=	2230;
 		LAST_TIME_OF_NIGHT			=	730;
 		
 		UTCS_CSV_FEED_FORMAT		=	"EEE dd MMM yyyy HHmm";
@@ -270,7 +268,6 @@ final class Constants {
 		
 		BUILDING_CACHELIST_THIS_SEMESTER = null;
 		BUILDING_CACHELIST_NEXT_SEMESTER = null;
-//		DISABLE_SEARCHES_NEXT_SEMESTER = false;
 	}
 	
 	protected static void init(Context context) {
@@ -310,8 +307,6 @@ final class Constants {
 			throw new IllegalStateException("Fatal error: failed to get GDC Building instance for this semester");
 		}
 		
-//		BUILDING_CACHELIST_THIS_SEMESTER.put_building(GDC, gdc_instance_this_semester);
-		
 		stopwatch.stop();
 		time_to_read += stopwatch.time();
 		
@@ -321,12 +316,8 @@ final class Constants {
 			Log.d(TAG, "Num rooms in GDC list: " + BUILDING_CACHELIST_THIS_SEMESTER.get_building(GDC).get_num_rooms());
 		}
 		
-		if (COURSE_SCHEDULE_NEXT_SEMESTER == null) {
-//			DISABLE_SEARCHES_NEXT_SEMESTER = true;
-		}
-		else {
+		if (COURSE_SCHEDULE_NEXT_SEMESTER != null) {
 			BUILDING_CACHELIST_NEXT_SEMESTER = new BuildingList();
-//			BUILDING_CACHELIST_NEXT_SEMESTER.put_building(GDC, Building.get_instance(context, GDC, COURSE_SCHEDULE_NEXT_SEMESTER));
 			
 			final Building gdc_instance_next_semester = Building.get_instance(context, GDC, COURSE_SCHEDULE_NEXT_SEMESTER);
 			if (gdc_instance_next_semester == null) {
@@ -352,7 +343,6 @@ final class Constants {
 		if (CSV_FEEDS_MASTER == null) {
 			throw new IllegalStateException("ERROR: CSV_FEEDS_MASTER is null, Constants.get_events_cleaned()");
 		}
-//		final String[] ignore_rooms = { "1.210", "2.100", "3.100", "4.100", "4.202", "4.314", "5.100", "6.100", "6.302" };
 		EventList out = new EventList();
 		Iterator<Event> itr = CSV_FEEDS_MASTER.get_iterator();
 		Event event;
@@ -390,28 +380,6 @@ final class Constants {
 	}
 
 	private static final Map<String, Integer> initialise_campus_buildings() {
-//		final String[] CAMPUS_BUILDINGS = {
-//				"ACA", "ADH", "AFP", "AHG", "ANB", "AND", "ARC", "ART", "ATT",
-//				"BAT", "BEL", "BEN", "BHD", "BIO", "BLD", "BMA", "BMC", "BME", "BOT", "BRB", "BRG", "BTL", "BUR", "BWY",
-//				"CAL", "CBA", "CCG", "CCJ", "CDA", "CDL", "CEE", "CCF", "CLA", "CLK", "CMA", "CMB", "CML", "COM", "CPE", "CRB", "CRD", "CRH", "CSA", "CS3", "CS4", "CS5", "CTR",
-//				"DEV", "DCP", "DFA", "DFF",
-//				"EAS", "ECJ", "ENS", "EPS", "ERC", "ETC",
-//				"FAC", "FDF", "FDH", "FNT", "FPC",			// , "FC1", "FC2", "FC3", "FC4", "FC5", "FC6", "FC7", "FC8" (facilities complex)
-//				"GAR", "GDC", "GEA", "GEB", "GOL", "GRE", "GRG", "GSB", "GUG",
-//				"HMA", "HRC", "HRH", "HSM",
-//				"INT", "IPF",
-//				"JCD", "JES", "JGB", "JHH", "JON",
-//				"KIN",
-//				"LBJ", "LCH", "LDH", "LFH", "LLA", "LLB", "LLC", "LLD", "LLE", "LLF", "LTD", "LTH",
-//				"MAG", "MAI", "MBB", "MEZ", "MFH", "MHD", "MMS", "MNC", "MRH", "MSB",
-//				"NEZ", "NHB", "NMS", "NOA", "NUR",
-//				"PAC", "PAI", "PAR", "PAT", "PCL", "PHD", "PHR", "POB", "PPA", "PPB", "PPE", "PPL",
-//				"RHD", "RLM", "RSC",
-//				"SAC", "SAG", "SBS", "SEA", "SER", "SJG", "SJH", "SRH", "SSB", "SSW", "STD", "SUT", "SWG", "SW7", "SZB",
-//				"TCC", "TMM", "TNH", "TRG", "TSC", "TSG", "TTC",
-//				"UA9", "UIL", "UNB", "UPB", "UTA", "UTC", "UTX",
-//				"WAG", "WCH", "WEL", "WIN", "WMB", "WRW", "WWH"
-//		};
 		final String[] CAMPUS_BUILDINGS = {
 				"ACA", "AHG", "ART", "ATT",
 				"BAT", "BEL", "BEN", "BIO", "BMC", "BME", "BRB", "BTL", "BUR",
@@ -441,29 +409,17 @@ final class Constants {
 		return CAMPUS_BUILDINGS_MAP;
 	}
 	
-//	private static final int initialise_campus_buildings_gdc_pos() {
-//		for (int i = 0; i < CAMPUS_BUILDINGS.length; i++) {
-//			if (CAMPUS_BUILDINGS[i].equals(GDC)) {
-//				return i;
-//			}
-//		}
-//		
-//		throw new IllegalStateException("ERROR: where's GDC in the campus buildings array mang?");
-//	}
-	
 	private static final int[] initialise_days_in_month() {
 		final int[] DAYS_IN_MONTH =	{ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 		return DAYS_IN_MONTH;
 	}
 	
 	private static final String[] initialise_days_of_week_long() {
-//		final String[] DAYS_OF_WEEK_LONG = { "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" };
 		final String[] DAYS_OF_WEEK_LONG = { "", "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY" };
 		return DAYS_OF_WEEK_LONG;
 	}
 	
 	private static final String[] initialise_days_of_week_short() {
-//		final String[] DAYS_OF_WEEK_SHORT =	{ "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN" };
 		final String[] DAYS_OF_WEEK_SHORT =	{ "", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
 		return DAYS_OF_WEEK_SHORT;
 	}
@@ -588,80 +544,5 @@ final class Constants {
 	}
 
 }		// end of file
-
-// ################################################
-/*
- * all set_start_date()s: prevent previous date from being assigned
- * null check all toString()s
- */
-
-/*
-
-	public static void main(String[] args){
-		
-		int current_month = 10;
-		int current_day = 27;
-
-		test(Utilities.get_date(current_month, current_day, 2014, 400), 61);
-		test(Utilities.get_date(current_month, current_day, 2014, 800), 61);
-		test(Utilities.get_date(current_month, current_day, 2014, 1030), 61);
-		test(Utilities.get_date(current_month, current_day, 2014, 1300), 61);
-		test(Utilities.get_date(current_month, current_day, 2014, 1300), 1);
-		test(Utilities.get_date(current_month, current_day, 2014, 1630), 61);
-		test(Utilities.get_date(current_month, current_day, 2014, 2300), 61);
-		test(Utilities.get_date(current_month, current_day, 2014, 0000), Constants.MINUTES_IN_DAY);
-
-	}
-	
-	public static void test(Date date, int duration) {
-		if (date == null) {
-			Calendar calendar = Calendar.getInstance();
-			date = calendar.getTime();
-		}
-		Stopwatch stopwatch = new Stopwatch();
-		double time_to_read, time_to_exec;
-		int num_events_in_raw_feeds;	//, num_events_available;
-		
-		EventList events = new EventList();
-
-		stopwatch.start();
-//		events = read_csv();
-		events = Constants.CSV_FEEDS_MASTER;
-		stopwatch.stop();
-		time_to_read = stopwatch.time();
-		num_events_in_raw_feeds = events.get_size();
-
-		events.sort_by_event_name(true);
-		events.sort_by_start_date(true);
-		
-//System.out.println(events.toString());
-		
-		stopwatch.start();
-		Query query = new Query(date);
-		
-		query.set_duration(duration);
-		query.set_option_power(false);
-//		query.set_option_capacity(0);
-		query.set_option(Constants.CAPACITY, new Integer(0));
-
-		String random_room = query.search();
-
-		stopwatch.stop();
-		time_to_exec = stopwatch.time();
-		
-		System.out.println("Random room chosen:\t" + random_room + "\n");
-		System.out.println("Query:\n" + query.toString() + "\n");
-		
-		System.out.println("Done.\n");
-		System.out.println("Num events, raw feeds:\t" + num_events_in_raw_feeds);
-		System.out.println("Num events, cleaned:\t" + Constants.CSV_FEEDS_CLEANED.get_size());
-//		System.out.println("Num events avail at\n    " + query + ":\t" + num_events_available);
-		System.out.println("Time to read feeds:\t" + time_to_read + " seconds");
-		System.out.println("Time to process:\t" + time_to_exec + " seconds");
-		System.out.println("Total time elapsed:\t" + (time_to_read + time_to_exec) + " seconds\n");
-		System.out.println("##########################################################################\n");
-	}
-	
- */
 
 

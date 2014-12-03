@@ -26,7 +26,7 @@ public class Utilities {
 			throw new IllegalArgumentException();
 		}
 		
-		int out = (int) Math.ceil((double) size / Constants.DEFAULT_HASHMAP_LOAD_FACTOR);
+		int out = ((int) Math.ceil((double) size / Constants.DEFAULT_HASHMAP_LOAD_FACTOR)) + 1;
 		return out;
 	}
 	
@@ -141,7 +141,6 @@ public class Utilities {
 	
 	protected static Date get_date(int time) {
 		if (time < Constants.MIN_TIME || time > Constants.MAX_TIME || time % 100 >= Constants.MINUTES_IN_HOUR) {
-//System.out.println((time < Constants.MIN_TIME) + " " + (time > Constants.MAX_TIME) + " " +  (time % 100 >= Constants.MINUTES_IN_HOUR));
 			return null;
 		}
 
@@ -149,12 +148,10 @@ public class Utilities {
 		
 		String temp = Integer.toString(time);
 		temp = Utilities.pad_to_len_leading_zeroes(temp, 4);
-//System.out.println(temp.substring(0, 2) + " " + temp.substring(2, 4));		
 		calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(temp.substring(0, 2)));
 		calendar.set(Calendar.MINUTE, Integer.parseInt(temp.substring(2, 4)));
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
-//System.out.println("\nfweiojfwe\n");		
 		return (calendar.getTime());
 	}
 	
@@ -220,32 +217,7 @@ public class Utilities {
 		}
 		return (start1.before(end2) && start2.before(end1));
 	}
-	
-//	protected static boolean times_overlap(Date start1, Date end1, Date start2, Date end2) {
-//		if (start1 == null || end1 == null || start2 == null || end2 == null) {
-//			throw new IllegalArgumentException("One or more arguments is null");
-//		}
-//		
-//		Calendar calendar = Calendar.getInstance();
-//		
-//		calendar.setTime(start1);
-//		DateTime start_one = new DateTime(calendar.getTime());
-//		
-//		calendar.setTime(end1);
-//		DateTime end_one = new DateTime(calendar.getTime());
-//		
-//		calendar.setTime(start2);
-//		DateTime start_two = new DateTime(calendar.getTime());
-//		
-//		calendar.setTime(end2);
-//		DateTime end_two = new DateTime(calendar.getTime());
-//		
-//		Interval one = new Interval(start_one, end_one);
-//		Interval two = new Interval(start_two, end_two);
-//		
-//		return (one.overlaps(two));
-//	}
-	
+
 	protected static boolean occur_on_same_day(Date date1, Date date2) {
 		if (date1 == null || date2 == null) {
 			return false;
@@ -311,8 +283,6 @@ public class Utilities {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-				
-//System.out.println(month_str + " " + day_str + " " + year_str + " " + time_str);
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
@@ -327,59 +297,7 @@ public class Utilities {
 		Calendar calendar = Calendar.getInstance();
 		return (calendar.getTime());
 	}
-	
-//	protected static Date get_date(int month, int day, int year) {
-//		if (month < 1 || month > 12) {
-//			return null;
-//		}
-//		else if (year < Constants.MIN_YEAR || year > Constants.MAX_YEAR) {
-//			return null;
-//		}
-//		
-//		int days_in_this_month = Constants.DAYS_IN_MONTH[month - 1];
-//		if (month == 2 && is_leap_year(year)) {
-//			days_in_this_month++;
-//		}
-//		if (day < 1 || day > days_in_this_month) {
-//			return null;
-//		}
-//		
-//		String month_str = Constants.MONTHS_SHORT[month - 1];
-//		String day_str = Integer.toString(day);
-//		String year_str = Integer.toString(year);
-//
-//		if (day_str.length() == 1) {
-//			day_str = "0" + day_str;
-//		}
-//		
-//		String date_str = new StringBuilder((month_str.length() + day_str.length() + year_str.length()) * 2).append(month_str + " " + day_str + " " + year_str).toString();
-//		
-//		DateFormat date_format = new SimpleDateFormat("MMM dd yyyy");
-//		Date date = null;
-//		try {
-//			date = date_format.parse(date_str);
-//		}
-//		catch (ParseException e) {
-//			e.printStackTrace();
-//		}
-//				
-////System.out.println(month_str + " " + day_str + " " + year_str);
-//				
-//		return date;
-//	}
-	
-//	public static void main(String args[]) {
-//		Date date = get_date("10 3 14 a1");
-//		if (date == null) {
-//			System.out.println("fuck");
-//		}
-//		else {
-//			System.out.println("FEJIOWEF");
-//		}
-//		
-//		get_date(1, 3, 2014, 0);
-//	}
-	
+
 	protected static String regex_replace(String str, String regex, String replace_with) {
 		if (str == null || regex == null || replace_with == null) {
 			throw new IllegalArgumentException();
@@ -452,15 +370,12 @@ public class Utilities {
 		
 		if (containsIgnoreCase(time, "noon")) {
 			time = regex_replace(time, "(?i)noon", "pm");
-//			System.out.println(time);
 		}
 
 		if ((containsIgnoreCase(time, "am") && (time.indexOf("am") == time.length() - 2 || time.indexOf("AM") == time.length() - 2)) ||
 				(containsIgnoreCase(time, "a") && (time.indexOf("a") == time.length() - 1 || time.indexOf("A") == time.length() - 1))) {
 			time = time.replaceAll("a", "");
 			time = time.replaceAll("m", "");
-//			time = regex_replace(time, "(?i)a", "");
-//			time = regex_replace(time, "(?i)m", "");
 			int temp = Integer.parseInt(time);		// negative times?
 			if (temp >= 1200 && temp <= 1259) {
 				time = Integer.toString(temp -= 1200);
@@ -472,8 +387,6 @@ public class Utilities {
 				 (containsIgnoreCase(time, "p") && (time.indexOf("p") == time.length() - 1 || time.indexOf("P") == time.length() - 1))) {
 			time = time.replaceAll("p", "");
 			time = time.replaceAll("m", "");
-//			time = regex_replace(time, "(?i)p", "");
-//			time = regex_replace(time, "(?i)m", "");
 			int temp = Integer.parseInt(time);		// negative times?
 			if (temp >= 100 && temp <= 1159) {
 				time = Integer.toString(temp += 1200);
@@ -552,18 +465,7 @@ public class Utilities {
         }
         return h;
 	}
-	
-//	int hash = 0;
-//	int h = hash;
-//	char[] str_arr = this.toString().toCharArray();
-//    if (h == 0 && str_arr.length > 0) {
-//        char val[] = str_arr;
-//
-//        for (int i = 0; i < str_arr.length; i++) {
-//            h = 31 * h + val[i];
-//        }
-//        hash = h;
-//    }
-//    return h;
     			
-}
+}		// end of file
+
+

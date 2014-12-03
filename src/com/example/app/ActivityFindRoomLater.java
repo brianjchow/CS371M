@@ -34,7 +34,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-//public class FindRoomLaterActivity extends ActionBarActivity implements View.OnClickListener {
 public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnDateSetListener, TimePickerDialog.OnTimeSetListener
 
 	private static final String TAG = "ActivityFindRoomLater";
@@ -55,21 +54,17 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				this.query.set_context(ActivityFindRoomLater.this);
 			}
 			else {
-//				this.query = new Query(getApplicationContext());
 				this.query = new Query(ActivityFindRoomLater.this);
 			}
 		}
 		else {
-//			this.query = new Query(getApplicationContext());
 			this.query = new Query(ActivityFindRoomLater.this);
 			
 			Bundle bundle = getIntent().getExtras();
 			if (bundle != null) {
 				Query query = (Query) bundle.getParcelable(Query.PARCELABLE_QUERY);
 				if (query != null) {
-//					Log.d(TAG, "Using transmitted parcelable\n" + query.toString());
 					this.query = query;
-//					this.query.set_context(getApplicationContext());
 					this.query.set_context(ActivityFindRoomLater.this);
 				}
 			}
@@ -176,7 +171,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				else {
 					query.set_option_power(Boolean.valueOf(false));
 				}
-//				Toast.makeText(FindRoomLaterActivity.this, "Selected power option: " + selected_power, Toast.LENGTH_SHORT).show();
 			}
 		});
 	}
@@ -195,12 +189,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			
 		};
 		
-//		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ActivityFindRoomLater.this, R.array.campus_buildings, android.R.layout.simple_spinner_dropdown_item);	// or android.R.layout.simple_spinner_item
-//		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(ActivityFindRoomLater.this, android.R.layout.simple_spinner_item, Constants.CAMPUS_BUILDINGS);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
-		
-//		spinner.setSelection(Constants.CAMPUS_BUILDINGS.get(Constants.GDC));
 		
 		setSearchBuildingSpinnerOnItemSelectedListener(spinner);
 	}
@@ -255,7 +245,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				calendar.setTime(start_date);
 				
 				Dialog timepicker_dialog = new TimePickerDialog(ActivityFindRoomLater.this, timepicker_dialog_listener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
-//				Dialog timepicker_dialog = new TimePickerDialog(ActivityFindRoomLater.this, timepicker_dialog_listener, selected_hour, selected_minute, true);
 				timepicker_dialog.show();
 			}
 		});		
@@ -276,12 +265,10 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				curr_start_date.setTime(start_date);
 				
 				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityFindRoomLater.this, datepicker_dialog_listener, curr_start_date.get(Calendar.YEAR), curr_start_date.get(Calendar.MONTH), curr_start_date.get(Calendar.DAY_OF_MONTH));
-//				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityFindRoomLater.this, datepicker_dialog_listener, selected_year, selected_month - 1, selected_day);
 				
 				DatePicker datepicker = datepicker_dialog.getDatePicker();
 				CalendarView cal_view = datepicker.getCalendarView();
 				cal_view.setShowWeekNumber(false);
-//				cal_view.setFocusedMonthDateColor(0xff00ff);
 				datepicker.setSpinnersShown(false);
 				datepicker.setCalendarViewShown(true);
 				
@@ -328,8 +315,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	
 	private DatePickerDialog.OnDateSetListener datepicker_dialog_listener = new OnDateSetListener() {
 		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//			Toast.makeText(FindRoomLaterActivity.this, "Date selected: " + year + "/" + (monthOfYear + 1) + "/" + dayOfMonth, Toast.LENGTH_SHORT).show();
-			
 			query.set_start_date((monthOfYear + 1), dayOfMonth, year);
 			set_start_date_button_text(query.get_start_date());
 			
@@ -345,9 +330,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	};
 	
 	private TimePickerDialog.OnTimeSetListener timepicker_dialog_listener = new OnTimeSetListener() {
-		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-//			Toast.makeText(FindRoomLaterActivity.this, "Time selected: " + hourOfDay + ":" + minute, Toast.LENGTH_SHORT).show();
-			
+		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {			
 			query.set_start_time(hourOfDay, minute);
 			set_start_time_button_text(query.get_start_date());
 		}
@@ -377,8 +360,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		np.setValue(this.query.get_option_capacity());
 		np.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
 			
-			@Override
-			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+		@Override
+		public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
 //				Toast.makeText(FindRoomLaterActivity.this, "Old val: " + oldVal + "; new val: " + newVal, Toast.LENGTH_SHORT).show();
 			}
 		});
@@ -447,8 +430,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			
 			@Override
 			public void onClick(View v) {
-//				Toast.makeText(FindRoomLaterActivity.this, "Duration selected: " + np.getValue(), Toast.LENGTH_SHORT).show();
-				
 				Integer val = Integer.valueOf(np.getValue());
 				query.set_duration(val);
 				set_min_duration_button_text(val);
@@ -527,15 +508,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		}
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-
 	private void getRoomRec() {
 		Query.QueryResult query_result = this.query.search();
 		
@@ -543,12 +515,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
 		intent.putExtra(Query.QueryResult.PARCELABLE_QUERY_RESULT, query_result);
 		
-//		Log.d(TAG, "Transmitting parcelable to RoomRecActivity: " + this.query.toString());
-		
-		startActivity(intent);
-//		startActivityForResult(intent, 0);
-//		startActivityForResult(new Intent(this, RoomRecActivity.class), 0);
-		
+		startActivity(intent);		
 		finish();
 	}
 		
@@ -593,7 +560,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		return super.onOptionsItemSelected(item);
 	}
 
-	
 	private void find_room_later() {
 		Intent intent = new Intent(ActivityFindRoomLater.this, ActivityFindRoomLater.class);
 //		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
@@ -615,8 +581,5 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		startActivity(intent);
 		finish();
 	}
-/*
-	
-*/
-		
+
 }		// end of file

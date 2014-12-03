@@ -17,11 +17,9 @@ import java.util.SortedSet;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 public class Query implements Parcelable {
 
-	private static final String TAG = "Query";
 	protected static final String PARCELABLE_QUERY = "query";
 	
 	private Context mContext;
@@ -59,7 +57,6 @@ public class Query implements Parcelable {
 		this.options.put(Constants.POWER, Boolean.valueOf(false));
 		this.options.put(Constants.SEARCH_BUILDING, Constants.GDC);
 		this.options.put(Constants.SEARCH_ROOM, Constants.RANDOM);
-
 	}
 
 	/**
@@ -257,32 +254,27 @@ public class Query implements Parcelable {
 
 		if (Utilities.date_is_during_spring(this.start_date)) {
 			if (Utilities.date_is_during_spring(now)) {
-				Log.d(TAG, "pos 1");
 				return Constants.COURSE_SCHEDULE_THIS_SEMESTER;
 			}
 			else if (Utilities.date_is_during_summer(now)) {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
 					throw new IllegalArgumentException("Fatal error - next semester's course schedule doesn't exist");
 				}
-				Log.d(TAG, "pos 2");
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
 			}
 			else if (Utilities.date_is_during_fall(now)) {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
 					throw new IllegalArgumentException("Fatal error - next semester's course schedule doesn't exist");
 				}
-				Log.d(TAG, "pos 3");
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
 			}
 			else {		// holiday
-				Log.d(TAG, "pos 4");
 				return SearchStatus.HOLIDAY.toString();
 //				return null;
 			}
 		}
 
 		else if (Utilities.date_is_during_summer(this.start_date)) {		// summer
-			Log.d(TAG, "pos 5");
 			return SearchStatus.SUMMER.toString();
 //			return null;
 		}
@@ -292,28 +284,21 @@ public class Query implements Parcelable {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
 					throw new IllegalArgumentException("Fatal error - next semester's course schedule doesn't exist");
 				}
-				Log.d(TAG, "pos 6");
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
 			}
 			else if (Utilities.date_is_during_summer(now)) {
-				Log.d(TAG, "pos 7");
 				return Constants.COURSE_SCHEDULE_THIS_SEMESTER;
 			}
 			else if (Utilities.date_is_during_fall(now)) {
-				Log.d(TAG, "pos 8");
 				return Constants.COURSE_SCHEDULE_THIS_SEMESTER;
 			}
 			else {		// holiday
-				Log.d(TAG, "pos 9");
 				return SearchStatus.HOLIDAY.toString();
-//				return null;
 			}
 		}
 
 		else {	// holiday
-			Log.d(TAG, "pos 10");
 			return SearchStatus.HOLIDAY.toString();
-//			return null;
 		}
 	}
 	
@@ -326,32 +311,27 @@ public class Query implements Parcelable {
 
 		if (Utilities.date_is_during_spring(this.start_date)) {
 			if (Utilities.date_is_during_spring(now)) {
-				Log.d(TAG, "pos 1");
 				return Constants.COURSE_SCHEDULE_THIS_SEMESTER;
 			}
 			else if (Utilities.date_is_during_summer(now)) {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
 					query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
 				}
-				Log.d(TAG, "pos 2");
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
 			}
 			else if (Utilities.date_is_during_fall(now)) {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
 					query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
 				}
-				Log.d(TAG, "pos 3");
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
 			}
 			else {
-				Log.d(TAG, "pos 4");
 				query_result.set_search_status(SearchStatus.HOLIDAY);
 				return null;
 			}
 		}
 
 		else if (Utilities.date_is_during_summer(this.start_date)) {
-			Log.d(TAG, "pos 5");
 			query_result.set_search_status(SearchStatus.SUMMER);
 			return null;
 		}
@@ -361,26 +341,21 @@ public class Query implements Parcelable {
 				if (Constants.COURSE_SCHEDULE_NEXT_SEMESTER == null) {
 					query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
 				}
-				Log.d(TAG, "pos 6");
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
 			}
 			else if (Utilities.date_is_during_summer(now)) {
-				Log.d(TAG, "pos 7");
 				return Constants.COURSE_SCHEDULE_THIS_SEMESTER;
 			}
 			else if (Utilities.date_is_during_fall(now)) {
-				Log.d(TAG, "pos 8");
 				return Constants.COURSE_SCHEDULE_THIS_SEMESTER;
 			}
 			else {
-				Log.d(TAG, "pos 9");
 				query_result.set_search_status(SearchStatus.HOLIDAY);
 				return null;
 			}
 		}
 
 		else {
-			Log.d(TAG, "pos 10");
 			query_result.set_search_status(SearchStatus.HOLIDAY);
 			return null;
 		}
@@ -609,7 +584,7 @@ public class Query implements Parcelable {
 	 */
 	protected boolean set_start_date(Date start_date) {
 		if (start_date == null) {
-			//				return false;
+//				return false;
 			throw new IllegalArgumentException("Error: starting date of event cannot be null, set_start_date()");
 		}
 
@@ -752,7 +727,6 @@ public class Query implements Parcelable {
 	
 	@SuppressWarnings("unchecked")
 	public Query(Parcel parcel) {
-//		Log.d(TAG, "In parcel constructor:\n" + this.toString());
 		Object[] fields = new Object[4];
 		fields = parcel.readArray(Query.class.getClassLoader());
 		
@@ -760,8 +734,6 @@ public class Query implements Parcelable {
 		this.end_date = (Date) fields[1];
 		this.duration = (Integer) fields[2];
 		this.options = (Map<String, Object>) fields[3];
-		
-//		Log.d(TAG, "In parcel constructor:\n" + this.toString());
 	}
 	
 	@Override
@@ -778,7 +750,6 @@ public class Query implements Parcelable {
 		
 		@Override
 		public Query createFromParcel(Parcel in) {
-//			Log.d(TAG, "In createFromParcel");
 			return new Query(in);
 		}
 		
@@ -852,51 +823,29 @@ public class Query implements Parcelable {
 				curr_room_str = curr_event.get_location().get_room();
 				curr_room = search_building.get_room(curr_room_str);
 				
-//				Log.d(TAG, curr_room_str);
-				
 				if (curr_room == null) {
 					continue;
 				}
 				else if (curr_room_str.equals("2.506") || (wanted_power && !curr_room.get_has_power())) {
-					
-//					Log.d(TAG, "Removing " + curr_room_str + " due to options");
-					
 					if (valid_rooms.contains(curr_room_str)) {
 						valid_rooms.remove(curr_room_str);
 						continue;
 					}
 				}
 				
-//				if (!Utilities.occur_on_same_day(curr_event.get_start_date(), this.start_date)) {
-//					
-//					Log.d(TAG, "Removing " + curr_room_str + " due to diff dates; curre: " + curr_event.get_event_name() + "; curre start: " + curr_event.get_start_date().toString() + "; currq start: " + this.start_date.toString());
-//					
-//					if (valid_rooms.contains(curr_room_str)) {
-//						valid_rooms.remove(curr_room_str);
-//						continue;
-//					}
-//				}
-				
-				if (Utilities.occur_on_same_day(curr_event.get_start_date(), this.start_date) && Utilities.times_overlap(curr_event.get_start_date(), curr_event.get_end_date(), this.start_date, this.end_date)) {
-					
-//					Log.d(TAG, "Removing " + curr_room_str + " due to overlap; curre: " + curr_event.get_event_name() + "; curre start: " +
-//								curr_event.get_start_date().toString() + "; curre end: " + curr_event.get_end_date() + "; currq start: " +
-//								this.start_date.toString() + "; currq end: " + this.end_date.toString());
-					
+				if (Utilities.occur_on_same_day(curr_event.get_start_date(), this.start_date) && 
+					Utilities.times_overlap(curr_event.get_start_date(), curr_event.get_end_date(), this.start_date, this.end_date)) {
 					if (valid_rooms.contains(curr_room_str)) {
 						valid_rooms.remove(curr_room_str);
 						continue;
 					}
 				}
 			}
-			
-//			Log.d(TAG, valid_rooms.toString());
-			
+						
 		}
 		
 		final Calendar cal1 = Calendar.getInstance();
 		final Calendar cal2 = Calendar.getInstance();
-//		Date temp;
 		
 		int today = this.get_this_day_of_week();
 		boolean is_valid = true;
@@ -908,7 +857,6 @@ public class Query implements Parcelable {
 			}
 			
 			Set<Event> courses = curr_room.get_events(today);
-//	System.out.println(courses.toString());
 			
 			Date curr_start_date, curr_end_date;
 			for (Event curr_event : courses) {
@@ -918,16 +866,12 @@ public class Query implements Parcelable {
 				cal1.setTime(curr_start_date);
 				cal2.setTime(this.start_date);
 				
-				/* Set DatePicker to limit search to the current day */
-				
-//				cal1.set(Calendar.MONTH, cal2.get(Calendar.MONTH));
 				cal1.set(Calendar.DAY_OF_YEAR, cal2.get(Calendar.DAY_OF_YEAR));
 				curr_start_date = cal1.getTime();
 				
 				cal1.setTime(curr_end_date);
 				cal2.setTime(this.end_date);
 				
-//				cal1.set(Calendar.MONTH, cal2.get(Calendar.MONTH));
 				cal1.set(Calendar.DAY_OF_YEAR, cal2.get(Calendar.DAY_OF_YEAR));
 				curr_end_date = cal1.getTime();
 				
@@ -950,9 +894,6 @@ public class Query implements Parcelable {
 			is_valid = true;
 		}
 
-//		Log.d(TAG, "DONE; valid_rooms: " + valid_rooms.toString());
-//		Log.d(TAG, this.toString());
-		
 		if (all_valid_rooms.size() <= 0) {
 			query_result.set_search_status(SearchStatus.NO_ROOMS_AVAIL);
 		}
@@ -1002,8 +943,6 @@ public class Query implements Parcelable {
 			query_result.set_results(schedule);
 			return query_result;
 		}
-		
-//		query_result.set_scratch(search_room);
 		
 		int today = this.get_this_day_of_week();
 		Set<Event> all_events = search_room.get_events(today);
@@ -1190,8 +1129,6 @@ public class Query implements Parcelable {
 			this.building_name = (String) fields[1];
 			this.results = (List<String>) fields[2];
 			this.message_status = (String) fields[3];
-//			this.scratch = (Object) fields[4];
-			
 		}
 		
 		@Override
@@ -1201,7 +1138,7 @@ public class Query implements Parcelable {
 		
 		@Override
 		public void writeToParcel(Parcel out, int flags) {
-			out.writeArray(new Object[] { this.search_type, this.building_name, this.results, this.message_status }); // , this.scratch });
+			out.writeArray(new Object[] { this.search_type, this.building_name, this.results, this.message_status });
 		}
 		
 		public static final Parcelable.Creator<QueryResult> CREATOR = new Parcelable.Creator<QueryResult>() {
@@ -1266,7 +1203,6 @@ public class Query implements Parcelable {
 		}
 	}
 
-	
 }		// end of file
 
 

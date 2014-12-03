@@ -45,9 +45,6 @@ public class ActivityRoomRec extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_room_rec);
 		
-//		TextView info_textview = (TextView) findViewById(R.id.info_textview);
-//		info_textview.setMovementMethod(new ScrollingMovementMethod());
-		
 		if (savedInstanceState != null) {
 			/*
 			 * Orientation change/etc
@@ -62,7 +59,6 @@ public class ActivityRoomRec extends ActionBarActivity {
 				this.query.set_context(ActivityRoomRec.this);
 			}
 			else {
-//				this_query = new Query(getApplicationContext());
 				this.query = new Query(ActivityRoomRec.this);
 			}
 			
@@ -76,8 +72,6 @@ public class ActivityRoomRec extends ActionBarActivity {
 				setTextViewInfo(this.curr_recommendation);
 				update_background();
 				update_info_textview(this.curr_recommendation_info_textview);
-				
-				// CHECK QUERYRESULT'S SEARCHTYPE HERE; UPDATE LOWER TEXTVIEW AS NECESSARY
 			}
 			else {
 				search();
@@ -187,24 +181,12 @@ public class ActivityRoomRec extends ActionBarActivity {
 		stopwatch.start();
 		
 		this.query_result = query.search();
-		this.curr_recommendation = query_result.get_random_room();
+//		this.curr_recommendation = query_result.get_random_room();
 		
 		stopwatch.stop();
 		handle_search_random_room();
 	}
-	
-//	private boolean is_truncated_gdc_room(String room) {
-//		if (room == null) {
-//			return false;
-////			throw new IllegalArgumentException();
-//		}
-//
-//		if (room.equalsIgnoreCase("gdc 2.21") || room.equalsIgnoreCase("gdc 2.41")) {
-//			return true;
-//		}
-//		return false;
-//	}	
-	
+
 	private boolean needs_truncation_gdc_room(String room) {
 		if (room == null) {
 			return false;
@@ -219,14 +201,12 @@ public class ActivityRoomRec extends ActionBarActivity {
 	
 	// http://androidcocktail.blogspot.in/2012/05/solving-bitmap-size-exceeds-vm-budget.html
 	private void update_background() {
-//		final int TRANSPARENCY_VAL = 165;
 		
 		View background = findViewById(R.id.background);
 		if (this.query_result.get_search_status().equals(Query.SearchStatus.SEARCH_SUCCESS.toString())) {
 			
 			String building_name = this.query_result.get_building_name();
 			if (building_name.equalsIgnoreCase(Constants.GDC)) {
-//				String temp = new Location(curr_recommendation).get_room().replaceAll("\\.", "");
 				
 				String room_rec = this.curr_recommendation.toLowerCase(Constants.DEFAULT_LOCALE);
 				if (needs_truncation_gdc_room(room_rec)) {
@@ -238,13 +218,9 @@ public class ActivityRoomRec extends ActionBarActivity {
 				if (res_id != -1) {
 					background.setBackgroundResource(res_id);
 					this.curr_recommendation_res_id = res_id;
-					
-//					Drawable background_image = background.getBackground();
-//					background_image.setAlpha(TRANSPARENCY_VAL);	// 0xcc == 204
 				}
 				else {
-					// display tower?
-					res_id = Utilities.getResId("campus_tower", R.drawable.class);
+					res_id = Utilities.getResId("campus_gdc", R.drawable.class);
 					background.setBackgroundResource(res_id);
 					this.curr_recommendation_res_id = res_id;
 				}
@@ -252,21 +228,13 @@ public class ActivityRoomRec extends ActionBarActivity {
 				Log.d(TAG, "Looking for building picture " + building_pic_str + " with res id " + res_id);
 			}
 			else {
-				// get the building name
-				// get its picture
-				// set res id
-				
 				String building_pic_str = "campus_" + building_name.toLowerCase(Constants.DEFAULT_LOCALE);
 				int res_id = Utilities.getResId(building_pic_str, R.drawable.class);
 				if (res_id != -1) {
 					background.setBackgroundResource(res_id);
 					this.curr_recommendation_res_id = res_id;
-					
-//					Drawable background_image = background.getBackground();
-//					background_image.setAlpha(TRANSPARENCY_VAL);	// 0xcc == 204
 				}
 				else {
-					// display tower?
 					res_id = Utilities.getResId("campus_tower", R.drawable.class);
 					background.setBackgroundResource(res_id);
 					this.curr_recommendation_res_id = res_id;
@@ -276,18 +244,12 @@ public class ActivityRoomRec extends ActionBarActivity {
 			}
 		}
 		else {
-			// display tower
 			int res_id = Utilities.getResId("campus_tower", R.drawable.class);
 			background.setBackgroundResource(res_id);
 			this.curr_recommendation_res_id = res_id;
 			
 			Log.d(TAG, "Search returned " + this.query_result.get_search_status());
 		}
-		
-		// http://stackoverflow.com/questions/4968883/opacity-on-a-background-drawable-image-in-view-using-xml-layout
-		// http://stackoverflow.com/questions/2838757/how-to-set-opacity-alpha-for-view-in-android
-//		Drawable background_image = background.getBackground();
-//		background_image.setAlpha(165);	// 0xcc == 204
 	}
 	
 	private void setTextViewInfo(String recommendation) {
@@ -297,7 +259,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 
 		TextView roomRecText = (TextView) findViewById(R.id.room_num);
 		
-		if (recommendation.equals("GDC 2.21") || recommendation.equals("GDC 2.41")) {
+		if (recommendation.toUpperCase(Constants.DEFAULT_LOCALE).equals("GDC 2.21") || recommendation.toUpperCase(Constants.DEFAULT_LOCALE).equals("GDC 2.41")) {
 			roomRecText.setText(recommendation + "0");
 		}
 		else {
@@ -327,9 +289,12 @@ public class ActivityRoomRec extends ActionBarActivity {
 					"the information below and we'll get it fixed. Thanks!\n\n" + this.query.toString());
 		}
 		else if (message_status.equals(Query.SearchStatus.SEARCH_SUCCESS.toString())) {
-			List<String> results = this.query_result.get_results();
+			String[] curr_rec_split = this.curr_recommendation.split("\\s");
+			if (curr_rec_split.length > 1) {
+				this.query.set_option_search_room(curr_rec_split[1]);
+			}
 			
-//			Log.d(TAG, results.toString());
+			List<String> results = this.query_result.get_results();
 			
 			if (results.size() == 1) {
 				msg.append("Search found one room available.\n\n");
@@ -340,10 +305,10 @@ public class ActivityRoomRec extends ActionBarActivity {
 			
 			if (!Constants.SHORT_CIRCUIT_SEARCH_FOR_ROOM) {
 				if (this.query.search_is_on_weekend()) {
-					msg.append("NOTE: search occurs partly through or during the weekend; you may not be able to enter without the appropriate authorization.\n\n");
+					msg.append("NOTE: search occurs partly through or during the weekend; you may not be able to enter without appropriate authorization.\n\n");
 				}
 				else if (this.query.search_is_at_night()) {
-					msg.append("NOTE: search occurs partly through or during after hours; you may not be able to enter without the appropriate authorization.\n\n");
+					msg.append("NOTE: search occurs partly through or during after-hours; you may not be able to enter without appropriate authorization.\n\n");
 				}
 			}
 			
@@ -396,9 +361,8 @@ public class ActivityRoomRec extends ActionBarActivity {
 		this.curr_recommendation_info_textview = msg.toString();
 		
 		setTextViewInfo(this.curr_recommendation);
-		update_background();
 		
-//		Log.d(TAG, "PROCESSED regular random-room search - " + msg.toString());
+		update_background();
 	}
 	
 	private void handle_search_get_room_schedule() {
@@ -426,9 +390,6 @@ public class ActivityRoomRec extends ActionBarActivity {
 
 			int capacity = search_room.get_capacity();
 			List<String> events = this.query_result.get_results();
-			
-//			Log.d(TAG, search_room.toString());
-//			Log.d(TAG, events.toString());
 			
 			DateFormat format = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.ENGLISH);
 			String date_str = format.format(this.query.get_start_date());
@@ -463,7 +424,6 @@ public class ActivityRoomRec extends ActionBarActivity {
 				}
 				
 				for (String curr_event : events) {
-//					curr_event = curr_event.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(", ", "");
 					msg.append(curr_event);
 				}
 			}
@@ -475,8 +435,6 @@ public class ActivityRoomRec extends ActionBarActivity {
 		}
 		
 		update_background();
-		
-//		Log.d(TAG, "PROCESSED room course schedule search - " + msg.toString());
 	}
 	
 	@Override
@@ -488,8 +446,6 @@ public class ActivityRoomRec extends ActionBarActivity {
 		outState.putString(CURR_RECOMMENDATION, this.curr_recommendation);
 		outState.putString(CURR_RECOMMENDATION_INFO_TEXTVIEW, this.curr_recommendation_info_textview);
 		outState.putInt(CURR_RECOMMENDATION_RES_ID, this.curr_recommendation_res_id);
-		
-//		Log.d(TAG, "Orientation changed, in onSaveInstanceState(); bground res id: " + outState.getInt("curr_recommendation_res_id", -64));
 	}
 
 	@Override
@@ -526,7 +482,6 @@ public class ActivityRoomRec extends ActionBarActivity {
 
 
 	public void getRoomRec() {
-//		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
 		startActivity(new Intent(ActivityRoomRec.this, ActivityFindRoomLater.class));
 		finish();
 	}
@@ -552,28 +507,6 @@ public class ActivityRoomRec extends ActionBarActivity {
 		startActivity(intent);
 		finish();
 	}
-
-
-//	@Override
-//	public void onClick(View v) {
-//		switch (v.getId()) {
-//			case R.id.ohkay:
-////				exit();
-//				Intent intent = new Intent(this, ActivityMain.class);
-//				startActivity(intent);
-//				finish();
-//				break;
-//			case R.id.new_room:
-////				getRoomRec();
-//				search();
-//				break;
-//			case R.id.find_room_later:
-//				Log.d(TAG, "Clicked search later button");
-//				find_room_later();
-//				break;
-//		}
-//
-//	}
 
 }		// end of file
 

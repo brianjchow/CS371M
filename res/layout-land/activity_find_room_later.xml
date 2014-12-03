@@ -23,7 +23,7 @@
 	        android:layout_width="0dp"
 	        android:layout_height="50dp"
 	        android:layout_weight = "1"
-	        android:text="@string/get_room_enthusiastic"
+	        android:text="@string/search"
 	        android:textSize = "24sp"
 	        android:textColor = "@color/white"
         	android:background = "@color/background_transparency" />

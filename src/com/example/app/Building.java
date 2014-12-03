@@ -62,12 +62,7 @@ final class Building implements Comparable<Building> {
 			if (Constants.BUILDING_CACHELIST_NEXT_SEMESTER != null) {
 				Constants.BUILDING_CACHELIST_NEXT_SEMESTER.put_building(building_name, out);
 			}
-			
-//			if ((out = Constants.BUILDING_CACHELIST_NEXT_SEMESTER.get_building(building_name)) == null) {
-//				Constants.BUILDING_CACHELIST_NEXT_SEMESTER.put_building(building_name, out);
-//			}
 		}
-//		else if (Utilities.containsIgnoreCase(Constants.COURSE_SCHEDULE_THIS_SEMESTER, db_file_name)) {
 		else {
 
 			if ((out = Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_building(building_name)) != null) {
@@ -81,14 +76,7 @@ final class Building implements Comparable<Building> {
 			if (Constants.BUILDING_CACHELIST_THIS_SEMESTER != null) {
 				Constants.BUILDING_CACHELIST_THIS_SEMESTER.put_building(building_name, out);
 			}
-			
-//			if ((out = Constants.BUILDING_CACHELIST_THIS_SEMESTER.get_building(building_name)) == null) {
-//				Constants.BUILDING_CACHELIST_THIS_SEMESTER.put_building(building_name, out);
-//			}
 		}
-//		else {
-//			out = null;
-//		}
 		
 		return out;
 	}
@@ -132,22 +120,12 @@ final class Building implements Comparable<Building> {
 		
 		CourseScheduleDatabase db = new CourseScheduleDatabase(context, db_file_name);
 		this.rooms = db.get_courses(this.name, db_file_name);
-		
-//		System.out.println(this.rooms.toString());
 	}
-	
-//	protected boolean put_room(String room_num, Room room) {
-//		if (room_num == null || room_num.length() <= 0 || room == null) {
-////			return false;
-//			throw new IllegalArgumentException();
-//		}
-//		this.rooms.put(room_num, room);
-//		return true;
-//	}
-	
+
 	@Override
 	protected Building clone() {
 		Building out = new Building(this.name);
+		out.rooms = new HashMap<String, Room>(Utilities.get_hashmap_size(this.rooms.size()));
 		
 		String curr_room_str;
 		Room curr_room;

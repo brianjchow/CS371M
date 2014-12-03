@@ -19,11 +19,19 @@ public class EventList {
 		this.list = new ArrayList<Event>(100);
 	}
 	
+	protected EventList(int size) {
+		if (size < 0) {
+			throw new IllegalArgumentException();
+		}
+		
+		this.list = new ArrayList<Event>(size);
+	}
+	
 	/**
 	 * @param strings
 	 */
 	protected EventList(List<HashMap<String, String>> strings) {
-		EventList temp = new EventList();
+		EventList temp = new EventList(strings.size());
 		if (!temp.add(strings)) {
 			throw new IllegalStateException("Error adding List of HashMap of Strings to EventList, EventList constructor");
 		}
@@ -314,7 +322,7 @@ public class EventList {
 	 * @see java.lang.Object#clone()
 	 */
 	protected EventList clone() {
-		EventList out = new EventList();
+		EventList out = new EventList(this.list.size());
 		
 		for (Event event : this.list) {
 			out.add(event.clone());

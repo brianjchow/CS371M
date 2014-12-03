@@ -35,7 +35,7 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 	
 	protected Map<String, Room> get_courses(String building_name, String db_file_name) {
 		if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH || db_file_name == null || db_file_name.length() <= 0) {
-//			Log.d(TAG, "One or more arguments null, CourseScheduleDatabase.get_courses()");
+			Log.d(TAG, "One or more arguments null, CourseScheduleDatabase.get_courses()");
 			throw new IllegalArgumentException("One or more arguments null, CourseScheduleDatabase.get_courses()");
 		}
 		
@@ -52,10 +52,7 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 		query = "SELECT * FROM " + table_name + " WHERE building=\"" + building_name.toUpperCase(Constants.DEFAULT_LOCALE) + "\"";
 		
 		db = this.getReadableDatabase();
-//		Log.d(TAG, "db is null: " + (db == null));
-		
 		cursor = db.rawQuery(query, null);
-//		Log.d(TAG, "cursor is null: " + (cursor == null));
 
 		if (!cursor.moveToFirst()) {
 			return out;
@@ -124,8 +121,6 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 				
 				out.put(room_num, room);
 			}
-			
-//			Log.d(TAG, DatabaseUtils.dumpCurrentRowToString(cursor));
 		}
 		while (cursor.moveToNext());
 		
@@ -188,10 +183,6 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 	}
 
 	private Map<String, Room> initialise_gdc_room_properties() {
-//		Log.d(TAG, (Constants.VALID_GDC_ROOMS == null) + " " + (Constants.VALID_GDC_ROOMS_TYPES == null) + " " + (Constants.VALID_GDC_ROOMS_CAPACITIES == null)
-//				+ " " + (Constants.VALID_GDC_ROOMS_POWERS == null) + " " + (Constants.GDC == null)
-//				+ " " + (Constants.CONFERENCE == null) + " " + (Constants.LOBBY == null) + " " + (Constants.LOUNGE == null));
-		
 		Map<String, Room> out = new HashMap<String, Room>(Constants.VALID_GDC_ROOMS.length * 2);
 
 		String[] room_types = Constants.VALID_GDC_ROOMS_TYPES;

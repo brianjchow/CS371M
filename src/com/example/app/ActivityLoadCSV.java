@@ -37,8 +37,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 	
 	private final ReadFeedTask read_csv = new ReadFeedTask();
 
-//	private Context mContext;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,8 +45,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		
 		getActionBar().setTitle(getResources().getString(R.string.loading));
 		
-//		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
 		try {
 			Class.forName("com.example.app.Constants", true, this.getClass().getClassLoader());
 		}
@@ -62,16 +58,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		AnimationDrawable anim_draw = (AnimationDrawable) progressSpinner.getBackground();
 		anim_draw.start();
 
-//		mContext = ActivityLoadCSV.this;
-		
-//		Intent calling_intent = getIntent();
-//		if (calling_intent == null) {
-//			Log.d(TAG, "App just freshly launched");
-//		}
-//		else {
-//			Log.d(TAG, "App restarted from " + calling_intent.toString());
-//		}
-		
 		if (!has_network_connectivity()) {
 			Log.d(TAG, "No wifi and/or mobile cxn detected on startup, onCreate(), LoadCSV");
 			goto_wait_for_cxn();
@@ -89,7 +75,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 					if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
 						TIMEOUT_FLAG = true;
 						read_csv.cancel(true);
-//						show_warning_dialog(getResources().getString(R.string.load_error_msg));
 					}
 				}
 				
@@ -100,10 +85,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 	
 	// MUST CALL return AFTER CALLING THIS METHOD
 	private void goto_wait_for_cxn() {
-//		Constants.CSV_FEEDS_MASTER = null;
-//		Constants.CSV_FEEDS_CLEANED = null;
-		
-//		Intent intent = new Intent(ActivityLoadCSV.this, ActivityWaitForCxn.class);
 		startActivity(new Intent(ActivityLoadCSV.this, ActivityWaitForCxn.class));
 		finish();
 	}
@@ -124,7 +105,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 	protected void onPause() {
 		super.onPause();
 		
-		// unregister BroadcastReceiver
 		Log.d(TAG, "Unregistering broadcast receiver, onPause()");
 		unregisterReceiver(broadcast_receiver);
 	}
@@ -150,9 +130,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 //						else {
 //							show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
 //						}
-						
-//						goto_wait_for_cxn();
-//						return;
+
 					}
 					// else do nothing, because connection was newly established (should never happen within this class)
 				}
@@ -166,9 +144,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 //					else {
 //						show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
 //					}
-					
-//					goto_wait_for_cxn();
-//					return;
+
 				}
 
 			}
@@ -188,9 +164,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 //						else {
 //							show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
 //						}
-						
-//						goto_wait_for_cxn();
-//						return;
+
 					}
 					// else do nothing, because connection was newly established (should never happen within this class)
 				}
@@ -204,9 +178,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 //					else {
 //						show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
 //					}
-					
-//					goto_wait_for_cxn();
-//					return;
+
 				}
 			}
 		}
@@ -261,8 +233,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		
 		@Override
 		protected void onCancelled(Boolean done) {
-//			Log.d(TAG, "Timed out");
-			
 			delete_all_feeds();
 			
 			if (!TIMEOUT_FLAG) {
@@ -284,7 +254,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 				Log.d(TAG, "Done reading CSV, now entering MainActivity...");
 				
 				if (Constants.DEBUG) {
-//					Toast.makeText(ActivityLoadCSV.this, "Took " + CSVReader.time_to_read + " seconds to read " + CSVReader.lines_read + " lines", Toast.LENGTH_LONG).show();
 					Toast.makeText(ActivityLoadCSV.this, "Took " + (CSVReader.time_to_read + Constants.time_to_read) + " seconds to read CSV feeds (" + CSVReader.lines_read + " lines) and load GDC course schedule", Toast.LENGTH_LONG).show();
 				}
 				
@@ -311,7 +280,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		dialog.setCancelable(false);		
 		
 		TextView err_msg = (TextView) dialog.findViewById(R.id.error_msg);
-//		err_msg.setText(R.string.load_warning_msg);
 		err_msg.setText(msg);
 		
 		dialog.findViewById(R.id.restart_button).setVisibility(View.GONE);
@@ -323,9 +291,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			
 			@Override
 			public void onClick(View v) {
-//				Constants.CSV_FEEDS_MASTER = null;
-//				Constants.CSV_FEEDS_CLEANED = null;
-				
 				Constants.init(ActivityLoadCSV.this, true);
 				
 				dialog.dismiss();
@@ -428,28 +393,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory (delete_all()): " + deleted);
 		}
 	}
-	
-/*
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.load_csv, menu);
-		return true;
-	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-	
-*/
-	
 }		// end of file
+
+

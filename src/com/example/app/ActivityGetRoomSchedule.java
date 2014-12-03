@@ -54,20 +54,17 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 			}
 		}
 		else {
-//			this.query = new Query(getApplicationContext());
 			this.query = new Query(ActivityGetRoomSchedule.this);
 			
 			Bundle bundle = getIntent().getExtras();
 			if (bundle != null) {
 				Query query = (Query) bundle.getParcelable(Query.PARCELABLE_QUERY);
 				if (query != null) {
-//					Log.d(TAG, "Using transmitted parcelable\n" + query.toString());
 					this.query = query;
 					this.query.set_context(ActivityGetRoomSchedule.this);
 				}
 			}
 		}
-		
 		
 		findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
 			
@@ -111,12 +108,8 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 			
 		};
 		
-//		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ActivityGetRoomSchedule.this, R.array.campus_buildings, android.R.layout.simple_spinner_dropdown_item);	// or android.R.layout.simple_spinner_item
-//		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(ActivityFindRoomLater.this, android.R.layout.simple_spinner_item, Constants.CAMPUS_BUILDINGS);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
-		
-//		spinner.setSelection(Constants.CAMPUS_BUILDINGS.get(Constants.GDC));
 		
 		setSearchBuildingButtonSpinnerOnItemSelectedListener(spinner);
 	}
@@ -154,12 +147,14 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.start();
 		
+		String search_building_str = this.query.get_option_search_building();
+		
 		String curr_course_schedule = this.query.get_current_course_schedule();
 		if (curr_course_schedule == null) {
 			rooms = new String[] { no_rooms_found };
 		}
 		else {
-			Building search_building = Building.get_instance(ActivityGetRoomSchedule.this, this.query.get_option_search_building(), curr_course_schedule);
+			Building search_building = Building.get_instance(ActivityGetRoomSchedule.this, search_building_str, curr_course_schedule);
 			SortedSet<String> roomset = search_building.get_keyset();
 			
 			if (roomset.size() <= 0) {
@@ -168,7 +163,7 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 			else {
 				rooms = roomset.toArray(new String[roomset.size()]);
 				
-				if (Utilities.str_is_gdc(this.query.get_option_search_building())) {
+				if (Utilities.str_is_gdc(search_building_str)) {
 					int index;
 					
 					index = Arrays.asList(rooms).indexOf("2.21");
@@ -187,21 +182,8 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 		Button get_room_button = (Button) findViewById(R.id.get_room);
 		if (rooms.length == 0 || (rooms.length == 1 && rooms[0].equals(no_rooms_found))) {
 			get_room_button.setVisibility(View.GONE);
-			
-//			get_room_button.setText(getResources().getString(R.string.home));
-//			get_room_button.setOnClickListener(new OnClickListener() {
-//				
-//				@Override
-//				public void onClick(View v) {
-//					Intent intent = new Intent(ActivityGetRoomSchedule.this, ActivityMain.class);
-//					startActivity(intent);
-//					finish();
-//					return;
-//				}
-//			});
 		}
 		else {
-			get_room_button.setText(getResources().getString(R.string.get_room_enthusiastic));
 			get_room_button.setOnClickListener(new OnClickListener() {
 				
 				@Override
@@ -290,12 +272,10 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 				curr_start_date.setTime(start_date);
 				
 				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityGetRoomSchedule.this, datepicker_dialog_listener, curr_start_date.get(Calendar.YEAR), curr_start_date.get(Calendar.MONTH), curr_start_date.get(Calendar.DAY_OF_MONTH));
-//				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityFindRoomLater.this, datepicker_dialog_listener, selected_year, selected_month - 1, selected_day);
-				
+
 				DatePicker datepicker = datepicker_dialog.getDatePicker();
 				CalendarView cal_view = datepicker.getCalendarView();
 				cal_view.setShowWeekNumber(false);
-//				cal_view.setFocusedMonthDateColor(0xff00ff);
 				datepicker.setSpinnersShown(false);
 				datepicker.setCalendarViewShown(true);
 				
@@ -342,8 +322,6 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 	
 	private DatePickerDialog.OnDateSetListener datepicker_dialog_listener = new OnDateSetListener() {
 		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//			Toast.makeText(FindRoomLaterActivity.this, "Date selected: " + year + "/" + (monthOfYear + 1) + "/" + dayOfMonth, Toast.LENGTH_SHORT).show();
-			
 			query.set_start_date((monthOfYear + 1), dayOfMonth, year);
 			set_start_date_button_text(query.get_start_date());
 			
@@ -370,26 +348,7 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 		start_date_button.setText(date_str);
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	private void get_room_rec() {
-//		Query.QueryResult query_result = this.query.search_get_schedule_by_room();
-//		
-//		Intent intent = new Intent(getApplicationContext(), ActivityRoomRec.class);
-//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
-//		intent.putExtra(Query.QueryResult.PARCELABLE_QUERY_RESULT, query_result);
-//		
-//		startActivity(intent);
-//		finish();
-		
 		final SearchTask search_get_room_schedule = new SearchTask();
 		search_get_room_schedule.execute(ActivityGetRoomSchedule.this);
 	}
@@ -540,7 +499,7 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 	
 	private void find_room_later() {
 		Intent intent = new Intent(ActivityGetRoomSchedule.this, ActivityFindRoomLater.class);
-//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
+		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
 		startActivity(intent);
 		finish();
 	}

@@ -36,13 +36,6 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_wait_for_cxn);
-//		setContentView(R.layout.floor_0_frame_layout);
-//		
-//		ImageView dinosaur = (ImageView) findViewById(R.id.dinosaur);
-//		dinosaur.setBackgroundColor(Color.RED);
-//		
-//		mContext = ActivityWaitForCxn.this;
-//		
 		if (savedInstanceState != null) {
 			mHasCxn = savedInstanceState.getBoolean(mHASCXN, false);
 		}
@@ -54,7 +47,6 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		wait_task.execute();
 		
 		if (!INFINITE_TIMEOUT) {
-			// http://stackoverflow.com/questions/7882739/android-setting-a-timeout-for-an-asynctask
 			Handler handler = new Handler();
 			handler.postDelayed(new Runnable() {
 				
@@ -113,16 +105,7 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		Log.d(TAG, "Unregistering broadcast receiver, onPause()");
 		unregisterReceiver(broadcast_receiver);
 	}
-	
-//	@Override
-//	protected void onDestroy() {
-//		super.onDestroy();
-//		
-//		// unregister BroadcastReceiver
-//		Log.d(TAG, "Unregistering broadcast receiver, onDestroy()");
-//		unregisterReceiver(broadcast_receiver);
-//	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -139,15 +122,9 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 			
 			final String action = intent.getAction();
 			
-//			Toast.makeText(ActivityWaitForCxn.this, "BroadcastReceiver action was " + action, Toast.LENGTH_LONG).show();
-			
 			if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
 				Log.d(TAG, "Network state just changed, broadcast_receiver.onReceive() for WiFi");
 
-//				if (Constants.DEBUG) {
-//					Toast.makeText(ActivityWaitForCxn.this, "Network state just changed", Toast.LENGTH_LONG).show();
-//				}
-				
 				NetworkInfo net_info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
 				if (net_info != null) {
 
@@ -160,11 +137,6 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 						
 						mHasCxn = true;
 					}
-//					else if (net_info.getType() == ConnectivityManager.TYPE_MOBILE && net_info.isConnected()) {
-//						Log.d(TAG, "Mobile cxn just enabled");
-//						Toast.makeText(ActivityWaitForCxn.this, "Mobile cxn just enabled", Toast.LENGTH_LONG).show();
-//						mHasCxn = true;
-//					}
 					else {
 						mHasCxn = false;
 					}
@@ -183,20 +155,9 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 			else if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
 				Log.d(TAG, "Network state just changed, broadcast_receiver.onReceive() for mobile");
 
-//				if (Constants.DEBUG) {
-//					Toast.makeText(ActivityWaitForCxn.this, "Network state just changed", Toast.LENGTH_LONG).show();
-//				}
-				
-//				NetworkInfo net_info = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
-				
 				ConnectivityManager con_man = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 				
 				NetworkInfo net_info = con_man.getActiveNetworkInfo();
-				
-//				int net_type = intent.getExtras().getInt(ConnectivityManager.EXTRA_NETWORK_TYPE);
-//				NetworkInfo net_info = con_man.getNetworkInfo(net_type);
-				
-//				NetworkInfo net_info = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
 				if (net_info != null) {
 
 					if (net_info.isConnected() && net_info.getType() == ConnectivityManager.TYPE_MOBILE) {
@@ -276,12 +237,6 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 			}
 		}
 	}
-	
-//	private void start_loading_csv() {
-//		startActivity(new Intent(ActivityWaitForCxn.this, ActivityLoadCSV.class));
-//		finish();
-//		return;
-//	}
 
 	private void show_failure_dialog() {
 		final Dialog dialog = new Dialog(ActivityWaitForCxn.this);
@@ -327,31 +282,9 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo net_info = manager.getActiveNetworkInfo();
 		if (net_info != null) {
-			
 			if (net_info.getState().equals(NetworkInfo.State.CONNECTED)) {
 				return true;
 			}
-			
-//			if ((net_info.getType() == ConnectivityManager.TYPE_WIFI || net_info.getType() == ConnectivityManager.TYPE_MOBILE) && net_info.isConnected()) {
-//				if (Constants.DEBUG) {
-//					if (net_info.getType() == ConnectivityManager.TYPE_WIFI) {
-//						Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
-//					}
-//					else {
-//						Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
-//					}
-//				}
-//				return true;
-//			}
-			
-//			if (net_info.getType() == ConnectivityManager.TYPE_WIFI && net_info.isConnected()) {
-//				Log.d(TAG, "Wifi cxn enabled and connected on startup, onCreate(), LoadCSV");
-//				return true;
-//			}
-//			else if (net_info.getType() == ConnectivityManager.TYPE_MOBILE && net_info.isConnected()) {
-//				Log.d(TAG, "Mobile cxn enabled and connected on startup, onCreate(), LoadCSV");
-//				return true;		
-//			}
 		}
 		
 		return false;
@@ -392,7 +325,6 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 	
 
 	public void getRoomRec() {
-//		startActivityForResult(new Intent(this, ActivityFindRoomLater.class), 0);
 		startActivity(new Intent(ActivityWaitForCxn.this, ActivityFindRoomLater.class));
 		finish();
 	}

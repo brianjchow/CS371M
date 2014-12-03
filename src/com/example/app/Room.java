@@ -17,7 +17,6 @@ final class Room implements Comparable<Room> {
 	private int capacity;
 	private boolean has_power;
 	
-//	private Map<Integer, Set<Event>> course_schedule;
 	private SparseArray<Set<Event>> course_schedule;
 
 	/**
@@ -47,15 +46,7 @@ final class Room implements Comparable<Room> {
 		this.has_power = has_power;
 		
 		// loopify?
-//		this.course_schedule = new HashMap<Integer, Set<Event>>();
-		this.course_schedule = new SparseArray<Set<Event>>();
-//		this.course_schedule.put(Constants.SUNDAY, new HashSet<Event>());
-//		this.course_schedule.put(Constants.MONDAY, new HashSet<Event>());
-//		this.course_schedule.put(Constants.TUESDAY, new HashSet<Event>());
-//		this.course_schedule.put(Constants.WEDNESDAY, new HashSet<Event>());
-//		this.course_schedule.put(Constants.THURSDAY, new HashSet<Event>());
-//		this.course_schedule.put(Constants.FRIDAY, new HashSet<Event>());
-//		this.course_schedule.put(Constants.SATURDAY, new HashSet<Event>());
+		this.course_schedule = new SparseArray<Set<Event>>(Utilities.get_hashmap_size(7));
 		
 		this.course_schedule.put(Constants.SUNDAY, new TreeSet<Event>());
 		this.course_schedule.put(Constants.MONDAY, new TreeSet<Event>());
@@ -82,7 +73,6 @@ final class Room implements Comparable<Room> {
 		return true;
 	}
 	
-//	protected final Map<Integer, Set<Event>> get_events() {
 	protected final SparseArray<Set<Event>> get_events() {
 		return this.course_schedule;
 	}
@@ -177,18 +167,6 @@ final class Room implements Comparable<Room> {
 		out.type = this.type;
 		out.capacity = this.capacity;
 		out.has_power = this.has_power;
-		
-//		out.course_schedule = new HashMap<Integer, Set<Event>>(this.course_schedule.size() * 2);
-//		Integer curr_key;
-//		Set<Event> curr_val;
-//		for (Map.Entry<Integer, Set<Event>> entry : this.course_schedule.entrySet()) {
-//			curr_key = Integer.valueOf(entry.getKey());
-//			curr_val = new HashSet<Event>(entry.getValue().size() * 2);
-//			for (Event event : entry.getValue()) {
-//				curr_val.add(event.clone());
-//			}
-//			out.course_schedule.put(curr_key, curr_val);
-//		}
 		
 		out.course_schedule = new SparseArray<Set<Event>>(this.course_schedule.size() * 2);
 		Set<Event> curr_schedule, schedule_to_add;

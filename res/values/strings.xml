@@ -23,7 +23,7 @@
 
     <!-- Main -->
     <string name="find_room_now">Find a room now</string>
-    <string name = "find_random_room_now">Find random room now</string>
+    <string name = "find_random_room_now">Find a random room now</string>
     <string name="find_room_later">Find a room later</string>
     <string name = "get_room_schedule">Get room schedule</string>
 

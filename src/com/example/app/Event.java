@@ -205,8 +205,6 @@ public class Event implements Comparable<Event> {
 		calendar.setTime(this.start_date);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
-//		calendar.add(Calendar.MINUTE, Constants.DEFAULT_EVENT_DURATION);
-//		this.end_date = calendar.getTime();
 		
 		Calendar calendar_end_date = Calendar.getInstance();
 		calendar_end_date.setTime(this.end_date);
@@ -214,28 +212,6 @@ public class Event implements Comparable<Event> {
 		calendar_end_date.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
 		this.end_date = calendar_end_date.getTime();
 	}
-			
-	/**
-	 * @param start_date
-	 */
-//	protected void set_start_date(String start_date) {
-//		if (start_date == null) {
-//			throw new IllegalArgumentException("Error: event start date cannot be null, set_start_date()");
-//		}
-//		
-//		this.start_date = to_date(start_date);
-//		
-//		Calendar calendar = Calendar.getInstance();
-//		calendar.setTime(this.start_date);
-////		calendar.add(Calendar.MINUTE, Constants.DEFAULT_EVENT_DURATION);
-////		this.end_date = calendar.getTime();
-//		
-//		Calendar calendar_end_date = Calendar.getInstance();
-//		calendar_end_date.setTime(this.end_date);
-//		calendar_end_date.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR));
-//		calendar_end_date.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
-//		this.end_date = calendar_end_date.getTime();
-//	}
 
 	// Mon 20 Oct 2014 1700
 	/**
@@ -313,13 +289,6 @@ public class Event implements Comparable<Event> {
 	 */
 	@Override
 	public int hashCode() {
-//		long result = Utilities.stringHashCode(this.event_name) * Utilities.dateHashCode(this.start_date) *
-//					  Utilities.dateHashCode(this.end_date) * this.location.hashCode() * 37;
-		
-//		long result = Utilities.stringHashCode(this.event_name) * this.location.hashCode();
-
-//		return ((int) result);
-		
 		int start_time = Integer.parseInt(Utilities.get_time(this.start_date).replaceAll(":", ""));
 		return (Utilities.stringHashCode(this.event_name) * start_time * this.location.hashCode());
 	}
