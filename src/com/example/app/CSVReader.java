@@ -171,7 +171,7 @@ final class CSVReader {
 		Log.d(TAG, "Took " + (time_to_read + Constants.time_to_read) + " seconds to read CSV feeds (" + lines_read + " lines) and load GDC course schedule");
 		Log.d(TAG, "Num events supposed to be in CSV_FEEDS_MASTER: " + events.get_size());
 		
-		return events;		
+		return events;	
 	}
 		
 	private List<HashMap<String, String>> read_csv_from_file(Context context, String filename, boolean file_is_asset) {

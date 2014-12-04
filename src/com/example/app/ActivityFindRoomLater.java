@@ -74,8 +74,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(ActivityFindRoomLater.this, ActivityMain.class);
-				startActivity(intent);
+//				Intent intent = new Intent(ActivityFindRoomLater.this, ActivityMain.class);
+//				startActivity(intent);
 				finish();
 				return;
 			}
@@ -569,7 +569,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	
 	private void get_room_schedule() {
 		Intent intent = new Intent(ActivityFindRoomLater.this, ActivityGetRoomSchedule.class);
-//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
+intent.putExtra(Query.PARCELABLE_QUERY, this.query);
 		startActivity(intent);
 		finish();
 	}

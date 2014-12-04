@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -87,6 +88,16 @@ public class ActivityLoadCSV extends ActionBarActivity {
 	private void goto_wait_for_cxn() {
 		startActivity(new Intent(ActivityLoadCSV.this, ActivityWaitForCxn.class));
 		finish();
+	}
+	
+	// http://stackoverflow.com/questions/4783960/call-method-when-home-button-pressed-on-android
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			Log.d(TAG, "Back button pressed while loading CSV");
+			delete_all_feeds();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 	
 	@Override

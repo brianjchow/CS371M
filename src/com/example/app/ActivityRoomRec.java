@@ -17,7 +17,11 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 /*
+ * BLOCK ROTATION WHEN DIALOG OPEN
+ * 	// http://stackoverflow.com/questions/3611457/android-temporarily-disable-orientation-changes-in-an-activity
+ * 
  * USE DialogFragment TO REOPEN DIALOG UPON ORIENTATION CHANGE
+ * 	// http://stackoverflow.com/questions/7557265/prevent-dialog-dismissal-on-screen-rotation-in-android
  *	// OR THIS: http://stackoverflow.com/questions/1111980/how-to-handle-screen-orientation-change-when-progress-dialog-and-background-thre
  *
  * ADD this_query_result PARCELABLE HANDLING TO onCreate()
@@ -130,8 +134,8 @@ public class ActivityRoomRec extends ActionBarActivity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(ActivityRoomRec.this, ActivityMain.class);
-				startActivity(intent);
+//				Intent intent = new Intent(ActivityRoomRec.this, ActivityMain.class);
+//				startActivity(intent);
 				finish();
 				return;
 			}

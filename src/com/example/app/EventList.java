@@ -93,16 +93,27 @@ public class EventList {
 				continue;
 			}
 			
+			// verify that start date has the correct format
+			Date verify_start_date = Event.to_date(start_date);
+			if (verify_start_date == null) {
+				return false;
+			}
+					
 			// set dummy location if not specified in feed
 			if ((location = curr_event.get(Constants.LOCATION)) == null) {
 				location = Constants.GDC + " " +  Constants.DEFAULT_GDC_LOCATION;
 			}
-			
+
 			// set default duration of Event as 90 minutes if none specified
 			if ((end_date = curr_event.get(Constants.END_DATE)) == null) {
 				this.list.add(new Event(event_name, start_date, null, location));
 			}
 			else {
+				Date verify_end_date = Event.to_date(end_date);
+				if (verify_end_date == null) {
+					return false;
+				}
+				
 				this.list.add(new Event(event_name, start_date, end_date, location));
 			}
 			

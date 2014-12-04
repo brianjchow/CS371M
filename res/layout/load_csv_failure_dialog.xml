@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="250dp"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:descendantFocusability = "blocksDescendants"
     tools:context="com.example.app.ActivityLoadCSV" 
     android:orientation="vertical"
     >

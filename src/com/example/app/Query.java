@@ -39,7 +39,7 @@ public class Query implements Parcelable {
 	/**
 	 * @param start_date
 	 */
-	protected Query(Context context, Date start_date) {
+	protected Query(Context context, final Date start_date) {
 		if (context == null) {
 			throw new IllegalArgumentException("Error: context argument cannot be null, Query constructor");
 		}
@@ -60,47 +60,6 @@ public class Query implements Parcelable {
 	}
 
 	/**
-	 * @return The master CSV feeds, with all events included.
-	 */
-	protected final EventList get_all_room_schedules() {
-		return Constants.CSV_FEEDS_MASTER;
-	}
-
-	/**
-	 * @return The master CSV feeds, minus any events with no
-	 * 		   location specified and/or located in rooms normally
-	 * 		   inaccessible to undergrads (e.g., the faculty lounge).
-	 */
-	protected final EventList get_all_valid_room_schedules() {
-		return Constants.CSV_FEEDS_CLEANED;
-	}
-
-	/**
-	 * @param location
-	 * @return All events occurring at location based on this Query's
-	 * 		   dates and times.
-	 */
-	protected EventList get_room_schedule(Location location) {
-		EventList schedule = new EventList();
-
-		if (location == null) {
-			throw new IllegalArgumentException("Error: location cannot be null, get_room_schedule()");
-		}
-
-		Iterator<Event> itr = Constants.CSV_FEEDS_CLEANED.get_iterator();
-		Event event;
-		while (itr.hasNext()) {
-			event = itr.next();
-			if (event.get_location().equals(location)) {
-				schedule.add(event);
-			}
-		}
-
-		schedule.sort_by_start_date(true);
-		return schedule;
-	}
-
-	/**
 	 * @return How long the user of the app needs
 	 * 		   a room to be available/unoccupied for.
 	 */
@@ -113,87 +72,6 @@ public class Query implements Parcelable {
 	 */
 	protected final Date get_end_date() {
 		return (this.end_date);
-	}
-
-	/**
-	 * @return An EventList of all events occurring on
-	 * 		   the start date specified by this Query, culled
-	 * 		   from the master CSV feeds.
-	 */
-	protected EventList get_events_by_date() {
-		return (get_events_by_date(Constants.CSV_FEEDS_MASTER));
-	}
-
-	/**
-	 * @param eolist
-	 * @return An EventList of all events occurring on
-	 * 		   the start date specified by this Query, culled
-	 * 		   from eolist.
-	 */
-	protected EventList get_events_by_date(EventList eolist) {
-		if (eolist == null) {
-			throw new IllegalArgumentException("Error: eolist cannot be null, get_events_by_date()");
-		}
-
-		EventList reduced = new EventList();
-
-		if (eolist.get_size() == 0) {
-			return reduced;
-		}
-
-		Iterator<Event> itr = eolist.get_iterator();
-		Event event;
-		while (itr.hasNext()) {
-			event = itr.next();
-
-			// skip dummy locations
-			if (!event.get_location().equals(Constants.GDC_ATRIUM) &&
-					!event.get_location().equals(Constants.GDC_GATESHENGE) &&
-					Utilities.occur_on_same_day(event.get_start_date(), this.start_date)) {
-
-				reduced.add(event);
-			}
-		}
-
-		return reduced;
-	}
-
-	/**
-	 * @return An EventList of all events occurring during
-	 * 		   the start and end times specified by this Query, culled
-	 * 		   from the master CSV feeds.
-	 */
-	protected EventList get_events_by_time() {
-		return (get_events_by_time(Constants.CSV_FEEDS_MASTER));
-	}
-
-	/**
-	 * @param eolist
-	 * @return An EventList of all events occurring during
-	 * 		   the start and end times specified by this Query, culled
-	 * 		   from eolist.
-	 */
-	protected EventList get_events_by_time(EventList eolist) {
-		if (eolist == null) {
-			throw new IllegalArgumentException("Error: eolist cannot be null, get_events_by_time()");
-		}
-
-		EventList reduced = new EventList();
-
-		if (eolist.get_size() == 0) {
-			return reduced;
-		}
-
-		Iterator<Event> itr = eolist.get_iterator();
-		Event event;
-		while (itr.hasNext()) {
-			event = itr.next();
-			if (Utilities.times_overlap(event.get_start_date(), event.get_end_date(), this.start_date, this.end_date)) {
-				reduced.add(event);
-			}
-		}
-
-		return reduced;
 	}
 
 	/**
@@ -227,25 +105,9 @@ public class Query implements Parcelable {
 	}
 
 	/**
-	 * @return A List of Strings representing the keyset
-	 * 		   of this Query's options map.
-	 */
-	protected final List<String> get_options() {
-		return (new ArrayList<String>(options.keySet()));
-	}
-
-	/**
-	 * @return A Map of String-to-Object pairs representing
-	 * 		   the user-selectable options and their current values.
-	 */
-	protected final Map<String, Object> get_options_map() {
-		return this.options;
-	}
-
-	/**
 	 * @return The starting date of this Query.
 	 */
-	protected Date get_start_date() {
+	protected final Date get_start_date() {
 		return (this.start_date);
 	}
 
@@ -268,15 +130,13 @@ public class Query implements Parcelable {
 				}
 				return Constants.COURSE_SCHEDULE_NEXT_SEMESTER;		// should never happen if it's null (see DatePicker code)
 			}
-			else {		// holiday
+			else {
 				return SearchStatus.HOLIDAY.toString();
-//				return null;
 			}
 		}
 
-		else if (Utilities.date_is_during_summer(this.start_date)) {		// summer
+		else if (Utilities.date_is_during_summer(this.start_date)) {
 			return SearchStatus.SUMMER.toString();
-//			return null;
 		}
 
 		else if (Utilities.date_is_during_fall(this.start_date)) {
@@ -292,12 +152,12 @@ public class Query implements Parcelable {
 			else if (Utilities.date_is_during_fall(now)) {
 				return Constants.COURSE_SCHEDULE_THIS_SEMESTER;
 			}
-			else {		// holiday
+			else {
 				return SearchStatus.HOLIDAY.toString();
 			}
 		}
 
-		else {	// holiday
+		else {
 			return SearchStatus.HOLIDAY.toString();
 		}
 	}
@@ -359,7 +219,6 @@ public class Query implements Parcelable {
 			query_result.set_search_status(SearchStatus.HOLIDAY);
 			return null;
 		}
-
 	}
 
 	private int get_this_day_of_week() {
@@ -396,6 +255,16 @@ public class Query implements Parcelable {
 //		return !is_truncated_gdc_room(room);
 	}
 
+	protected void reset() {
+		Date start_date = Calendar.getInstance().getTime();
+		set_start_date(start_date);
+		this.duration = Constants.DEFAULT_QUERY_DURATION;
+
+		set_end_date();
+
+		this.set_standard_options();
+	}
+	
 	protected boolean search_is_at_night() {
 		int this_start_time = Utilities.get_time_from_date(this.start_date);
 		int this_end_time = Utilities.get_time_from_date(this.end_date);
@@ -430,6 +299,16 @@ public class Query implements Parcelable {
 		
 		return false;
 	}
+
+	protected boolean set_context(Context context) {
+		if (context == null) {
+//			return false;
+			throw new IllegalArgumentException("Argument cannot be null, Query.set_context()");
+		}
+		
+		this.mContext = context;
+		return true;
+	}
 	
 	/**
 	 * @param duration
@@ -447,15 +326,27 @@ public class Query implements Parcelable {
 		return true;
 	}
 
+	// automatically set new end date according to
+	// start_date and specified duration
+	private boolean set_end_date() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(start_date);
+		calendar.add(Calendar.MINUTE, this.duration);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		this.end_date = calendar.getTime();
+		return true;
+	}
+
 	/**
 	 * @param option
 	 * @param value
 	 * @return True if this.options was successfully updated
 	 * 		   with the provided arguments, false otherwise.
 	 */
-	protected boolean set_option(String option, Object value) {
+	protected boolean set_option(final String option, final Object value) {
 		if (option == null || value == null) {
-			//				return false;
+//				return false;
 			throw new IllegalArgumentException("Error: one or more arguments is null, set_option()");
 		}
 
@@ -483,10 +374,8 @@ public class Query implements Parcelable {
 			}
 			return (set_option_search_room((String) value));
 		}
-		else {
-			return false;
-		}
-
+		
+		return false;
 	}
 
 	/**
@@ -494,7 +383,7 @@ public class Query implements Parcelable {
 	 * @return True if this.capacity was successfully updated
 	 * 		   with the provided argument, false otherwise.
 	 */
-	protected boolean set_option_capacity(Integer capacity) {
+	protected boolean set_option_capacity(final Integer capacity) {
 		if (capacity == null) {
 			//				return false;
 			throw new IllegalArgumentException("Error: capacity cannot be null, set_option_capacity()");
@@ -512,7 +401,7 @@ public class Query implements Parcelable {
 	 * @return True if this.has_power was successfully updated
 	 * 		   with the provided argument, false otherwise.
 	 */
-	protected boolean set_option_power(Boolean power) {
+	protected boolean set_option_power(final Boolean power) {
 		if (power == null) {
 			//				return false;
 			throw new IllegalArgumentException("Error: power cannot be null, set_option_power()");
@@ -521,7 +410,7 @@ public class Query implements Parcelable {
 		return true;
 	}
 
-	protected boolean set_option_search_building(String building_code) {
+	protected boolean set_option_search_building(final String building_code) {
 		if (building_code == null) {
 //			return false;
 			throw new IllegalArgumentException("Error: argument cannot be null, set_option_search_for_building()");		
@@ -535,7 +424,7 @@ public class Query implements Parcelable {
 		return true;		
 	}
 	
-	protected boolean set_option_search_room(String room_num) {
+	protected boolean set_option_search_room(final String room_num) {
 		if (room_num == null) {
 //			return false;
 			throw new IllegalArgumentException("Error: argument cannot be null, set_option_search_for_building()");		
@@ -551,25 +440,6 @@ public class Query implements Parcelable {
 		return true;
 	}
 
-	protected void reset() {
-		Date start_date = Calendar.getInstance().getTime();
-		set_start_date(start_date);
-		this.duration = Constants.DEFAULT_QUERY_DURATION;
-
-		set_end_date();
-
-		this.set_standard_options();
-	}
-	
-	protected boolean set_context(Context context) {
-		if (context == null) {
-//			return false;
-			throw new IllegalArgumentException("Argument cannot be null, Query.set_context()");
-		}
-		this.mContext = context;
-		return true;
-	}
-
 	protected void set_standard_options() {
 		this.set_option_capacity(0);
 		this.set_option_power(false);
@@ -582,7 +452,7 @@ public class Query implements Parcelable {
 	 * @return True if this.start_date was successfully updated
 	 * 		   with the provided argument, false otherwise.
 	 */
-	protected boolean set_start_date(Date start_date) {
+	protected boolean set_start_date(final Date start_date) {
 		if (start_date == null) {
 //				return false;
 			throw new IllegalArgumentException("Error: starting date of event cannot be null, set_start_date()");
@@ -645,18 +515,6 @@ public class Query implements Parcelable {
 		return true;
 	}
 
-	// automatically set new end date according to
-	// start_date and specified duration
-	private boolean set_end_date() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(start_date);
-		calendar.add(Calendar.MINUTE, this.duration);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		this.end_date = calendar.getTime();
-		return true;
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#clone()
 	 */
@@ -686,9 +544,9 @@ public class Query implements Parcelable {
 
 		Query other_query = (Query) other;
 		if (Utilities.dates_are_equal(this.start_date, other_query.start_date) &&
-				Utilities.dates_are_equal(this.end_date, other_query.end_date) &&
-				this.duration == other_query.duration &&
-				this.options.equals(other_query.options)) {
+			Utilities.dates_are_equal(this.end_date, other_query.end_date) &&
+			this.duration == other_query.duration &&
+			this.options.equals(other_query.options)) {
 
 			return true;
 		}
@@ -723,7 +581,7 @@ public class Query implements Parcelable {
 		return (out.toString());
 	}
 
-/* ############################### BEGIN IMPLEMENTING PARCELABLE ############################### */
+/* ############################### BEGIN QUERY PARCELABLE IMPLEMENTATION ############################### */
 	
 	@SuppressWarnings("unchecked")
 	public Query(Parcel parcel) {
@@ -759,13 +617,15 @@ public class Query implements Parcelable {
 		}
 	};
 	
-/* ######################### SEARCH ALGORITHM DEVELOPMENT ######################### */
+/* ############################### END QUERY PARCELABLE IMPLEMENTATION ############################### */	
+	
+/* ############################### BEGIN SEARCH ALGORITHMS ############################### */
 
 	protected QueryResult search() {
 		return (search(Constants.CSV_FEEDS_CLEANED));
 	}
 	
-	protected QueryResult search(EventList eolist) {
+	protected QueryResult search(final EventList eolist) {
 		if (eolist == null) {
 			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
 		}
@@ -909,7 +769,7 @@ public class Query implements Parcelable {
 		return (search_get_schedule_by_room(Constants.CSV_FEEDS_CLEANED));
 	}
 	
-	protected QueryResult search_get_schedule_by_room(EventList eolist) {
+	protected QueryResult search_get_schedule_by_room(final EventList eolist) {
 		if (eolist == null) {
 			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
 		}
@@ -1040,9 +900,8 @@ public class Query implements Parcelable {
 		return query_result;
 	}
 	
+/* ############################### END SEARCH ALGORITHMS ############################### */	
 	
-	
-
 	protected static class QueryResult implements Parcelable {
 		
 		protected static final String PARCELABLE_QUERY_RESULT = "query_result";
@@ -1056,7 +915,7 @@ public class Query implements Parcelable {
 		private List<String> results;
 		private String message_status;
 		
-		private QueryResult(int search_type, String building_name) {
+		private QueryResult(int search_type, final String building_name) {
 			if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH) {
 				throw new IllegalArgumentException();
 			}
@@ -1118,7 +977,7 @@ public class Query implements Parcelable {
 			return true;
 		}
 
-/* ############################### BEGIN IMPLEMENTING PARCELABLE ############################### */
+/* ############################### BEGIN QUERYRESULT PARCELABLE IMPLEMENTATION ############################### */
 		
 		@SuppressWarnings("unchecked")
 		public QueryResult(Parcel parcel) {
@@ -1151,8 +1010,10 @@ public class Query implements Parcelable {
 				return new QueryResult[size];
 			}
 		};
-				
+		
 	}
+	
+/* ############################### END QUERYRESULT PARCELABLE IMPLEMENTATION ############################### */
 	
 	public enum SearchStatus {
 		

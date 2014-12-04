@@ -7,9 +7,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import android.util.Log;
+
 import com.google.common.collect.ComparisonChain;
 
 public class Event implements Comparable<Event> {
+	
+	private static final String TAG = "Event";
 	
 	private String event_name;
 	private Date start_date;
@@ -36,6 +40,10 @@ public class Event implements Comparable<Event> {
 		this.location = new Location(location);
 		
 		Date date = to_date(start_date);
+		if (date == null) {
+			date = Utilities.get_date();
+		}
+		
 		Calendar start_temp = Calendar.getInstance();
 		start_temp.setTime(date);
 		start_temp.set(Calendar.SECOND, 0);
@@ -50,7 +58,17 @@ public class Event implements Comparable<Event> {
 		}
 		else {
 			Calendar end_temp = Calendar.getInstance();
-			end_temp.setTime(to_date(end_date));
+			
+			date = to_date(end_date);
+			if (date == null) {
+				date = Utilities.get_date();
+				end_temp.setTime(date);
+				end_temp.add(Calendar.MINUTE, Constants.DEFAULT_EVENT_DURATION);
+			}
+			else {
+				end_temp.setTime(to_date(end_date));
+			}
+			
 			end_temp.set(Calendar.SECOND, 0);
 			end_temp.set(Calendar.MILLISECOND, 0);
 			this.end_date = end_temp.getTime();
@@ -159,24 +177,7 @@ public class Event implements Comparable<Event> {
 		
 		this.event_name = event_name;
 	}
-	
-	/**
-	 * @param end_date
-	 */
-	protected void set_end_date(String end_date) {
-		if (end_date == null) {
-			throw new IllegalArgumentException("Error: end date cannot be null, set_end_date()");
-		}
-		
-		Date date = to_date(end_date);
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		
-		this.end_date = calendar.getTime();
-	}
-	
+
 	/**
 	 * @param location
 	 */
@@ -219,7 +220,7 @@ public class Event implements Comparable<Event> {
 	 * @return A Date representing the information culled
 	 * 		   from the CSV feeds.
 	 */
-	private Date to_date(String date_time) {
+	protected static Date to_date(String date_time) {
 		if (date_time == null) {
 			throw new IllegalArgumentException("Error: String representing date of event cannot be null, to_date()");
 		}
@@ -231,9 +232,11 @@ public class Event implements Comparable<Event> {
 			date = format.parse(date_time);
 		}
 		catch (ParseException e) {
-			System.out.printf("Error parsing date/time String \"%s\", to_date()", date_time);
-			e.printStackTrace();
-			throw new RuntimeException(e);
+			Log.w(TAG, "WARNING: error parsing date/time String \"" + date_time + "\"; skipping over it");
+//			System.out.printf("Error parsing date/time String \"%s\", to_date()", date_time);
+//			e.printStackTrace();
+//			throw new RuntimeException(e);
+			return null;
 		}
 		
 		return (date);

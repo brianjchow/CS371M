@@ -47,23 +47,14 @@ public class Location implements Comparable<Location> {
 		this.room = room;
 	}
 
-	/**
-	 * @return This Location's building code.
-	 */
 	protected String get_building() {
 		return this.building;
 	}
 
-	/**
-	 * @return This Location's room number.
-	 */
 	protected String get_room() {
 		return this.room;
 	}
 
-	/**
-	 * @param building
-	 */
 	protected boolean set_building(String building) {
 		if (building == null) {
 //			return false;
@@ -74,9 +65,6 @@ public class Location implements Comparable<Location> {
 		return true;
 	}
 
-	/**
-	 * @param room
-	 */
 	protected boolean set_room(String room) {
 		if (room == null) {
 //			return false;

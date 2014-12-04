@@ -70,8 +70,8 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(ActivityGetRoomSchedule.this, ActivityMain.class);
-				startActivity(intent);
+//				Intent intent = new Intent(ActivityGetRoomSchedule.this, ActivityMain.class);
+//				startActivity(intent);
 				finish();
 				return;
 			}
@@ -149,6 +149,9 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 		
 		String search_building_str = this.query.get_option_search_building();
 		
+		int gdc_221_index = -1;
+		int gdc_241_index = -1;
+		
 		String curr_course_schedule = this.query.get_current_course_schedule();
 		if (curr_course_schedule == null) {
 			rooms = new String[] { no_rooms_found };
@@ -164,16 +167,15 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 				rooms = roomset.toArray(new String[roomset.size()]);
 				
 				if (Utilities.str_is_gdc(search_building_str)) {
-					int index;
 					
-					index = Arrays.asList(rooms).indexOf("2.21");
-					if (index != -1) {
-						rooms[index] = "2.210";
+					gdc_221_index = Arrays.asList(rooms).indexOf("2.21");
+					if (gdc_221_index != -1) {
+						rooms[gdc_221_index] = "2.210";
 					}
 					
-					index = Arrays.asList(rooms).indexOf("2.41");
-					if (index != -1) {
-						rooms[index] = "2.410";
+					gdc_241_index = Arrays.asList(rooms).indexOf("2.41");
+					if (gdc_241_index != -1) {
+						rooms[gdc_241_index] = "2.410";
 					}
 				}
 			}
@@ -216,6 +218,17 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 			if (search_room.equals(Constants.RANDOM)) {
 				this.query.set_option_search_room(rooms[0]);
 				spinner.setSelection(0);
+			}
+			else if (Utilities.str_is_gdc(search_building_str) && (search_room.equals("2.21") || search_room.equals("2.41"))) {
+				if (search_room.equals("2.21") && gdc_221_index != -1) {
+					spinner.setSelection(gdc_221_index);
+				}
+				else if (search_room.equals("2.41") && gdc_241_index != -1) {
+					spinner.setSelection(gdc_241_index);
+				}
+				else {
+					spinner.setSelection(0);
+				}
 			}
 			else {
 				for (int i = 0; i < rooms.length; i++) {
