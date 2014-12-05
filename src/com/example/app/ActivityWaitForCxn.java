@@ -65,11 +65,11 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 			
 			@Override
 			public void onClick(View v) {
-				if (has_network_connectivity()) {
+//				if (has_network_connectivity()) {
 					startActivity(new Intent(ActivityWaitForCxn.this, ActivityLoadCSV.class));
 					finish();
 					return;					
-				}
+//				}
 			}
 		});
 		

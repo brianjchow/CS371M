@@ -11,7 +11,10 @@ import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -70,25 +73,28 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			}
 		}
 		
-		findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
+		String orientation = Utilities.getRotation(ActivityFindRoomLater.this);
+		if (orientation.equals("portrait") || orientation.equals("reverse portrait")) {
+			findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+//					Intent intent = new Intent(ActivityFindRoomLater.this, ActivityMain.class);
+//					startActivity(intent);
+					finish();
+					return;
+				}
+			});
 			
-			@Override
-			public void onClick(View v) {
-//				Intent intent = new Intent(ActivityFindRoomLater.this, ActivityMain.class);
-//				startActivity(intent);
-				finish();
-				return;
-			}
-		});
-		
-		findViewById(R.id.get_room_schedule).setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				get_room_schedule();
-				return;
-			}
-		});
+			findViewById(R.id.get_room_schedule).setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					get_room_schedule();
+					return;
+				}
+			});
+		}
 
 		setSearchBuildingSpinnerOnItemSelectedListener();
 		
@@ -135,6 +141,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			@Override
 			public void onClick(View v) {
 				show_duration_picker();
+				
+				lock_orientation();
 			}
 		});		
 	}
@@ -147,6 +155,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			@Override
 			public void onClick(View v) {
 				show_capacity_picker();
+				
+				lock_orientation();
 			}
 		});
 	}
@@ -245,7 +255,25 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				calendar.setTime(start_date);
 				
 				Dialog timepicker_dialog = new TimePickerDialog(ActivityFindRoomLater.this, timepicker_dialog_listener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+				
+				// http://stackoverflow.com/questions/4724781/timepickerdialog-cancel-button
+				timepicker_dialog.setOnDismissListener(new OnDismissListener() {
+					
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						unlock_orientation();
+					}
+				});
+				
 				timepicker_dialog.show();
+				
+//				context.getResources().getBoolean(R.bool.is_landscape)
+//				boolean is_portrait = ActivityFindRoomLater.this.getResources().getBoolean(R.bool.is_portrait);
+//				if (is_portrait) {
+//					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//				}
+				
+				lock_orientation();
 			}
 		});		
 	}
@@ -265,6 +293,15 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				curr_start_date.setTime(start_date);
 				
 				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityFindRoomLater.this, datepicker_dialog_listener, curr_start_date.get(Calendar.YEAR), curr_start_date.get(Calendar.MONTH), curr_start_date.get(Calendar.DAY_OF_MONTH));
+				
+				// http://stackoverflow.com/questions/4724781/timepickerdialog-cancel-button
+				datepicker_dialog.setOnDismissListener(new OnDismissListener() {
+					
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						unlock_orientation();
+					}
+				});
 				
 				DatePicker datepicker = datepicker_dialog.getDatePicker();
 				CalendarView cal_view = datepicker.getCalendarView();
@@ -309,6 +346,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 					
 				}
 				datepicker_dialog.show();
+				
+				lock_orientation();
 			}
 		});
 	}
@@ -326,6 +365,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 //				selected_duration = time_remaining_in_day_mins;
 //				update_this.query();
 //			}
+			
+			unlock_orientation();
 		}
 	};
 	
@@ -333,6 +374,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {			
 			query.set_start_time(hourOfDay, minute);
 			set_start_time_button_text(query.get_start_date());
+			
+			unlock_orientation();
 		}
 	};
 
@@ -435,6 +478,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				set_min_duration_button_text(val);
 				
 				dialog.dismiss();
+				
+				unlock_orientation();
 			}
 		});
 		
@@ -443,6 +488,8 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
+				
+				unlock_orientation();
 			}
 		});
 		
@@ -581,5 +628,25 @@ intent.putExtra(Query.PARCELABLE_QUERY, this.query);
 		startActivity(intent);
 		finish();
 	}
-
+	
+	private void lock_orientation() {
+		String orientation = Utilities.getRotation(ActivityFindRoomLater.this);
+		if (orientation.equals("portrait")) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		}
+		else if (orientation.equals("landscape")) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		}
+		else if (orientation.equals("reverse portrait")) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+		}
+		else {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+		}
+	}
+	
+	private void unlock_orientation() {
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+	}
+	
 }		// end of file

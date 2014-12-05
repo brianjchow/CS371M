@@ -27,7 +27,7 @@ public class Query implements Parcelable {
 	private Date start_date;				// must have date and time at minimum
 	private Date end_date;					// automatically set
 	private int duration;					// how long the user needs the room to be available, in minutes; default 60
-	private Map<String, Object> options;	// [capacity, power plugs, search building] for now
+	private Map<String, Object> options;	// [capacity, power plugs, search building, search room]
 
 	/**
 	 * Default constructor. Uses the current system time.
@@ -52,7 +52,7 @@ public class Query implements Parcelable {
 		this.duration = Constants.DEFAULT_QUERY_DURATION;
 		this.set_start_date(start_date);
 
-		this.options = new HashMap<String, Object>(5);
+		this.options = new HashMap<String, Object>(Utilities.get_hashmap_size(4));
 		this.options.put(Constants.CAPACITY, Integer.valueOf(0));
 		this.options.put(Constants.POWER, Boolean.valueOf(false));
 		this.options.put(Constants.SEARCH_BUILDING, Constants.GDC);

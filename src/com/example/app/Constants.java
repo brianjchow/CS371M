@@ -401,7 +401,7 @@ final class Constants {
 				"WAG", "WCH", "WEL", "WIN", "WMB", "WRW"
 		};
 		
-		final Map<String, Integer> CAMPUS_BUILDINGS_MAP = new HashMap<String, Integer>(CAMPUS_BUILDINGS.length);
+		final Map<String, Integer> CAMPUS_BUILDINGS_MAP = new HashMap<String, Integer>(Utilities.get_hashmap_size(CAMPUS_BUILDINGS.length));
 		for (int i = 0; i < CAMPUS_BUILDINGS.length; i++) {
 			CAMPUS_BUILDINGS_MAP.put(CAMPUS_BUILDINGS[i], i);
 		}

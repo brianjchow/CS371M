@@ -168,7 +168,7 @@ final class Room implements Comparable<Room> {
 		out.capacity = this.capacity;
 		out.has_power = this.has_power;
 		
-		out.course_schedule = new SparseArray<Set<Event>>(this.course_schedule.size() * 2);
+		out.course_schedule = new SparseArray<Set<Event>>(Utilities.get_hashmap_size(this.course_schedule.size()));
 		Set<Event> curr_schedule, schedule_to_add;
 		for (int i = Constants.SUNDAY; i <= Constants.SATURDAY; i++) {
 			curr_schedule = this.course_schedule.get(i);

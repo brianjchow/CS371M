@@ -39,7 +39,7 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 			throw new IllegalArgumentException("One or more arguments null, CourseScheduleDatabase.get_courses()");
 		}
 		
-		Map<String, Room> out = new HashMap<String, Room>(25);
+		Map<String, Room> out = new HashMap<String, Room>(Utilities.get_hashmap_size(15));
 
 		String table_name, query;
 		SQLiteDatabase db;
@@ -183,7 +183,7 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 	}
 
 	private Map<String, Room> initialise_gdc_room_properties() {
-		Map<String, Room> out = new HashMap<String, Room>(Constants.VALID_GDC_ROOMS.length * 2);
+		Map<String, Room> out = new HashMap<String, Room>(Utilities.get_hashmap_size(Constants.VALID_GDC_ROOMS.length));
 
 		String[] room_types = Constants.VALID_GDC_ROOMS_TYPES;
 		int[] room_capacities = Constants.VALID_GDC_ROOMS_CAPACITIES;

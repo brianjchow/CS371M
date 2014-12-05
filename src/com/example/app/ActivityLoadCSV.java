@@ -33,8 +33,10 @@ import android.widget.Toast;
 public class ActivityLoadCSV extends ActionBarActivity {
 
 	private static final String TAG = "ActivityLoadCSV";
-	private static final int TIMEOUT_AFTER = 20000;		// milliseconds
-	private static boolean TIMEOUT_FLAG = false;
+	
+	private static final int TIMEOUT_AFTER 		= 20000;		// milliseconds
+	private boolean TIMED_OUT 					= false;
+	private boolean BACK_BUTTON_PRESSED 		= false;
 	
 	private final ReadFeedTask read_csv = new ReadFeedTask();
 
@@ -74,7 +76,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 				@Override
 				public void run() {
 					if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
-						TIMEOUT_FLAG = true;
+						TIMED_OUT = true;
 						read_csv.cancel(true);
 					}
 				}
@@ -95,7 +97,13 @@ public class ActivityLoadCSV extends ActionBarActivity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Log.d(TAG, "Back button pressed while loading CSV");
-			delete_all_feeds();
+			
+			BACK_BUTTON_PRESSED = true;
+			if (read_csv.getStatus() == AsyncTask.Status.RUNNING) {
+				read_csv.cancel(true);
+			}
+			
+			return true;
 		}
 		return super.onKeyDown(keyCode, event);
 	}
@@ -246,7 +254,11 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		protected void onCancelled(Boolean done) {
 			delete_all_feeds();
 			
-			if (!TIMEOUT_FLAG) {
+			if (BACK_BUTTON_PRESSED) {
+				finish();
+				return;
+			}
+			else if (!TIMED_OUT) {
 				show_warning_dialog(getResources().getString(R.string.cxn_lost_warning_msg));
 			}
 			else {

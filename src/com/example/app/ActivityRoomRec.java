@@ -2,7 +2,6 @@ package com.example.app;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -130,28 +129,28 @@ public class ActivityRoomRec extends ActionBarActivity {
 			}
 		}
 		
-		findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-//				Intent intent = new Intent(ActivityRoomRec.this, ActivityMain.class);
-//				startActivity(intent);
-				finish();
-				return;
-			}
-		});
-		
-		findViewById(R.id.new_room).setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Calendar calendar = Calendar.getInstance();
-				query.set_start_date(calendar.getTime());
+		String orientation = Utilities.getRotation(ActivityRoomRec.this);
+		if (orientation.equals("portrait") || orientation.equals("reverse portrait")) {
+			findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
 				
-				search();
-				return;
-			}
-		});
+				@Override
+				public void onClick(View v) {
+//					Intent intent = new Intent(ActivityFindRoomLater.this, ActivityMain.class);
+//					startActivity(intent);
+					finish();
+					return;
+				}
+			});
+			
+			findViewById(R.id.get_room_schedule).setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					get_room_schedule();
+					return;
+				}
+			});
+		}
 		
 		findViewById(R.id.find_room_later).setOnClickListener(new OnClickListener() {
 			

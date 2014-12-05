@@ -11,8 +11,31 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class Utilities {
+import android.content.Context;
+import android.view.Surface;
+import android.view.WindowManager;
 
+public class Utilities {
+	
+	// http://stackoverflow.com/questions/3611457/android-temporarily-disable-orientation-changes-in-an-activity
+	protected static String getRotation(Context context) {
+		if (context == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		final int rotation = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+		switch (rotation) {
+		case Surface.ROTATION_0:
+			return "portrait";
+		case Surface.ROTATION_90:
+			return "landscape";
+		case Surface.ROTATION_180:
+			return "reverse portrait";
+		default:
+			return "reverse landscape";
+		}
+	}
+	
 	protected static boolean str_is_gdc(String str) {
 		if (str == null) {
 			throw new IllegalArgumentException();

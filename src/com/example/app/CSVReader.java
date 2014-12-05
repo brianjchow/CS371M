@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,12 +33,12 @@ final class CSVReader {
 	private static final String ALL_ROOMS_SCHEDULE		= "https://www.cs.utexas.edu/calendar/touch/all/feed";		// rooms
 	private static final String ALL_TODAYS_EVENTS		= "https://www.cs.utexas.edu/calendar/touch/today/feed";	// today's events
 	
-	protected static final String ALL_EVENTS_SCHEDULE_FILENAME = "calendar_events_feed" + CSV_EXT;
-	protected static final String ALL_ROOMS_SCHEDULE_FILENAME = "calendar_rooms_feed" + CSV_EXT;
-	protected static final String ALL_TODAYS_EVENTS_FILENAME = "calendar_events_today_feed" + CSV_EXT;
+	protected static final String ALL_EVENTS_SCHEDULE_FILENAME 	= "calendar_events_feed" + CSV_EXT;
+	protected static final String ALL_ROOMS_SCHEDULE_FILENAME 	= "calendar_rooms_feed" + CSV_EXT;
+	protected static final String ALL_TODAYS_EVENTS_FILENAME 	= "calendar_events_today_feed" + CSV_EXT;
 
-	private static final char DELIMITER = '\"';
-	private static final String TAG = "CSVReader";
+	private static final char DELIMITER	= '\"';
+	private static final String TAG 	= "CSVReader";
 	
 	protected static int lines_read = 0;
 	protected static double time_to_read = 0;
@@ -148,20 +149,20 @@ final class CSVReader {
 				event_strings = reader.read_csv_from_url(context, new URL(ALL_TODAYS_EVENTS));
 				events.add(event_strings);
 			}
-			catch (IOException e) {
+			catch (MalformedURLException e) {
 				Log.d(TAG, "Failed to read due to malformed URL");
 			}
 		}
 		else {
 			Log.d(TAG, "Now reading from local files");
 			
-			event_strings = reader.read_csv_from_file(context, "calendar_events_today_feed_0112" + CSV_EXT, true);
+			event_strings = reader.read_csv_from_file(context, "calendar_events_today_feed_0412" + CSV_EXT, true);
 			events.add(event_strings);
 			
-			event_strings = reader.read_csv_from_file(context, "calendar_events_feed_0112" + CSV_EXT, true);
+			event_strings = reader.read_csv_from_file(context, "calendar_events_feed_0412" + CSV_EXT, true);
 			events.add(event_strings);
 
-			event_strings = reader.read_csv_from_file(context, "calendar_rooms_feed_0112" + CSV_EXT, true);
+			event_strings = reader.read_csv_from_file(context, "calendar_rooms_feed_0412" + CSV_EXT, true);
 			events.add(event_strings);	
 		}
 		
@@ -716,7 +717,7 @@ final class CSVReader {
 		
 		private FileOutputStream writer;
 		
-		protected static FileOutputWriter get_instance(Context context, String filename) {
+		protected static final FileOutputWriter get_instance(Context context, String filename) {
 			if (context == null || filename == null || filename.length() <= 0) {
 				throw new IllegalArgumentException("Invalid argument, get_instance()");
 			}

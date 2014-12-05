@@ -12,7 +12,10 @@ import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnDismissListener;
+import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -66,26 +69,28 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 			}
 		}
 		
-		findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
+		String orientation = Utilities.getRotation(ActivityGetRoomSchedule.this);
+		if (orientation.equals("portrait") || orientation.equals("reverse portrait")) {
+			findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+//					Intent intent = new Intent(ActivityFindRoomLater.this, ActivityMain.class);
+//					startActivity(intent);
+					finish();
+					return;
+				}
+			});
 			
-			@Override
-			public void onClick(View v) {
-//				Intent intent = new Intent(ActivityGetRoomSchedule.this, ActivityMain.class);
-//				startActivity(intent);
-				finish();
-				return;
-			}
-		});
-
-		findViewById(R.id.find_room_later).setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				find_room_later();
-				return;
-			}
-		});
-		
+			findViewById(R.id.get_room_schedule).setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					get_room_schedule();
+					return;
+				}
+			});
+		}
 
 		setSearchBuildingSpinnerOnItemSelectedListener();
 		
@@ -286,6 +291,15 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 				
 				DatePickerDialog datepicker_dialog = new DatePickerDialog(ActivityGetRoomSchedule.this, datepicker_dialog_listener, curr_start_date.get(Calendar.YEAR), curr_start_date.get(Calendar.MONTH), curr_start_date.get(Calendar.DAY_OF_MONTH));
 
+				// http://stackoverflow.com/questions/4724781/timepickerdialog-cancel-button
+				datepicker_dialog.setOnDismissListener(new OnDismissListener() {
+					
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						unlock_orientation();
+					}
+				});
+				
 				DatePicker datepicker = datepicker_dialog.getDatePicker();
 				CalendarView cal_view = datepicker.getCalendarView();
 				cal_view.setShowWeekNumber(false);
@@ -329,6 +343,8 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 					
 				}
 				datepicker_dialog.show();
+				
+				lock_orientation();
 			}
 		});
 	}
@@ -346,6 +362,8 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 //				selected_duration = time_remaining_in_day_mins;
 //				update_this.query();
 //			}
+			
+			unlock_orientation();
 		}
 	};
 
@@ -531,4 +549,25 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 		startActivity(intent);
 		finish();
 	}
+	
+	private void lock_orientation() {
+		String orientation = Utilities.getRotation(ActivityGetRoomSchedule.this);
+		if (orientation.equals("portrait")) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		}
+		else if (orientation.equals("landscape")) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		}
+		else if (orientation.equals("reverse portrait")) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+		}
+		else {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+		}
+	}
+	
+	private void unlock_orientation() {
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+	}
+	
 }
