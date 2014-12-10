@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -12,6 +13,7 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -33,6 +35,8 @@ import android.widget.Toast;
 public class ActivityLoadCSV extends ActionBarActivity {
 
 	private static final String TAG = "ActivityLoadCSV";
+	
+	protected static final String SKIP_UPDATE = "skip_update";
 	
 	private static final int TIMEOUT_AFTER 		= 20000;		// milliseconds
 	private boolean TIMED_OUT 					= false;
@@ -61,7 +65,13 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		AnimationDrawable anim_draw = (AnimationDrawable) progressSpinner.getBackground();
 		anim_draw.start();
 
-		if (!has_network_connectivity()) {
+		boolean skip_update = false;
+		Intent prev_intent = getIntent();
+		if (getIntent() != null && prev_intent.getBooleanExtra(SKIP_UPDATE, false)) {
+			skip_update = true;
+		}
+		
+		if (!has_network_connectivity() && !skip_update) {
 			Log.d(TAG, "No wifi and/or mobile cxn detected on startup, onCreate(), LoadCSV");
 			goto_wait_for_cxn();
 			return;
@@ -252,8 +262,13 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		
 		@Override
 		protected void onCancelled(Boolean done) {
-			delete_all_feeds();
-			
+
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ActivityLoadCSV.this);
+			boolean csv_feeds_write_success = prefs.getBoolean(Constants.CSV_FEEDS_WRITE_SUCCESS, false);
+			if (!csv_feeds_write_success) {
+				delete_all_feeds();
+			}
+
 			if (BACK_BUTTON_PRESSED) {
 				finish();
 				return;
@@ -367,7 +382,11 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			public void onClick(View v) {
 				Log.d(TAG, "Failed to complete reading CSV, now restarting app...");
 				
-				delete_all_feeds();
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ActivityLoadCSV.this);
+				boolean csv_feeds_write_success = prefs.getBoolean(Constants.CSV_FEEDS_WRITE_SUCCESS, false);
+				if (!csv_feeds_write_success) {
+					delete_all_feeds();
+				}
 				
 				dialog.dismiss();
 				startActivity(new Intent(ActivityLoadCSV.this, ActivityLoadCSV.class));
@@ -382,7 +401,11 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			public void onClick(View v) {
 				Log.d(TAG, "Failed to complete reading CSV, now aborting...");
 				
-				delete_all_feeds();
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ActivityLoadCSV.this);
+				boolean csv_feeds_write_success = prefs.getBoolean(Constants.CSV_FEEDS_WRITE_SUCCESS, false);
+				if (!csv_feeds_write_success) {
+					delete_all_feeds();
+				}
 				
 				dialog.dismiss();
 				finish();
@@ -398,23 +421,31 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		String download_filename;
 		boolean deleted = false;
 		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ActivityLoadCSV.this);
+		SharedPreferences.Editor prefs_edit = prefs.edit();
+		
 		download_filename = CSVReader.ALL_EVENTS_SCHEDULE_FILENAME;
 		if (ActivityLoadCSV.this.getFileStreamPath(download_filename).exists()) {
 			deleted = ActivityLoadCSV.this.deleteFile(download_filename);
+			prefs_edit.putBoolean(Constants.CSV_FEED_ALL_EVENTS_WRITE_SUCCESS, false);
 			Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory (delete_all()): " + deleted);
 		}
 		
 		download_filename = CSVReader.ALL_ROOMS_SCHEDULE_FILENAME;
 		if (ActivityLoadCSV.this.getFileStreamPath(download_filename).exists()) {
 			deleted = ActivityLoadCSV.this.deleteFile(download_filename);
+			prefs_edit.putBoolean(Constants.CSV_FEED_ALL_ROOMS_WRITE_SUCCESS, false);
 			Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory (delete_all()): " + deleted);
 		}
 		
 		download_filename = CSVReader.ALL_TODAYS_EVENTS_FILENAME;
 		if (ActivityLoadCSV.this.getFileStreamPath(download_filename).exists()) {
 			deleted = ActivityLoadCSV.this.deleteFile(download_filename);
+			prefs_edit.putBoolean(Constants.CSV_FEED_ALL_TODAYS_EVENTS_WRITE_SUCCESS, false);
 			Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory (delete_all()): " + deleted);
 		}
+		
+		prefs_edit.apply();
 	}
 
 }		// end of file

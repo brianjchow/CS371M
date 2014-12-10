@@ -11,10 +11,12 @@ import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -74,7 +76,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		}
 		
 		String orientation = Utilities.getRotation(ActivityFindRoomLater.this);
-		if (orientation.equals("portrait") || orientation.equals("reverse portrait")) {
+		if (orientation.equals(Utilities.PORTRAIT) || orientation.equals(Utilities.REVERSE_PORTRAIT)) {
 			findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
 				
 				@Override
@@ -556,16 +558,115 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	}
 
 	private void getRoomRec() {
-		Query.QueryResult query_result = this.query.search();
+//		Query.QueryResult query_result = this.query.search();
+//		
+//		Intent intent = new Intent(getApplicationContext(), ActivityRoomRec.class);
+//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
+//		intent.putExtra(Query.QueryResult.PARCELABLE_QUERY_RESULT, query_result);
+//		
+//		startActivity(intent);		
+//		finish();
 		
-		Intent intent = new Intent(getApplicationContext(), ActivityRoomRec.class);
-		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
-		intent.putExtra(Query.QueryResult.PARCELABLE_QUERY_RESULT, query_result);
-		
-		startActivity(intent);		
-		finish();
+		final SearchTask search_get_room_later = new SearchTask();
+		search_get_room_later.execute(ActivityFindRoomLater.this);
 	}
+	
+	private class SearchTask extends AsyncTask<Context, Void, Query.QueryResult> {
+		private Exception exception = null;
 		
+//		@Override
+//		protected void onPreExecute() {
+//			
+//		}
+		
+		@Override
+		protected Query.QueryResult doInBackground(Context... context) {
+			Query.QueryResult query_result;
+			
+			try {
+				query_result = query.search();
+			}
+			catch (Exception e) {
+				Log.d(TAG, "Caught an exception while executing search (" + e.toString() + ")");
+				this.exception = e;
+				query_result = null;
+			}
+			
+			return query_result;
+		}
+		
+		@Override
+		protected void onCancelled(Query.QueryResult query_result) {
+			Log.d(TAG, "onCancelled() was called while executing search");
+			show_failure_dialog();
+		}
+		
+		@Override
+		protected void onPostExecute(Query.QueryResult query_result) {
+			if (exception != null) {
+				Log.d(TAG, "Exception occurred while trying to find room later (" + exception.toString() + ")");
+				show_failure_dialog();
+			}
+			else if (query_result == null) {
+				Log.d(TAG, "Unknown error occurred - query_result is null");
+				show_failure_dialog();
+			}
+			else {
+				Log.d(TAG, "Finished search, AsyncTask; now transferring to ActivityRoomRec...");
+				
+				Intent intent = new Intent(getApplicationContext(), ActivityRoomRec.class);
+				intent.putExtra(Query.PARCELABLE_QUERY, query);
+				intent.putExtra(Query.QueryResult.PARCELABLE_QUERY_RESULT, query_result);
+				
+				startActivity(intent);
+				finish();
+				return;
+			}
+		}
+	}
+	
+	private void show_failure_dialog() {
+		final Dialog dialog = new Dialog(ActivityFindRoomLater.this);
+		
+		dialog.setTitle("Search failure");
+		dialog.setContentView(R.layout.load_csv_failure_dialog);
+		dialog.setCancelable(false);
+		
+		Button restart_button = (Button) dialog.findViewById(R.id.restart_button);
+		Button abort_button = (Button) dialog.findViewById(R.id.abort_button);
+		
+		dialog.findViewById(R.id.continue_button).setVisibility(View.GONE);
+		
+		restart_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "Failed to complete search, now restarting app...");
+				dialog.dismiss();
+				startActivity(new Intent(ActivityFindRoomLater.this, ActivityLoadCSV.class));
+				finish();
+				return;
+			}
+		});
+
+		abort_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "Failed to complete search, now aborting...");
+				dialog.dismiss();
+				finish();
+				return;
+				
+				/*
+				 * TODO - by default, routes back to ActivityMain; kill that as well
+				 */
+			}
+		});
+		
+		dialog.show();
+	}
+	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -616,7 +717,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	
 	private void get_room_schedule() {
 		Intent intent = new Intent(ActivityFindRoomLater.this, ActivityGetRoomSchedule.class);
-intent.putExtra(Query.PARCELABLE_QUERY, this.query);
+		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
 		startActivity(intent);
 		finish();
 	}
@@ -631,13 +732,13 @@ intent.putExtra(Query.PARCELABLE_QUERY, this.query);
 	
 	private void lock_orientation() {
 		String orientation = Utilities.getRotation(ActivityFindRoomLater.this);
-		if (orientation.equals("portrait")) {
+		if (orientation.equals(Utilities.PORTRAIT)) {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		}
-		else if (orientation.equals("landscape")) {
+		else if (orientation.equals(Utilities.LANDSCAPE)) {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		}
-		else if (orientation.equals("reverse portrait")) {
+		else if (orientation.equals(Utilities.REVERSE_PORTRAIT)) {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
 		}
 		else {

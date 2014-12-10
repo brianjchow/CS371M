@@ -49,7 +49,15 @@
 	        android:layout_weight = "1"
 	        android:text="@string/try_again"
 	        android:textSize = "16sp" />
-
+	    
+	    <Button
+	        android:id="@+id/skip_update_button"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_weight = "1"
+	        android:text="@string/skip_update"
+	        android:textSize = "16sp" />
+	    	  
 	    <Button
 	        android:id="@+id/quit_button"
 	        android:layout_width="0dp"
@@ -57,7 +65,7 @@
 	        android:layout_weight = "1"
 	        android:text="@string/quit"
 	        android:textSize = "16sp" />
-	    	    
+
     </LinearLayout>
 
 </RelativeLayout>

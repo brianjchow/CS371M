@@ -70,7 +70,7 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 		}
 		
 		String orientation = Utilities.getRotation(ActivityGetRoomSchedule.this);
-		if (orientation.equals("portrait") || orientation.equals("reverse portrait")) {
+		if (orientation.equals(Utilities.PORTRAIT) || orientation.equals(Utilities.REVERSE_PORTRAIT)) {
 			findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
 				
 				@Override
@@ -82,11 +82,11 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 				}
 			});
 			
-			findViewById(R.id.get_room_schedule).setOnClickListener(new OnClickListener() {
+			findViewById(R.id.find_room_later).setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
-					get_room_schedule();
+					find_room_later();
 					return;
 				}
 			});
@@ -387,11 +387,10 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 	private class SearchTask extends AsyncTask<Context, Void, Query.QueryResult> {
 		private Exception exception = null;
 		
-		
-		@Override
-		protected void onPreExecute() {
-			
-		}
+//		@Override
+//		protected void onPreExecute() {
+//			
+//		}
 		
 		@Override
 		protected Query.QueryResult doInBackground(Context... context) {
@@ -437,7 +436,6 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 				return;
 			}
 		}
-		
 	}
 	
 	private void show_failure_dialog() {
@@ -552,13 +550,13 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 	
 	private void lock_orientation() {
 		String orientation = Utilities.getRotation(ActivityGetRoomSchedule.this);
-		if (orientation.equals("portrait")) {
+		if (orientation.equals(Utilities.PORTRAIT)) {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		}
-		else if (orientation.equals("landscape")) {
+		else if (orientation.equals(Utilities.LANDSCAPE)) {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		}
-		else if (orientation.equals("reverse portrait")) {
+		else if (orientation.equals(Utilities.REVERSE_PORTRAIT)) {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
 		}
 		else {

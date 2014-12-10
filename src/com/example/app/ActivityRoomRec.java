@@ -291,9 +291,10 @@ public class ActivityRoomRec extends ActionBarActivity {
 			msg.append("We're not sure why this is happening, but shoot us an email containing" +
 					"the information below and we'll get it fixed. Thanks!\n\n" + this.query.toString());
 		}
-		else if (message_status.equals(Query.SearchStatus.SEARCH_SUCCESS.toString())) {
+//		else if (message_status.equals(Query.SearchStatus.SEARCH_SUCCESS.toString())) {
+		else {
 			String[] curr_rec_split = this.curr_recommendation.split("\\s");
-			if (curr_rec_split.length > 1) {
+			if (curr_rec_split.length > 1 && message_status.equals(Query.SearchStatus.SEARCH_SUCCESS.toString())) {
 				this.query.set_option_search_room(curr_rec_split[1]);
 			}
 			
@@ -304,6 +305,15 @@ public class ActivityRoomRec extends ActionBarActivity {
 			}
 			else {
 				msg.append("Search found " + results.size() + " rooms available.\n\n");
+			}
+			
+			if (message_status.equals(Query.SearchStatus.HOLIDAY.toString())) {
+				this.curr_recommendation = "Some or all rooms available";
+				msg.append("NOTE: search occurs during final exams or the holidays. Final exam schedules are NOT considered in the search results below.\n\n");
+			}
+			else if (message_status.equals(Query.SearchStatus.SUMMER.toString())) {
+				this.curr_recommendation = "Some or all rooms available";
+				msg.append("NOTE: search occurs during summer hours; consult the course schedule on UTDirect for more information.\n\n");
 			}
 			
 			if (!Constants.SHORT_CIRCUIT_SEARCH_FOR_ROOM) {
@@ -352,13 +362,13 @@ public class ActivityRoomRec extends ActionBarActivity {
 				}
 			}
 		}
-		else if (message_status.equals(Query.SearchStatus.GO_HOME.toString())) {
-			msg.append("You're gonna fail that exam tomorrow anyway.");
-		}
-		else if (!message_status.equals(Query.SearchStatus.NO_ROOMS_AVAIL.toString())) {
-			msg.append("Be sure you have the appropriate authorization (if any) to enter and use" +
-					" the rooms in " + this.query.get_option_search_building() + ".");
-		}
+//		else if (message_status.equals(Query.SearchStatus.GO_HOME.toString())) {
+//			msg.append("You're gonna fail that exam tomorrow anyway.");
+//		}
+//		else if (!message_status.equals(Query.SearchStatus.NO_ROOMS_AVAIL.toString())) {
+//			msg.append("Be sure you have the appropriate authorization (if any) to enter and use" +
+//					" the rooms in " + this.query.get_option_search_building() + ".");
+//		}
 
 		update_info_textview(msg.toString());
 		this.curr_recommendation_info_textview = msg.toString();
@@ -373,17 +383,17 @@ public class ActivityRoomRec extends ActionBarActivity {
 		String search_building_str = this.query.get_option_search_building();
 		
 		String curr_course_schedule = this.query.get_current_course_schedule();
-		if (curr_course_schedule.equals(Query.SearchStatus.SUMMER.toString())) {
-			this.curr_recommendation = curr_course_schedule;
-			setTextViewInfo(Query.SearchStatus.ALL_ROOMS_AVAIL.toString());
-			update_info_textview("Campus closed for holidays; check that you have permission before entering.");
-		}
-		else if (curr_course_schedule.equals(Query.SearchStatus.HOLIDAY.toString())) {
-			this.curr_recommendation = curr_course_schedule;
-			setTextViewInfo("Some rooms available");
-			update_info_textview("Summer hours; check course schedule on UTDirect for more information.");
-		}
-		else {
+//		if (curr_course_schedule.equals(Query.SearchStatus.SUMMER.toString())) {
+//			this.curr_recommendation = curr_course_schedule;
+//			setTextViewInfo(Query.SearchStatus.ALL_ROOMS_AVAIL.toString());
+//			update_info_textview("Summer schedule; consult course schedule on UTDirect for more information.");
+//		}
+//		else if (curr_course_schedule.equals(Query.SearchStatus.HOLIDAY.toString())) {
+//			this.curr_recommendation = curr_course_schedule;
+//			setTextViewInfo("Some or all rooms available");
+//			update_info_textview("Finals schedule or campus closed for holidays.");
+//		}
+//		else {
 			Building search_building = Building.get_instance(ActivityRoomRec.this, search_building_str, curr_course_schedule);
 			search_room = search_building.get_room(this.query.get_option_search_room());
 
@@ -418,24 +428,31 @@ public class ActivityRoomRec extends ActionBarActivity {
 			if (events.size() <= 0) {
 				msg.append("There are no events scheduled on " + date_str + ".\n\n");
 			}
+			else if (events.size() == 1) {
+				msg.append("There is one event scheduled on " + date_str + ":\n\n");
+			}
 			else {
-				if (events.size() == 1) {
-					msg.append("There is one event scheduled on " + date_str + ":\n\n");
-				}
-				else {
-					msg.append("There are " + events.size() + " events scheduled on " + date_str + ":\n\n");
-				}
-				
-				for (String curr_event : events) {
-					msg.append(curr_event);
-				}
+				msg.append("There are " + events.size() + " events scheduled on " + date_str + ":\n\n");
+			}
+						
+			if (curr_course_schedule.equals(Query.SearchStatus.HOLIDAY.toString())) {
+				this.curr_recommendation = "Some or all rooms available";
+				msg.append("NOTE: search occurs during final exams or the holidays. Final exam schedules are NOT considered in the search results below.\n\n");
+			}
+			else if (curr_course_schedule.equals(Query.SearchStatus.SUMMER.toString())) {
+				this.curr_recommendation = "Some or all rooms available";
+				msg.append("NOTE: search occurs during summer hours; consult the course schedule on UTDirect for more information.\n\n");
 			}
 			
+			for (String curr_event : events) {
+				msg.append(curr_event);
+			}
+
 			this.curr_recommendation = search_building_str + " " + this.query.get_option_search_room();
 			setTextViewInfo(this.curr_recommendation);
 			update_info_textview(msg.toString());
 			this.curr_recommendation_info_textview = msg.toString();
-		}
+//		}
 		
 		update_background();
 	}

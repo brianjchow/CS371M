@@ -65,11 +65,32 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 			
 			@Override
 			public void onClick(View v) {
-//				if (has_network_connectivity()) {
+				if (has_network_connectivity()) {
+					if (wait_task.getStatus() == AsyncTask.Status.RUNNING) {
+						wait_task.cancel(true);
+					}
+					
 					startActivity(new Intent(ActivityWaitForCxn.this, ActivityLoadCSV.class));
 					finish();
 					return;					
-//				}
+				}
+			}
+		});
+		
+		Button skip_update_button = (Button) findViewById(R.id.skip_update_button);
+		skip_update_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (wait_task.getStatus() == AsyncTask.Status.RUNNING) {
+					wait_task.cancel(true);
+				}
+				
+				Intent intent = new Intent(ActivityWaitForCxn.this, ActivityLoadCSV.class);
+				intent.putExtra(ActivityLoadCSV.SKIP_UPDATE, true);
+				startActivity(intent);
+				finish();
+				return;
 			}
 		});
 		
@@ -214,7 +235,11 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		@Override
 		protected void onCancelled(Boolean result) {
 			Log.d(TAG, "AsyncTask was cancelled, checking results");
-			if (result == null || result.equals(Boolean.valueOf(false))) {
+			
+			if (!mHasCxn) {
+				// do nothing; skip update was pressed
+			}
+			else if (result == null || result.equals(Boolean.valueOf(false))) {
 				show_failure_dialog();
 			}
 			else {

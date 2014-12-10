@@ -46,6 +46,7 @@
     <string name="no_cxn_smartass_msg">What is this, 1979?</string>
     <string name="no_cxn_msg">No connection</string>
     <string name="try_again">Try again</string>
+    <string name = "skip_update">Skip update</string>
     <string name="quit">Quit</string>
     <string name="no_cxn_dinosaur_desc">No connection image</string>
 

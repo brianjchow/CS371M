@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.app"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="2"
+    android:versionName="2.0" >
 
     <uses-sdk
         android:minSdkVersion="12"
@@ -16,7 +16,7 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/loading"
+        android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:largeHeap = "true"
          >
@@ -59,36 +59,6 @@
         </activity>
     </application>
 
-</manifest><!--
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".RoomRecActivity"
-            android:label="@string/title_activity_find_room" >
-        </activity>
-        <activity
-            android:name=".FindRoomLaterActivity"
-            android:label="@string/title_activity_find_room_later" >
-        </activity>
-        <activity
-            android:name=".ExitActivity"
-            android:label="@string/title_activity_exit" >
-        </activity>
-        <activity
-            android:name=".LoadCSVActivity"
-            android:label="@string/title_activity_load_csv" >
-        </activity>
--->
+</manifest>
 
 

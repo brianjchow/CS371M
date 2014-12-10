@@ -17,6 +17,11 @@ import android.view.WindowManager;
 
 public class Utilities {
 	
+	protected static final String PORTRAIT = "portrait";
+	protected static final String LANDSCAPE = "landscape";
+	protected static final String REVERSE_PORTRAIT = "portrait_reverse";
+	protected static final String REVERSE_LANDSCAPE = "landscape_reverse";
+	
 	// http://stackoverflow.com/questions/3611457/android-temporarily-disable-orientation-changes-in-an-activity
 	protected static String getRotation(Context context) {
 		if (context == null) {
@@ -26,13 +31,13 @@ public class Utilities {
 		final int rotation = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
 		switch (rotation) {
 		case Surface.ROTATION_0:
-			return "portrait";
+			return PORTRAIT;
 		case Surface.ROTATION_90:
-			return "landscape";
+			return LANDSCAPE;
 		case Surface.ROTATION_180:
-			return "reverse portrait";
+			return REVERSE_PORTRAIT;
 		default:
-			return "reverse landscape";
+			return REVERSE_LANDSCAPE;
 		}
 	}
 	
@@ -90,6 +95,22 @@ public class Utilities {
 		return result;
 	}
 	
+	protected static boolean date_is_during_spring_trimester(Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException("Null argument.");
+		}
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		
+		int year = calendar.get(Calendar.YEAR);
+		Date start = get_date(1, 1, year, 0);
+		Date end = get_date(Constants.SUMMER_START_MONTH, Constants.SUMMER_START_DAY, year, 2359);
+		
+		boolean result = date_is_in_range(date, start, end);		
+		return result;
+	}
+		
 	protected static boolean date_is_during_summer(Date date) {
 		if (date == null) {
 			throw new IllegalArgumentException("Null argument.");
@@ -117,6 +138,23 @@ public class Utilities {
 		int year = calendar.get(Calendar.YEAR);
 		Date start = get_date(Constants.FALL_START_MONTH, Constants.FALL_START_DAY, year, 0);
 		Date end = get_date(Constants.FALL_END_MONTH, Constants.FALL_END_DAY, year, 2359);
+//		Date end = get_date(12, 31, year, 2359);
+		
+		boolean result = date_is_in_range(date, start, end);		
+		return result;
+	}
+	
+	protected static boolean date_is_during_fall_trimester(Date date) {
+		if (date == null) {
+			throw new IllegalArgumentException("Null argument.");
+		}
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		
+		int year = calendar.get(Calendar.YEAR);
+		Date start = get_date(Constants.SUMMER_END_MONTH, Constants.SUMMER_END_DAY, year, 0);
+		Date end = get_date(12, 31, year, 2359);
 		
 		boolean result = date_is_in_range(date, start, end);		
 		return result;

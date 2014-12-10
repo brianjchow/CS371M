@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Stack;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
@@ -36,6 +38,8 @@ final class CSVReader {
 	protected static final String ALL_EVENTS_SCHEDULE_FILENAME 	= "calendar_events_feed" + CSV_EXT;
 	protected static final String ALL_ROOMS_SCHEDULE_FILENAME 	= "calendar_rooms_feed" + CSV_EXT;
 	protected static final String ALL_TODAYS_EVENTS_FILENAME 	= "calendar_events_today_feed" + CSV_EXT;
+	
+	private static final int DAILY_UPDATE_TIME	=	859;	// 8:59a; update if curr time is 9a or after
 
 	private static final char DELIMITER	= '\"';
 	private static final String TAG 	= "CSVReader";
@@ -152,6 +156,24 @@ final class CSVReader {
 			catch (MalformedURLException e) {
 				Log.d(TAG, "Failed to read due to malformed URL");
 			}
+			finally {
+				if (get_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_EVENTS_WRITE_SUCCESS) &&
+					get_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_ROOMS_WRITE_SUCCESS) &&
+					get_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_TODAYS_EVENTS_WRITE_SUCCESS)) {
+
+					set_csv_feeds_write_success(context, Constants.CSV_FEEDS_WRITE_SUCCESS, true);
+					Log.d(TAG, "All 3 feeds read successfully, end of read_csv()");
+				}
+				else {
+					set_csv_feeds_write_success(context, Constants.CSV_FEEDS_WRITE_SUCCESS, false);
+					
+					set_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_EVENTS_WRITE_SUCCESS, false);
+					set_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_ROOMS_WRITE_SUCCESS, false);
+					set_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_TODAYS_EVENTS_WRITE_SUCCESS, false);
+					
+					Log.d(TAG, "One or more feeds not successfully read, end of read_csv()");
+				}
+			}
 		}
 		else {
 			Log.d(TAG, "Now reading from local files");
@@ -163,7 +185,8 @@ final class CSVReader {
 			events.add(event_strings);
 
 			event_strings = reader.read_csv_from_file(context, "calendar_rooms_feed_0412" + CSV_EXT, true);
-			events.add(event_strings);	
+			events.add(event_strings);
+						
 		}
 		
 		stopwatch.stop();
@@ -217,7 +240,7 @@ final class CSVReader {
 			}
 			
 			// end of line reached in file; parse this event
-			else {				
+			else {
 				lines_read++;
 				result = split_line(curr_line);
 				if (result != null) {
@@ -240,7 +263,11 @@ final class CSVReader {
 		}
 		
 		File file = context.getFileStreamPath(filename);
-		return (file.exists());
+		boolean file_exists = file.exists();
+		if (file_exists) {
+			Log.d(TAG, "File " + filename + " exists and has length " + file.length() + " bytes");
+		}
+		return file_exists;
 	}
 	
 	private boolean file_is_current(Context context, String filename) {
@@ -252,6 +279,7 @@ final class CSVReader {
 		}
 		
 		if (!file_exists(context, filename)) {
+			Log.d(TAG, "File " + filename + " does not exist");
 			return false;
 		}
 		
@@ -263,15 +291,68 @@ final class CSVReader {
 		Date last_modified = new Date(file.lastModified());
 				
 		Calendar calendar = Calendar.getInstance();
+		Date curr_date = calendar.getTime();
+		int curr_month = calendar.get(Calendar.MONTH) + 1;
+		int curr_day = calendar.get(Calendar.DAY_OF_MONTH);
 		int curr_day_of_year = calendar.get(Calendar.DAY_OF_YEAR);
 		int curr_year = calendar.get(Calendar.YEAR);
 		
+		Date update_time = Utilities.get_date(curr_month, curr_day, curr_year, DAILY_UPDATE_TIME);
 		calendar.setTime(last_modified);
-		if (calendar.get(Calendar.DAY_OF_YEAR) == curr_day_of_year && calendar.get(Calendar.YEAR) == curr_year) {
+		
+		Log.d(TAG, "Last modified, " + filename + ": " + last_modified.toString());
+		Log.d(TAG, "Update time: " + update_time.toString());
+		
+		if (calendar.get(Calendar.DAY_OF_YEAR) == curr_day_of_year && calendar.get(Calendar.YEAR) == curr_year && last_modified.after(update_time)) {
+//			if (filename.equals(ALL_EVENTS_SCHEDULE_FILENAME)) {
+//				return (get_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_EVENTS_WRITE_SUCCESS));
+//			}
+//			else if (filename.equals(ALL_ROOMS_SCHEDULE_FILENAME)) {
+//				return (get_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_ROOMS_WRITE_SUCCESS));
+//			}
+//			else if (filename.equals(ALL_TODAYS_EVENTS_FILENAME)) {
+//				return (get_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_TODAYS_EVENTS_WRITE_SUCCESS));
+//			}
+			Log.d(TAG, "Returning true, pos 1");
 			return true;
+		}
+		else if (calendar.get(Calendar.DAY_OF_YEAR) == curr_day_of_year - 1 && calendar.get(Calendar.YEAR) == curr_year && update_time.after(curr_date)) {
+			Date yesterday_update_time = Utilities.get_date(curr_month, curr_day - 1, curr_year, DAILY_UPDATE_TIME);
+			if (last_modified.after(yesterday_update_time)) {
+				Log.d(TAG, "Returning true, pos 2");
+				return true;
+			}
 		}
 		
 		return false;
+	}
+	
+	private static boolean get_csv_feeds_write_success(Context context, String pref_name) {
+		if (context == null) {
+			throw new IllegalArgumentException("Cannot accept null Context argument");
+		}
+		else if (pref_name == null) {
+			throw new IllegalArgumentException("Cannot accept null String argument");
+		}
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		if (!prefs.contains(pref_name)) {
+			return false;
+		}
+		return (prefs.getBoolean(pref_name, false));
+	}
+		
+	private static boolean set_csv_feeds_write_success(Context context, String pref_name, boolean success) {
+		if (context == null) {
+			throw new IllegalArgumentException("Cannot accept null Context argument");
+		}
+		else if (pref_name == null) {
+			throw new IllegalArgumentException("Cannot accept null String argument");
+		}
+		
+		SharedPreferences.Editor prefs_edit = PreferenceManager.getDefaultSharedPreferences(context).edit();
+		prefs_edit.putBoolean(pref_name, success);
+		return (prefs_edit.commit());
 	}
 	
 	private boolean file_delete(Context context, String filename) {
@@ -319,26 +400,32 @@ final class CSVReader {
 		else if (url == null) {
 			throw new IllegalArgumentException("Cannot accept null URL argument");
 		}
-		
+
+		final boolean download_new_csv_copy;
+		String download_filename = null;
 		if (!Constants.STORE_LOCAL_COPY_CSV_FEEDS) {
 			delete_all_feeds(context);
-		}
-		
-		boolean download_new_csv_copy = false;
-		String download_filename = null;
-		
-		if (Constants.STORE_LOCAL_COPY_CSV_FEEDS) {
+			download_new_csv_copy = false;
+		}		
+		else {
 			String url_str = url.toString();
 			if (url_str.equals(ALL_EVENTS_SCHEDULE)) {
 				download_filename = ALL_EVENTS_SCHEDULE_FILENAME;
 				
 				if (file_exists(context, download_filename)) {
 					if (file_is_current(context, download_filename)) {
-						Log.d(TAG, "File " + download_filename + " already exists and is up-to-date in internal storage directory");
-						
-						return (read_csv_from_file(context, download_filename, false));
+						if (!get_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_EVENTS_WRITE_SUCCESS)) {
+							file_delete(context, download_filename);
+							download_new_csv_copy = true;
+							Log.d(TAG, "File " + download_filename + " was corrupt and needs to be re-downloaded");
+						}
+						else {
+							Log.d(TAG, "File " + download_filename + " already exists and is up-to-date in internal storage directory");
+							return (read_csv_from_file(context, download_filename, false));
+						}
 					}
 					else {
+						Log.d(TAG, "File " + download_filename + " is not current");
 						boolean deleted = file_delete(context, download_filename);
 						download_new_csv_copy = true;
 						
@@ -355,12 +442,19 @@ final class CSVReader {
 				download_filename = ALL_ROOMS_SCHEDULE_FILENAME;
 				
 				if (file_exists(context, download_filename)) {
-					if (file_is_current(context, download_filename)) {
-						Log.d(TAG, "File " + download_filename + " already exists and is up-to-date in internal storage directory");
-						
-						return (read_csv_from_file(context, download_filename, false));
+					if (file_is_current(context, download_filename)) {						
+						if (!get_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_ROOMS_WRITE_SUCCESS)) {
+							file_delete(context, download_filename);
+							download_new_csv_copy = true;
+							Log.d(TAG, "File " + download_filename + " was corrupt and needs to be re-downloaded");
+						}
+						else {
+							Log.d(TAG, "File " + download_filename + " already exists and is up-to-date in internal storage directory");
+							return (read_csv_from_file(context, download_filename, false));
+						}
 					}
 					else {
+						Log.d(TAG, "File " + download_filename + " is not current");
 						boolean deleted = file_delete(context, download_filename);
 						download_new_csv_copy = true;
 						
@@ -378,11 +472,18 @@ final class CSVReader {
 				
 				if (file_exists(context, download_filename)) {
 					if (file_is_current(context, download_filename)) {
-						Log.d(TAG, "File " + download_filename + " already exists and is up-to-date in internal storage directory");
-						
-						return (read_csv_from_file(context, download_filename, false));
+						if (!get_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_TODAYS_EVENTS_WRITE_SUCCESS)) {
+							file_delete(context, download_filename);
+							download_new_csv_copy = true;
+							Log.d(TAG, "File " + download_filename + " was corrupt and needs to be re-downloaded");
+						}
+						else {
+							Log.d(TAG, "File " + download_filename + " already exists and is up-to-date in internal storage directory");
+							return (read_csv_from_file(context, download_filename, false));
+						}
 					}
 					else {
+						Log.d(TAG, "File " + download_filename + " is not current");
 						boolean deleted = file_delete(context, download_filename);
 						download_new_csv_copy = true;
 						
@@ -398,6 +499,8 @@ final class CSVReader {
 		}
 
 		List<HashMap<String, String>> schedules = new ArrayList<HashMap<String, String>>(100);
+
+		set_csv_feeds_write_success(context, Constants.CSV_FEEDS_WRITE_SUCCESS, false);
 		
 		HttpURLConnection connection = null;
 		try {
@@ -433,7 +536,7 @@ final class CSVReader {
 		InputReader reader = new InputReader(conn_stream);
 		
 		FileOutputWriter writer = null;
-		if (Constants.STORE_LOCAL_COPY_CSV_FEEDS && download_new_csv_copy) {
+		if (download_new_csv_copy) {
 			writer = FileOutputWriter.get_instance(context, download_filename);
 			if (writer == null) {
 				return schedules;
@@ -442,9 +545,19 @@ final class CSVReader {
 		
 		int temp;
 		String line_to_write;
-		
 		HashMap<String, String> result;
 		StringBuilder curr_line = new StringBuilder();
+		
+		if (download_filename.equals(ALL_EVENTS_SCHEDULE_FILENAME)) {
+			set_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_EVENTS_WRITE_SUCCESS, false);
+		}
+		else if (download_filename.equals(ALL_ROOMS_SCHEDULE_FILENAME)) {
+			set_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_ROOMS_WRITE_SUCCESS, false);
+		}
+		else if (download_filename.equals(ALL_TODAYS_EVENTS_FILENAME)) {
+			set_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_TODAYS_EVENTS_WRITE_SUCCESS, false);
+		}
+		
 		while ((temp = reader.read()) != -1) {
 			char curr_byte = (char) temp;
 			if (curr_byte != '\n') {
@@ -455,7 +568,7 @@ final class CSVReader {
 			else {
 				lines_read++;
 				
-				if (Constants.STORE_LOCAL_COPY_CSV_FEEDS && download_new_csv_copy && writer != null) {
+				if (download_new_csv_copy && writer != null) {
 					line_to_write = curr_line.toString() + "\n";
 					writer.write(line_to_write);
 				}
@@ -468,7 +581,23 @@ final class CSVReader {
 			}
 		}
 		
-		if (Constants.STORE_LOCAL_COPY_CSV_FEEDS && download_new_csv_copy && writer != null) {
+		boolean success = true;
+		if (writer.get_exception() != null) {
+			success = false;
+		}
+		
+		if (download_filename.equals(ALL_EVENTS_SCHEDULE_FILENAME)) {
+			set_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_EVENTS_WRITE_SUCCESS, success);
+		}
+		else if (download_filename.equals(ALL_ROOMS_SCHEDULE_FILENAME)) {
+			set_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_ROOMS_WRITE_SUCCESS, success);
+		}
+		else if (download_filename.equals(ALL_TODAYS_EVENTS_FILENAME)) {
+			set_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_TODAYS_EVENTS_WRITE_SUCCESS, success);
+		}
+		Log.d(TAG, "Successfully wrote copy of CSV feeds for " + download_filename + ": " + success + " (writer exception occurred: " + (writer.get_exception() != null) + ")");
+		
+		if (download_new_csv_copy && writer != null) {
 			writer.close();
 		}
 		reader.close();
@@ -608,11 +737,14 @@ final class CSVReader {
 		private static final int BUF_SIZE = 8192;	// bytes
 		
 		private BufferedReader reader;
+		private Exception exception;
 		
 		private InputReader(Context context, String filename, boolean is_asset) {
 			if (context == null || filename == null || filename.length() <= 0) {
 				throw new IllegalArgumentException("Invalid argument, InputReader constructor");
 			}
+			
+			this.exception = null;
 			
 			try {
 				if (is_asset) {
@@ -628,6 +760,7 @@ final class CSVReader {
 			}
 			catch (IOException e) {
 				this.reader = null;
+				this.exception = e;
 			}			
 		}
 		
@@ -650,6 +783,7 @@ final class CSVReader {
 			}
 			
 			this.reader = new BufferedReader(new InputStreamReader(stream), BUF_SIZE);
+			this.exception = null;
 		}
 		
 		protected InputReader(Context context, int res_id) {
@@ -664,6 +798,11 @@ final class CSVReader {
 			
 			InputStreamReader input_stream_reader = new InputStreamReader(input_stream);
 			this.reader = new BufferedReader(input_stream_reader, BUF_SIZE);
+			this.exception = null;
+		}
+		
+		protected Exception get_exception() {
+			return this.exception;
 		}
 		
 		protected int read() {
@@ -676,6 +815,7 @@ final class CSVReader {
 				return (this.reader.read());
 			}
 			catch (IOException e) {
+				this.exception = e;
 				return -1;
 			}
 		}
@@ -690,6 +830,7 @@ final class CSVReader {
 				return (this.reader.readLine());
 			}
 			catch (IOException e) {
+				this.exception = e;
 				return null;
 			}
 		}
@@ -704,6 +845,7 @@ final class CSVReader {
 				this.reader.close();
 			}
 			catch (IOException e) {
+				this.exception = e;
 				return false;
 			}
 			
@@ -716,6 +858,7 @@ final class CSVReader {
 		private static final String TAG = "FileOutputWriter";
 		
 		private FileOutputStream writer;
+		private Exception exception;
 		
 		protected static final FileOutputWriter get_instance(Context context, String filename) {
 			if (context == null || filename == null || filename.length() <= 0) {
@@ -737,10 +880,16 @@ final class CSVReader {
 			
 			try {
 				this.writer = context.openFileOutput(filename, Context.MODE_PRIVATE);
+				this.exception = null;
 			}
 			catch (IOException e) {
 				this.writer = null;
+				this.exception = e;
 			}
+		}
+		
+		protected Exception get_exception() {
+			return this.exception;
 		}
 		
 		protected boolean write(String line) {
@@ -756,6 +905,7 @@ final class CSVReader {
 				this.writer.write(line.getBytes());
 			}
 			catch (IOException e) {
+				this.exception = e;
 				return false;
 			}
 			
@@ -772,6 +922,7 @@ final class CSVReader {
 				this.writer.close();
 			}
 			catch (IOException e) {
+				this.exception = e;
 				return false;
 			}
 			

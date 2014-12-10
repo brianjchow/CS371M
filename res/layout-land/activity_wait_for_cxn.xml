@@ -15,15 +15,23 @@
 	    <Button
 	        android:id="@+id/try_again"
 	        android:layout_width="0dp"
-	        android:layout_height="30dp"
+	        android:layout_height="35dp"
 	        android:layout_weight = "1"
 	        android:text="@string/try_again"
 	        android:textSize = "12sp" />
 
 	    <Button
+	        android:id="@+id/skip_update_button"
+	        android:layout_width="0dp"
+	        android:layout_height="35dp"
+	        android:layout_weight = "1"
+	        android:text="@string/skip_update"
+	        android:textSize = "12sp" />
+	    	    
+	    <Button
 	        android:id="@+id/quit_button"
 	        android:layout_width="0dp"
-	        android:layout_height="30dp"
+	        android:layout_height="35dp"
 	        android:layout_weight = "1"
 	        android:text="@string/quit"
 	        android:textSize = "12sp" />

@@ -30,7 +30,7 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 		find_room_later.setOnClickListener(this);
 		get_room_schedule.setOnClickListener(this);
 		
-		if (getIntent().getBooleanExtra(Constants.EXIT,  false)) {
+		if (getIntent().getBooleanExtra(Constants.EXIT, false)) {
 			Log.d(TAG, "Now exiting");
 			finish();
 			return;

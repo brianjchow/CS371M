@@ -7,10 +7,17 @@ import java.util.Locale;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 final class Constants {
 
+	protected static final	String		CSV_FEEDS_WRITE_SUCCESS			=	"CSV_FEEDS_WRITE_SUCCESS";
+	protected static final	String		CSV_FEED_ALL_EVENTS_WRITE_SUCCESS	=	"CSV_FEEDS_ALL_EVENTS_WRITE_SUCCESS";
+	protected static final	String		CSV_FEED_ALL_ROOMS_WRITE_SUCCESS	=	"CSV_FEEDS_ALL_ROOMS_WRITE_SUCCESS";
+	protected static final	String		CSV_FEED_ALL_TODAYS_EVENTS_WRITE_SUCCESS	=	"CSV_FEED_ALL_TODAYS_EVENTS_WRITE_SUCCESS";
+	
 	protected static final	String		COURSE_SCHEDULE_THIS_SEMESTER	=	"master_course_schedule_f14";
 	protected static final	String		COURSE_SCHEDULE_NEXT_SEMESTER	=	"master_course_schedule_s15";
 	protected static final	String		DEFAULT_DB_EXTENSION			=	"db";
@@ -29,18 +36,18 @@ final class Constants {
 	
 	protected static final	int			BUILDING_CODE_LENGTH			=	3;
 
-	protected static final	int			SPRING_START_MONTH				=	1;
-	protected static final	int			SPRING_START_DAY				=	10;
-	protected static final	int			SPRING_END_MONTH				=	5;
-	protected static final	int			SPRING_END_DAY					=	20;
-	protected static final	int			SUMMER_START_MONTH				=	5;
-	protected static final	int			SUMMER_START_DAY				=	25;
-	protected static final	int			SUMMER_END_MONTH				=	8;
-	protected static final	int			SUMMER_END_DAY					=	19;
-	protected static final	int			FALL_START_MONTH				=	8;
-	protected static final	int			FALL_START_DAY					=	20;
-	protected static final	int			FALL_END_MONTH					=	12;
-	protected static final	int			FALL_END_DAY					=	20;
+	protected static final	int			SPRING_START_MONTH				=	1;		// default 1		Spring '15
+	protected static final	int			SPRING_START_DAY				=	20;		// default 10
+	protected static final	int			SPRING_END_MONTH				=	5;		// default 5
+	protected static final	int			SPRING_END_DAY					=	8;		// default 20
+	protected static final	int			SUMMER_START_MONTH				=	6;		// default 20		Summer '15
+	protected static final	int			SUMMER_START_DAY				=	4;		// default 25
+	protected static final	int			SUMMER_END_MONTH				=	8;		// default 8
+	protected static final	int			SUMMER_END_DAY					=	14;		// default 19
+	protected static final	int			FALL_START_MONTH				=	8;		// default 8		Fall '14
+	protected static final	int			FALL_START_DAY					=	27;		// default 20
+	protected static final	int			FALL_END_MONTH					=	12;		// default 12
+	protected static final	int			FALL_END_DAY					=	5;		// default 20
 	
 	protected static final 	boolean 	DEBUG;
 	
@@ -270,6 +277,37 @@ final class Constants {
 		BUILDING_CACHELIST_NEXT_SEMESTER = null;
 	}
 	
+	private static void init_shared_prefs(Context context) {
+		if (context == null) {
+			throw new IllegalArgumentException("Context argument cannot be null.");
+		}
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		if (!prefs.contains(CSV_FEEDS_WRITE_SUCCESS)) {
+			SharedPreferences.Editor prefs_edit = prefs.edit();
+			prefs_edit.putBoolean(CSV_FEEDS_WRITE_SUCCESS, false);
+			prefs_edit.apply();
+		}
+		
+		if (!prefs.contains(CSV_FEED_ALL_EVENTS_WRITE_SUCCESS)) {
+			SharedPreferences.Editor prefs_edit = prefs.edit();
+			prefs_edit.putBoolean(CSV_FEED_ALL_EVENTS_WRITE_SUCCESS, false);
+			prefs_edit.apply();
+		}
+		
+		if (!prefs.contains(CSV_FEED_ALL_ROOMS_WRITE_SUCCESS)) {
+			SharedPreferences.Editor prefs_edit = prefs.edit();
+			prefs_edit.putBoolean(CSV_FEED_ALL_ROOMS_WRITE_SUCCESS, false);
+			prefs_edit.apply();
+		}
+		
+		if (!prefs.contains(CSV_FEED_ALL_TODAYS_EVENTS_WRITE_SUCCESS)) {
+			SharedPreferences.Editor prefs_edit = prefs.edit();
+			prefs_edit.putBoolean(CSV_FEED_ALL_TODAYS_EVENTS_WRITE_SUCCESS, false);
+			prefs_edit.apply();
+		}
+	}
+	
 	protected static void init(Context context) {
 		init(context, DEBUG);
 	}
@@ -285,6 +323,8 @@ final class Constants {
 		reset();
 //		delete_all_feeds(context);
 		
+		init_shared_prefs(context);
+
 		CSV_FEEDS_MASTER = CSVReader.read_csv(context, read_from_local_feeds);		
 		if (CSV_FEEDS_MASTER == null) {
 			throw new IllegalStateException("Unknown error occurred while reading CSV feeds; CSV_FEEDS_MASTER is null");
