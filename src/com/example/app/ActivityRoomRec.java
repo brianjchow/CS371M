@@ -129,8 +129,8 @@ public class ActivityRoomRec extends ActionBarActivity {
 			}
 		}
 		
-		String orientation = Utilities.getRotation(ActivityRoomRec.this);
-		if (orientation.equals("portrait") || orientation.equals("reverse portrait")) {
+//		String orientation = Utilities.getRotation(ActivityRoomRec.this);
+//		if (orientation.equals(Utilities.PORTRAIT) || orientation.equals(Utilities.REVERSE_PORTRAIT)) {
 			findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
 				
 				@Override
@@ -142,15 +142,17 @@ public class ActivityRoomRec extends ActionBarActivity {
 				}
 			});
 			
-			findViewById(R.id.get_room_schedule).setOnClickListener(new OnClickListener() {
+			findViewById(R.id.new_room).setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
-					get_room_schedule();
+					query.set_start_date(Utilities.get_date());
+					
+					search();
 					return;
 				}
 			});
-		}
+//		}
 		
 		findViewById(R.id.find_room_later).setOnClickListener(new OnClickListener() {
 			
@@ -207,32 +209,60 @@ public class ActivityRoomRec extends ActionBarActivity {
 		
 		View background = findViewById(R.id.background);
 		if (this.query_result.get_search_status().equals(Query.SearchStatus.SEARCH_SUCCESS.toString())) {
+			int res_id;
 			
 			String building_name = this.query_result.get_building_name();
-			if (building_name.equalsIgnoreCase(Constants.GDC)) {
-				
-				String room_rec = this.curr_recommendation.toLowerCase(Constants.DEFAULT_LOCALE);
-				if (needs_truncation_gdc_room(room_rec)) {
-					room_rec = room_rec.substring(0, 8);		// substring length guaranteed to be 9 if true (see needs_truncation_gdc_room())
-				}
-				
-				String building_pic_str = room_rec.replaceAll("\\.", "").replaceAll("\\s+", "_");
-				int res_id = Utilities.getResId(building_pic_str, R.drawable.class);
-				if (res_id != -1) {
-					background.setBackgroundResource(res_id);
-					this.curr_recommendation_res_id = res_id;
+			if (building_name != null) {
+				if (Utilities.str_is_gdc(building_name)) {
+					
+					String room_rec = this.curr_recommendation.toLowerCase(Constants.DEFAULT_LOCALE);
+					if (needs_truncation_gdc_room(room_rec)) {
+						room_rec = room_rec.substring(0, 8);		// substring length guaranteed to be 9 if true (see needs_truncation_gdc_room())
+					}
+					
+					String building_pic_str = room_rec.replaceAll("\\.", "").replaceAll("\\s+", "_");
+					res_id = Utilities.getResId(building_pic_str, R.drawable.class);
+					if (res_id != -1) {
+						background.setBackgroundResource(res_id);
+						this.curr_recommendation_res_id = res_id;
+					}
+					else {
+						res_id = Utilities.getResId("campus_gdc", R.drawable.class);
+						background.setBackgroundResource(res_id);
+						this.curr_recommendation_res_id = res_id;
+					}
+					
+//					Log.d(TAG, "Looking for building picture " + building_pic_str + " with res id " + res_id);
 				}
 				else {
-					res_id = Utilities.getResId("campus_gdc", R.drawable.class);
-					background.setBackgroundResource(res_id);
-					this.curr_recommendation_res_id = res_id;
+					String building_pic_str = "campus_" + building_name.toLowerCase(Constants.DEFAULT_LOCALE);
+					res_id = Utilities.getResId(building_pic_str, R.drawable.class);
+					if (res_id != -1) {
+						background.setBackgroundResource(res_id);
+						this.curr_recommendation_res_id = res_id;
+					}
+					else {
+						res_id = Utilities.getResId("campus_tower", R.drawable.class);
+						background.setBackgroundResource(res_id);
+						this.curr_recommendation_res_id = res_id;
+					}
+					
+//					Log.d(TAG, "Looking for building picture " + building_pic_str + " with res id " + res_id);
 				}
-				
-				Log.d(TAG, "Looking for building picture " + building_pic_str + " with res id " + res_id);
 			}
 			else {
+				res_id = Utilities.getResId("campus_tower", R.drawable.class);
+				background.setBackgroundResource(res_id);
+				this.curr_recommendation_res_id = res_id;
+			}
+		}
+		else {
+			int res_id;
+			
+			String building_name = this.query_result.get_building_name();
+			if (building_name != null) {
 				String building_pic_str = "campus_" + building_name.toLowerCase(Constants.DEFAULT_LOCALE);
-				int res_id = Utilities.getResId(building_pic_str, R.drawable.class);
+				res_id = Utilities.getResId(building_pic_str, R.drawable.class);
 				if (res_id != -1) {
 					background.setBackgroundResource(res_id);
 					this.curr_recommendation_res_id = res_id;
@@ -242,16 +272,14 @@ public class ActivityRoomRec extends ActionBarActivity {
 					background.setBackgroundResource(res_id);
 					this.curr_recommendation_res_id = res_id;
 				}
-				
-				Log.d(TAG, "Looking for building picture " + building_pic_str + " with res id " + res_id);
 			}
-		}
-		else {
-			int res_id = Utilities.getResId("campus_tower", R.drawable.class);
-			background.setBackgroundResource(res_id);
-			this.curr_recommendation_res_id = res_id;
+			else {
+				res_id = Utilities.getResId("campus_tower", R.drawable.class);
+				background.setBackgroundResource(res_id);
+				this.curr_recommendation_res_id = res_id;
+			}
 			
-			Log.d(TAG, "Search returned " + this.query_result.get_search_status());
+//			Log.d(TAG, "Search returned " + this.query_result.get_search_status());
 		}
 	}
 	
@@ -309,7 +337,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 			
 			if (message_status.equals(Query.SearchStatus.HOLIDAY.toString())) {
 				this.curr_recommendation = "Some or all rooms available";
-				msg.append("NOTE: search occurs during final exams or the holidays. Final exam schedules are NOT considered in the search results below.\n\n");
+				msg.append("NOTE: search occurs during final exams or the holidays. Final exam schedules are NOT explicitly considered when searching.\n\n");
 			}
 			else if (message_status.equals(Query.SearchStatus.SUMMER.toString())) {
 				this.curr_recommendation = "Some or all rooms available";
@@ -394,6 +422,11 @@ public class ActivityRoomRec extends ActionBarActivity {
 //			update_info_textview("Finals schedule or campus closed for holidays.");
 //		}
 //		else {
+		
+			if (!Utilities.is_valid_db_filename(curr_course_schedule)) {
+				throw new IllegalArgumentException();
+			}
+		
 			Building search_building = Building.get_instance(ActivityRoomRec.this, search_building_str, curr_course_schedule);
 			search_room = search_building.get_room(this.query.get_option_search_room());
 
@@ -437,7 +470,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 						
 			if (curr_course_schedule.equals(Query.SearchStatus.HOLIDAY.toString())) {
 				this.curr_recommendation = "Some or all rooms available";
-				msg.append("NOTE: search occurs during final exams or the holidays. Final exam schedules are NOT considered in the search results below.\n\n");
+				msg.append("NOTE: search occurs during final exams or the holidays. Final exam schedules are NOT explicitly considered when searching..\n\n");
 			}
 			else if (curr_course_schedule.equals(Query.SearchStatus.SUMMER.toString())) {
 				this.curr_recommendation = "Some or all rooms available";

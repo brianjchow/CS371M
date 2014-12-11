@@ -69,6 +69,15 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 			}
 		}
 		
+		findViewById(R.id.get_room).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				get_room_rec();
+				return;
+			}
+		});
+		
 		String orientation = Utilities.getRotation(ActivityGetRoomSchedule.this);
 		if (orientation.equals(Utilities.PORTRAIT) || orientation.equals(Utilities.REVERSE_PORTRAIT)) {
 			findViewById(R.id.ohkay).setOnClickListener(new OnClickListener() {
@@ -161,6 +170,9 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 		if (curr_course_schedule == null) {
 			rooms = new String[] { no_rooms_found };
 		}
+		else if (!Utilities.is_valid_db_filename(curr_course_schedule)) {
+			rooms = new String[] { no_rooms_found };
+		}
 		else {
 			Building search_building = Building.get_instance(ActivityGetRoomSchedule.this, search_building_str, curr_course_schedule);
 			SortedSet<String> roomset = search_building.get_keyset();
@@ -191,14 +203,7 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 			get_room_button.setVisibility(View.GONE);
 		}
 		else {
-			get_room_button.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					get_room_rec();
-					return;
-				}
-			});
+			get_room_button.setVisibility(View.VISIBLE);
 		}
 		
 		final Spinner spinner = (Spinner) findViewById(R.id.choose_room_spinner);

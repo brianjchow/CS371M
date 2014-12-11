@@ -154,7 +154,7 @@ final class Constants {
 		CLASS						=	"class";
 		CONFERENCE					=	"conference";
 		LAB							=	"lab";
-		LECTURE_HALL				=	"lecture_hall";
+		LECTURE_HALL				=	"lecture hall";
 		LOBBY						=	"lobby";
 		LOUNGE						=	"lounge";
 		SEMINAR						=	"seminar";

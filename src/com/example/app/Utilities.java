@@ -22,7 +22,25 @@ public class Utilities {
 	protected static final String REVERSE_PORTRAIT = "portrait_reverse";
 	protected static final String REVERSE_LANDSCAPE = "landscape_reverse";
 	
+	protected static boolean is_valid_db_filename(String filename) {
+		if (filename == null || filename.length() <= 0) {
+//			return false;
+			throw new IllegalArgumentException();
+		}
+		
+		boolean is_valid = false;
+		if (filename.equals(Constants.COURSE_SCHEDULE_THIS_SEMESTER)) {
+			is_valid = true;
+		}
+		else if (!Constants.DISABLE_SEARCHES_NEXT_SEMESTER && filename.equals(Constants.COURSE_SCHEDULE_NEXT_SEMESTER)) {
+			is_valid = true;
+		}
+		
+		return is_valid;
+	}
+	
 	// http://stackoverflow.com/questions/3611457/android-temporarily-disable-orientation-changes-in-an-activity
+	// and http://stackoverflow.com/questions/2795833/check-orientation-on-android-phone/10453034#10453034
 	protected static String getRotation(Context context) {
 		if (context == null) {
 			throw new IllegalArgumentException();
@@ -89,7 +107,7 @@ public class Utilities {
 		
 		int year = calendar.get(Calendar.YEAR);
 		Date start = get_date(Constants.SPRING_START_MONTH, Constants.SPRING_START_DAY, year, 0);
-		Date end = get_date(Constants.SPRING_END_MONTH, Constants.SPRING_END_DAY, year, 2359);
+		Date end = get_date(Constants.SPRING_END_MONTH, Constants.SPRING_END_DAY, year, 0);
 		
 		boolean result = date_is_in_range(date, start, end);		
 		return result;
@@ -105,7 +123,7 @@ public class Utilities {
 		
 		int year = calendar.get(Calendar.YEAR);
 		Date start = get_date(1, 1, year, 0);
-		Date end = get_date(Constants.SUMMER_START_MONTH, Constants.SUMMER_START_DAY, year, 2359);
+		Date end = get_date(Constants.SUMMER_START_MONTH, Constants.SUMMER_START_DAY, year, 0);
 		
 		boolean result = date_is_in_range(date, start, end);		
 		return result;
@@ -121,7 +139,7 @@ public class Utilities {
 		
 		int year = calendar.get(Calendar.YEAR);
 		Date start = get_date(Constants.SUMMER_START_MONTH, Constants.SUMMER_START_DAY, year, 0);
-		Date end = get_date(Constants.SUMMER_END_MONTH, Constants.SUMMER_END_DAY, year, 2359);
+		Date end = get_date(Constants.SUMMER_END_MONTH, Constants.SUMMER_END_DAY, year, 0);
 		
 		boolean result = date_is_in_range(date, start, end);		
 		return result;
@@ -137,7 +155,7 @@ public class Utilities {
 		
 		int year = calendar.get(Calendar.YEAR);
 		Date start = get_date(Constants.FALL_START_MONTH, Constants.FALL_START_DAY, year, 0);
-		Date end = get_date(Constants.FALL_END_MONTH, Constants.FALL_END_DAY, year, 2359);
+		Date end = get_date(Constants.FALL_END_MONTH, Constants.FALL_END_DAY, year, 0);
 //		Date end = get_date(12, 31, year, 2359);
 		
 		boolean result = date_is_in_range(date, start, end);		
@@ -154,7 +172,7 @@ public class Utilities {
 		
 		int year = calendar.get(Calendar.YEAR);
 		Date start = get_date(Constants.SUMMER_END_MONTH, Constants.SUMMER_END_DAY, year, 0);
-		Date end = get_date(12, 31, year, 2359);
+		Date end = get_date(12, 31, year, 0);
 		
 		boolean result = date_is_in_range(date, start, end);		
 		return result;

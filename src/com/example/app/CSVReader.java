@@ -317,6 +317,7 @@ final class CSVReader {
 			return true;
 		}
 		else if (calendar.get(Calendar.DAY_OF_YEAR) == curr_day_of_year - 1 && calendar.get(Calendar.YEAR) == curr_year && update_time.after(curr_date)) {
+//			Log.d(TAG, "Maybe returning true, pos 2");
 			Date yesterday_update_time = Utilities.get_date(curr_month, curr_day - 1, curr_year, DAILY_UPDATE_TIME);
 			if (last_modified.after(yesterday_update_time)) {
 				Log.d(TAG, "Returning true, pos 2");
