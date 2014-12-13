@@ -156,7 +156,6 @@ public class Utilities {
 		int year = calendar.get(Calendar.YEAR);
 		Date start = get_date(Constants.FALL_START_MONTH, Constants.FALL_START_DAY, year, 0);
 		Date end = get_date(Constants.FALL_END_MONTH, Constants.FALL_END_DAY, year, 0);
-//		Date end = get_date(12, 31, year, 2359);
 		
 		boolean result = date_is_in_range(date, start, end);		
 		return result;
@@ -546,5 +545,7 @@ public class Utilities {
 	}
     			
 }		// end of file
+
+
 
 

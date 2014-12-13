@@ -15,9 +15,6 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 
 	private static final String TAG = "MainActivity";
 	
-//	Button find_room_now;
-//	Button find_room_later;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -104,9 +101,6 @@ public class ActivityMain extends ActionBarActivity implements View.OnClickListe
 				get_room_schedule();
 				break;
 		}
-		
-//		finish();
-//		return;
 	}
 
 }		// end of file

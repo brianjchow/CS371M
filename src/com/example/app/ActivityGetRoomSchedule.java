@@ -51,13 +51,16 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 			if (query != null) {
 				this.query = query;
 				this.query.set_context(ActivityGetRoomSchedule.this);
+//				this.query.set_context(getApplicationContext());
 			}
 			else {
 				this.query = new Query(ActivityGetRoomSchedule.this);
+//				this.query.set_context(getApplicationContext());
 			}
 		}
 		else {
 			this.query = new Query(ActivityGetRoomSchedule.this);
+//			this.query.set_context(getApplicationContext());
 			
 			Bundle bundle = getIntent().getExtras();
 			if (bundle != null) {
@@ -65,6 +68,7 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 				if (query != null) {
 					this.query = query;
 					this.query.set_context(ActivityGetRoomSchedule.this);
+//					this.query.set_context(getApplicationContext());
 				}
 			}
 		}

@@ -113,7 +113,7 @@ public class ActivityWaitForCxn extends ActionBarActivity {
 		// register BroadcastReceiver
 		Log.d(TAG, "Registering broadcast receiver, onResume()");
 		IntentFilter intent_filter = new IntentFilter();
-		intent_filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);	// SUPPLICANT_CONNECTION_CHANGE_ACTION
+		intent_filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
 		intent_filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 		registerReceiver(broadcast_receiver, intent_filter);
 	}

@@ -32,16 +32,10 @@ public class Query implements Parcelable {
 	private int duration;					// how long the user needs the room to be available, in minutes; default 60
 	private Map<String, Object> options;	// [capacity, power plugs, search building, search room]
 
-	/**
-	 * Default constructor. Uses the current system time.
-	 */
 	protected Query(Context context) {
 		this(context, Calendar.getInstance().getTime());
 	}
 
-	/**
-	 * @param start_date
-	 */
 	protected Query(Context context, final Date start_date) {
 		if (context == null) {
 			throw new IllegalArgumentException("Error: context argument cannot be null, Query constructor");
@@ -62,35 +56,18 @@ public class Query implements Parcelable {
 		this.options.put(Constants.SEARCH_ROOM, Constants.RANDOM);
 	}
 
-	/**
-	 * @return How long the user of the app needs
-	 * 		   a room to be available/unoccupied for.
-	 */
 	protected int get_duration() {
 		return (this.duration);
 	}
 
-	/**
-	 * @return The end date of this Query.
-	 */
 	protected final Date get_end_date() {
 		return (this.end_date);
 	}
 
-	/**
-	 * @return How many seats the user requires
-	 * 		   in any room chosen by the app.
-	 */
 	protected final Integer get_option_capacity() {
 		return ((Integer) this.options.get(Constants.CAPACITY));
 	}
 
-	/**
-	 * @return True if the user specified power plugs
-	 * 		   should be available for most if not all
-	 * 		   occupants of any room chosen by the app.
-	 * 		   False otherwise.
-	 */
 	protected final Boolean get_option_power() {
 		return ((Boolean) this.options.get(Constants.POWER));
 	}
@@ -101,15 +78,9 @@ public class Query implements Parcelable {
 	
 	protected final String get_option_search_room() {
 		String search_room = (String) this.options.get(Constants.SEARCH_ROOM);
-//		if (Utilities.str_is_gdc(this.get_option_search_building()) && (search_room.equals("2.21") || search_room.equals("2.41"))) {
-//			return (search_room + "0");
-//		}
 		return search_room;
 	}
 
-	/**
-	 * @return The starting date of this Query.
-	 */
 	protected final Date get_start_date() {
 		return (this.start_date);
 	}
@@ -377,19 +348,14 @@ public class Query implements Parcelable {
 		this.mContext = context;
 		return true;
 	}
-	
-	/**
-	 * @param duration
-	 * @return True if an update to this.duration was successfully
-	 * 		   applied to this Query, false otherwise.
-	 */
+
 	protected boolean set_duration(int duration) {
 		if (duration <= 0) {
 			return false;
 		}
 
 		this.duration = duration;
-		set_end_date();		// automatically set new end date according to new duration
+		set_end_date();
 
 		return true;
 	}
@@ -406,15 +372,9 @@ public class Query implements Parcelable {
 		return true;
 	}
 
-	/**
-	 * @param option
-	 * @param value
-	 * @return True if this.options was successfully updated
-	 * 		   with the provided arguments, false otherwise.
-	 */
 	protected boolean set_option(final String option, final Object value) {
 		if (option == null || value == null) {
-//				return false;
+//			return false;
 			throw new IllegalArgumentException("Error: one or more arguments is null, set_option()");
 		}
 
@@ -446,11 +406,6 @@ public class Query implements Parcelable {
 		return false;
 	}
 
-	/**
-	 * @param capacity
-	 * @return True if this.capacity was successfully updated
-	 * 		   with the provided argument, false otherwise.
-	 */
 	protected boolean set_option_capacity(final Integer capacity) {
 		if (capacity == null) {
 			//				return false;
@@ -464,11 +419,6 @@ public class Query implements Parcelable {
 		return true;
 	}
 
-	/**
-	 * @param power
-	 * @return True if this.has_power was successfully updated
-	 * 		   with the provided argument, false otherwise.
-	 */
 	protected boolean set_option_power(final Boolean power) {
 		if (power == null) {
 			//				return false;
@@ -483,10 +433,12 @@ public class Query implements Parcelable {
 //			return false;
 			throw new IllegalArgumentException("Error: argument cannot be null, set_option_search_for_building()");
 		}
+		else if (building_code.length() != 3) {
+//			return false;
+			Log.e(TAG, "FATAL ERROR: invalid building code (" + building_code + ")");
+			throw new IllegalArgumentException("Error: invalid building code (" + building_code + ")");
+		}
 		
-//		Log.d(TAG, "Setting search building to " + building_code);
-//		Log.d(TAG, this.toString());
-
 		/* There is currently no info for the power plug statii of non-GDC buildings */
 		if (!building_code.equalsIgnoreCase(Constants.GDC)) {
 			this.set_option_power(false);
@@ -518,14 +470,9 @@ public class Query implements Parcelable {
 		this.set_option_search_room(Constants.RANDOM);
 	}
 
-	/**
-	 * @param start_date
-	 * @return True if this.start_date was successfully updated
-	 * 		   with the provided argument, false otherwise.
-	 */
 	protected boolean set_start_date(final Date start_date) {
 		if (start_date == null) {
-//				return false;
+//			return false;
 			throw new IllegalArgumentException("Error: starting date of event cannot be null, set_start_date()");
 		}
 
@@ -586,9 +533,6 @@ public class Query implements Parcelable {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
 	protected Query clone() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(this.start_date);
@@ -602,9 +546,6 @@ public class Query implements Parcelable {
 		return copy;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	public boolean equals(Object other) {
 		if (other == this) {
 			return true;
@@ -624,17 +565,11 @@ public class Query implements Parcelable {
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
 	public int hashCode() {
 		return (37 * Integer.parseInt(Utilities.get_time(this.start_date).replaceAll(":", "")) * 
 				Integer.parseInt(Utilities.get_time(this.end_date).replaceAll(":", "")) * 17);
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	public String toString() {
 		StringBuilder out = new StringBuilder(100);
 
@@ -729,11 +664,8 @@ public class Query implements Parcelable {
 		
 		Log.d(TAG, "Searching for random room with course schedule " + course_schedule);
 		
-		boolean course_schedule_is_null = (course_schedule == null);
 		if (course_schedule == null) {
-			course_schedule = Constants.COURSE_SCHEDULE_THIS_SEMESTER;
-//			query_result.set_results(all_valid_rooms);
-//			return query_result;
+			return search_get_random_room_handle_null_course_schedule(query_result, eolist);
 		}
 		else if (!Utilities.is_valid_db_filename(course_schedule)) {
 			query_result.set_search_status(SearchStatus.SEARCH_ERROR);
@@ -749,7 +681,6 @@ public class Query implements Parcelable {
 		}
 		
 		SortedSet<String> valid_rooms = search_building.get_keyset();
-		SortedSet<String> rooms_to_remove = new TreeSet<String>();
 
 		int wanted_capacity = this.get_option_capacity();
 		boolean wanted_power = this.get_option_power();
@@ -759,20 +690,6 @@ public class Query implements Parcelable {
 			String curr_room_str;
 			Room curr_room;
 
-			if (course_schedule_is_null) {
-				String check_room_power;
-				for (Iterator<String> itr = valid_rooms.iterator(); itr.hasNext();) {
-					check_room_power = itr.next();
-					curr_room = search_building.get_room(check_room_power);
-					if (check_room_power.equals("2.506") || (wanted_power && !curr_room.get_has_power()) || curr_room.get_capacity() < wanted_capacity) {
-						if (!rooms_to_remove.contains(check_room_power)) {
-							rooms_to_remove.add(check_room_power);
-						}
-					}
-				}
-			}
-
-			else {
 				Iterator<Event> itr = eolist.get_iterator();
 				while (itr.hasNext()) {
 					curr_event = itr.next();
@@ -783,12 +700,8 @@ public class Query implements Parcelable {
 						continue;
 					}
 					
-//					Log.d(TAG, "Curr room: " + curr_room_str + "; wanted power: " + wanted_power + "; room has power: " + curr_room.get_has_power());
 					if (curr_room_str.equals("2.506") || (wanted_power && !curr_room.get_has_power())) {
 						if (valid_rooms.contains(curr_room_str)) {
-//							if (!rooms_to_remove.contains(curr_room_str)) {
-//								rooms_to_remove.add(curr_room_str);
-//							}
 							valid_rooms.remove(curr_room_str);
 							continue;
 						}
@@ -797,71 +710,14 @@ public class Query implements Parcelable {
 					if (Utilities.occur_on_same_day(curr_event.get_start_date(), this.start_date) && 
 						Utilities.times_overlap(curr_event.get_start_date(), curr_event.get_end_date(), this.start_date, this.end_date)) {
 						if (valid_rooms.contains(curr_room_str)) {
-//							if (!rooms_to_remove.contains(curr_room_str)) {
-//								rooms_to_remove.add(curr_room_str);
-//							}
 							valid_rooms.remove(curr_room_str);
 							continue;
 						}
 					}
 				}
-			}
 
 		}
-		else {
-			if (course_schedule_is_null) {
-				String check_room_capacity;
-				Room curr_room;
-				for (Iterator<String> itr = valid_rooms.iterator(); itr.hasNext();) {
-					check_room_capacity = itr.next();
-					curr_room = search_building.get_room(check_room_capacity);
-					if (curr_room.get_capacity() < wanted_capacity) {
-						if (!rooms_to_remove.contains(check_room_capacity)) {
-							rooms_to_remove.add(check_room_capacity);
-						}
-					}
-				}
-			}
-		}
 
-		// WRAP ACTIVITYFINDROOMLATER GETROOMREC() IN ASYNCTASK OR USE MULTITHREADING IN QUERY.SEARCH()
-		// FIX CSV FEEDS CURRENT METHOD
-		// CAPACITIES NOT ACCOUNTED FOR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		if (course_schedule_is_null) {
-			
-			for (Iterator<String> itr = valid_rooms.iterator(); itr.hasNext();) {
-				String check_remove_room = itr.next();
-				if (rooms_to_remove.contains(check_remove_room)) {
-					itr.remove();
-				}
-			}
-			
-			if (!Utilities.str_is_gdc(search_building_str)) {
-				for (String room_str : valid_rooms) {
-					all_valid_rooms.add(room_str);
-				}
-			}
-			else {
-//				Log.d(TAG, "DONE: " + valid_rooms.toString());
-				for (String room_str : valid_rooms) {
-					if (room_str.equalsIgnoreCase("2.21") || room_str.equalsIgnoreCase("2.41")) {
-						all_valid_rooms.add(room_str + "0");
-					}
-					else if (!room_str.equalsIgnoreCase("2.506")) {
-						all_valid_rooms.add(room_str);
-					}
-//					else {
-//						all_valid_rooms.add(room_str);
-//					}
-				}
-			}
-			query_result.set_results(all_valid_rooms);
-			return query_result;
-		}
-		
-//		Log.d(TAG, "Course schedule is null - " + course_schedule_is_null + "; curr contents of valid_rooms:");
-//		Log.d(TAG, valid_rooms.toString());
-		
 		final Calendar cal1 = Calendar.getInstance();
 		final Calendar cal2 = Calendar.getInstance();
 		
@@ -895,11 +751,6 @@ public class Query implements Parcelable {
 				cal1.set(Calendar.YEAR, cal2.get(Calendar.YEAR));
 				curr_end_date = cal1.getTime();
 				
-//				Log.d(TAG, "Event start date: " + curr_start_date.toString());
-//				Log.d(TAG, "\tEvent end date: " + curr_end_date.toString());
-//				Log.d(TAG, "\tCurr start date: " + this.start_date.toString());
-//				Log.d(TAG, "\tCurr end date: " + this.end_date.toString());
-				
 				if (Utilities.times_overlap(curr_start_date, curr_end_date, this.start_date, this.end_date)
 					|| curr_room.get_capacity() < wanted_capacity
 					) {
@@ -932,6 +783,130 @@ public class Query implements Parcelable {
 		return query_result;
 	}
 	
+	private QueryResult search_get_random_room_handle_null_course_schedule(QueryResult query_result, EventList eolist) {
+		String search_building_str = this.get_option_search_building();
+		String course_schedule = Constants.COURSE_SCHEDULE_THIS_SEMESTER;
+		boolean searching_gdc = Utilities.str_is_gdc(search_building_str);
+		
+		List<String> all_valid_rooms = new ArrayList<String>();
+		
+		Building search_building = Building.get_instance(this.mContext, search_building_str, course_schedule);
+		if (search_building == null) {
+			Log.d(TAG, "search building null: " + search_building_str);
+			query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
+			query_result.set_results(all_valid_rooms);
+			return query_result;
+		}
+		
+		SortedSet<String> valid_rooms = search_building.get_keyset();
+		SortedSet<String> rooms_to_remove = new TreeSet<String>();
+		
+//		Log.d(TAG, this.toString());
+		Log.d(TAG, "Valid rooms, unprocessed:");
+		Log.d(TAG, valid_rooms.toString());
+
+		if (searching_gdc) {
+			Event curr_event;
+			String curr_room_str;
+
+			Iterator<Event> itr = eolist.get_iterator();
+			while (itr.hasNext()) {
+				curr_event = itr.next();
+				curr_room_str = curr_event.get_location().get_room();
+				
+				if (Utilities.occur_on_same_day(curr_event.get_start_date(), this.start_date) && 
+					Utilities.times_overlap(curr_event.get_start_date(), curr_event.get_end_date(), this.start_date, this.end_date)) {
+					
+//					Log.d(TAG, curr_event.toString());
+					Log.d(TAG, "Conflicting event: " + curr_event.get_event_name() + "; in: " + curr_room_str + "; at: " + curr_event.get_start_date().toString());
+					
+					rooms_to_remove.add(curr_room_str);
+				}
+			}
+			
+			Log.d(TAG, "Removing GDC events:");
+			Log.d(TAG, rooms_to_remove.toString());
+		}
+		
+		String check_room_capacity;
+		Room curr_room;
+		for (Iterator<String> itr = valid_rooms.iterator(); itr.hasNext();) {
+			check_room_capacity = itr.next();
+			curr_room = search_building.get_room(check_room_capacity);
+
+			if (!rooms_to_remove.contains(check_room_capacity)) {
+				if (searching_gdc && !is_valid_gdc_room(curr_room)) {
+//					if (!is_valid_gdc_room(curr_room)) {
+//						rooms_to_remove.add(check_room_capacity);
+////						itr.remove();
+//					}
+					rooms_to_remove.add(check_room_capacity);
+////					itr.remove();
+				}
+				else {
+					if (curr_room.get_capacity() < this.get_option_capacity()) {
+						rooms_to_remove.add(check_room_capacity);
+//						itr.remove();
+					}
+				}
+			}
+		}
+		
+		Log.d(TAG, "Removing:");
+		Log.d(TAG, rooms_to_remove.toString());
+		
+		for (Iterator<String> itr = valid_rooms.iterator(); itr.hasNext();) {
+			String check_remove_room = itr.next();
+			if (rooms_to_remove.contains(check_remove_room)) {
+				itr.remove();
+			}
+		}
+		
+		Log.d(TAG, "Valid rooms, after removing:");
+		Log.d(TAG, valid_rooms.toString());
+		
+		for (String room_str : valid_rooms) {
+			if (searching_gdc && is_truncated_gdc_room(room_str)) {
+				room_str += "0";
+			}
+			all_valid_rooms.add(room_str);
+		}
+		
+		query_result.set_results(all_valid_rooms);
+		return query_result;
+	}
+	
+	private boolean is_valid_gdc_room(Room room) {
+		if (room == null) {
+//			throw new IllegalArgumentException();
+//			Log.d(TAG, "null room");
+			return false;
+		}
+		
+		Location location = room.get_location();
+		if (!Utilities.str_is_gdc(location.get_building())) {
+//			Log.d(TAG, "bad building");
+			return false;
+		}
+		
+		if (location.get_room().equalsIgnoreCase("2.506")) {
+//			Log.d(TAG, "2.506");
+			return false;
+		}
+		
+		if (room.get_capacity() < this.get_option_capacity() || (this.get_option_power() && !room.get_has_power())) {
+//			Log.d(TAG, "bad gdc options");
+			return false;
+		}
+		
+//		Log.d(TAG, "good room: " + location.get_room());
+		return true;
+	}
+	
+	
+	
+	
+	
 	protected QueryResult search_get_schedule_by_room() {
 		return (search_get_schedule_by_room(Constants.CSV_FEEDS_CLEANED));
 	}
@@ -945,7 +920,9 @@ public class Query implements Parcelable {
 		List<String> schedule = new ArrayList<String>();
 		
 		String course_schedule = this.get_current_course_schedule(query_result);
-Log.d(TAG, "Getting room schedule; using course schedule " + course_schedule);
+		
+		Log.d(TAG, "Getting room schedule; using course schedule " + course_schedule);
+
 		if (course_schedule == null) {
 			
 			if (Utilities.str_is_gdc(this.get_option_search_building())) {

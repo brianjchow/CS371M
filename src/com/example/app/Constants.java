@@ -240,34 +240,7 @@ final class Constants {
 	
 	protected static int lines_read = 0;
 	protected static double time_to_read = 0;
-	
-//	private static void delete_all_feeds(Context context) {
-//		if (context == null) {
-//			throw new IllegalArgumentException("Context argument cannot be null.");
-//		}
-//		
-//		String download_filename;
-//		boolean deleted = false;
-//		
-//		download_filename = CSVReader.ALL_EVENTS_SCHEDULE_FILENAME;
-//		if (context.getFileStreamPath(download_filename).exists()) {
-//			deleted = context.deleteFile(download_filename);
-//			Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory (delete_all()): " + deleted);
-//		}
-//		
-//		download_filename = CSVReader.ALL_ROOMS_SCHEDULE_FILENAME;
-//		if (context.getFileStreamPath(download_filename).exists()) {
-//			deleted = context.deleteFile(download_filename);
-//			Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory (delete_all()): " + deleted);
-//		}
-//		
-//		download_filename = CSVReader.ALL_TODAYS_EVENTS_FILENAME;
-//		if (context.getFileStreamPath(download_filename).exists()) {
-//			deleted = context.deleteFile(download_filename);
-//			Log.d(TAG, "File " + download_filename + " was deleted and no longer exists in internal storage directory (delete_all()): " + deleted);
-//		}
-//	}
-	
+
 	private static void reset() {
 		CSV_FEEDS_MASTER = null;
 		has_feed_been_read = false;

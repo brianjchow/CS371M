@@ -127,13 +127,8 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 		cursor.close();
 		db.close();
 
-		Log.d(TAG, "Number of courses: " + out.size());
-//		if (building_is_gdc) {
-//			for (Room curr_room : out.values()) {
-//				Log.d(TAG, curr_room.toString());
-//			}
-//		}
-		
+		Log.d(TAG, "Number of courses in " + building_name + ": " + out.size());
+
 		return out;
 	}
 
@@ -232,4 +227,8 @@ public class CourseScheduleDatabase extends SQLiteAssetHelper {
 		return this.database_name;
 	}
 	
-}
+}		// end of file
+
+
+
+

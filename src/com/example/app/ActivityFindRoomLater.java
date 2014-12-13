@@ -81,8 +81,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				
 				@Override
 				public void onClick(View v) {
-//					Intent intent = new Intent(ActivityFindRoomLater.this, ActivityMain.class);
-//					startActivity(intent);
 					finish();
 					return;
 				}
@@ -268,13 +266,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				});
 				
 				timepicker_dialog.show();
-				
-//				context.getResources().getBoolean(R.bool.is_landscape)
-//				boolean is_portrait = ActivityFindRoomLater.this.getResources().getBoolean(R.bool.is_portrait);
-//				if (is_portrait) {
-//					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//				}
-				
+
 				lock_orientation();
 			}
 		});		
@@ -403,13 +395,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		np.setWrapSelectorWheel(false);
 		np.setDisplayedValues(nums);
 		np.setValue(this.query.get_option_capacity());
-		np.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-			
-		@Override
-		public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-//				Toast.makeText(FindRoomLaterActivity.this, "Old val: " + oldVal + "; new val: " + newVal, Toast.LENGTH_SHORT).show();
-			}
-		});
 		
 		set_button.setOnClickListener(new OnClickListener() {
 			
@@ -463,14 +448,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 		np.setWrapSelectorWheel(false);
 		np.setDisplayedValues(nums);
 		np.setValue(this.query.get_duration());
-		np.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-			
-			@Override
-			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-//				Toast.makeText(FindRoomLaterActivity.this, "Old val: " + oldVal + "; new val: " + newVal, Toast.LENGTH_SHORT).show();
-			}
-		});
-		
+
 		set_button.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -558,15 +536,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	}
 
 	private void getRoomRec() {
-//		Query.QueryResult query_result = this.query.search();
-//		
-//		Intent intent = new Intent(getApplicationContext(), ActivityRoomRec.class);
-//		intent.putExtra(Query.PARCELABLE_QUERY, this.query);
-//		intent.putExtra(Query.QueryResult.PARCELABLE_QUERY_RESULT, query_result);
-//		
-//		startActivity(intent);		
-//		finish();
-		
 		final SearchTask search_get_room_later = new SearchTask();
 		search_get_room_later.execute(ActivityFindRoomLater.this);
 	}
@@ -657,10 +626,6 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 				dialog.dismiss();
 				finish();
 				return;
-				
-				/*
-				 * TODO - by default, routes back to ActivityMain; kill that as well
-				 */
 			}
 		});
 		
@@ -751,3 +716,7 @@ public class ActivityFindRoomLater extends FragmentActivity {	//  implements OnD
 	}
 	
 }		// end of file
+
+
+
+

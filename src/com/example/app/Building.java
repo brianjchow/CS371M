@@ -81,7 +81,7 @@ final class Building implements Comparable<Building> {
 		return out;
 	}
 	
-	protected final SortedSet<String> get_keyset() {
+	protected SortedSet<String> get_keyset() {
 		SortedSet<String> out = new TreeSet<String>();
 		
 		for (String room_num : this.rooms.keySet()) {

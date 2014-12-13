@@ -125,7 +125,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 		// register BroadcastReceiver
 		Log.d(TAG, "Registering broadcast receiver, onResume()");
 		IntentFilter intent_filter = new IntentFilter();
-		intent_filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);	// SUPPLICANT_CONNECTION_CHANGE_ACTION
+		intent_filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
 		intent_filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 		registerReceiver(broadcast_receiver, intent_filter);
 	}
@@ -145,7 +145,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 			// http://stackoverflow.com/questions/5888502/how-to-detect-when-wifi-connection-has-been-established-in-android?rq=1
 			
 			final String action = intent.getAction();
-			if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {	// SUPPLICANT_CONNECTION_CHANGE_ACTION
+			if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
 				
 				NetworkInfo net_info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
 				if (net_info != null) {
@@ -238,19 +238,8 @@ public class ActivityLoadCSV extends ActionBarActivity {
 					Log.d(TAG, "Successfully finished reading CSV");
 					result = true;
 				}
-//				else {
-//					Log.d(TAG, "FAILED to read CSV");
-//					result = false;
-////					show_warning_dialog(getResources().getString(R.string.load_error_msg));
-//				}
 			}
 			catch (Exception e) {
-//				http://stackoverflow.com/questions/6834106/try-catch-exception-always-returns-null
-//				if (e == null) {
-//					Log.d(TAG, "Exception e is actually null (?)");
-//					throw new RuntimeException();
-//				}
-
 				Log.d(TAG, "Caught an exception while reading CSV: " + e.toString());
 				e.printStackTrace();
 				this.exception = e;
@@ -345,10 +334,6 @@ public class ActivityLoadCSV extends ActionBarActivity {
 				dialog.dismiss();
 				finish();
 				return;
-				
-				/*
-				 * TODO - by default, routes back to ActivityMain; kill that as well
-				 */
 			}
 		});
 		
@@ -449,5 +434,7 @@ public class ActivityLoadCSV extends ActionBarActivity {
 	}
 
 }		// end of file
+
+
 
 

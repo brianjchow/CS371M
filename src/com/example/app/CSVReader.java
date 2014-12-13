@@ -51,12 +51,7 @@ final class CSVReader {
 	 * Default constructor. Empty.
 	 */
 	private CSVReader() {	}
-	
-	/**
-	 * @param src
-	 * @param what
-	 * @return True if src contains what (ignore case), false otherwise.
-	 */
+
 	private boolean containsIgnoreCase(String src, String what) {
 		return (Utilities.containsIgnoreCase(src, what));
 	}
@@ -105,7 +100,7 @@ final class CSVReader {
 		
 	/**
 	 * @param str
-	 * @return True if str matches a list of ignored "rooms", false otherwise.
+	 * @return True if str matches a list of ignored "rooms," false otherwise. (See list in Constants.java for more details.)
 	 */
 	private boolean is_ignored_room(String str) {
 		if (str == null || str.length() <= 0) {
@@ -304,23 +299,13 @@ final class CSVReader {
 		Log.d(TAG, "Update time: " + update_time.toString());
 		
 		if (calendar.get(Calendar.DAY_OF_YEAR) == curr_day_of_year && calendar.get(Calendar.YEAR) == curr_year && last_modified.after(update_time)) {
-//			if (filename.equals(ALL_EVENTS_SCHEDULE_FILENAME)) {
-//				return (get_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_EVENTS_WRITE_SUCCESS));
-//			}
-//			else if (filename.equals(ALL_ROOMS_SCHEDULE_FILENAME)) {
-//				return (get_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_ROOMS_WRITE_SUCCESS));
-//			}
-//			else if (filename.equals(ALL_TODAYS_EVENTS_FILENAME)) {
-//				return (get_csv_feeds_write_success(context, Constants.CSV_FEED_ALL_TODAYS_EVENTS_WRITE_SUCCESS));
-//			}
-			Log.d(TAG, "Returning true, pos 1");
 			return true;
 		}
+		
+		// disable this block if updates should always occur from 0000 to 0859
 		else if (calendar.get(Calendar.DAY_OF_YEAR) == curr_day_of_year - 1 && calendar.get(Calendar.YEAR) == curr_year && update_time.after(curr_date)) {
-//			Log.d(TAG, "Maybe returning true, pos 2");
 			Date yesterday_update_time = Utilities.get_date(curr_month, curr_day - 1, curr_year, DAILY_UPDATE_TIME);
 			if (last_modified.after(yesterday_update_time)) {
-				Log.d(TAG, "Returning true, pos 2");
 				return true;
 			}
 		}
@@ -933,5 +918,7 @@ final class CSVReader {
 	}
 		
 }		// end of file
+
+
 
 
