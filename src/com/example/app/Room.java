@@ -92,63 +92,36 @@ final class Room implements Comparable<Room> {
 		}
 		return total_size;
 	}
-	
-	/**
-	 * @return The Location of this Room.
-	 */
+
 	protected Location get_location() {
 		return this.location;
 	}
 
-	/**
-	 * @return The Location of this Room, in String format.
-	 */
 	protected String get_name() {
 		return this.location.toString();
 	}
 
-	/**
-	 * @return The 3-letter building code of this
-	 * 		   Room's Location.
-	 */
 	protected String get_building_name() {
 		return this.location.get_building();
 	}
 
-	/**
-	 * @return The room number of this Room's Location.
-	 */
 	protected String get_room_number() {
 		return this.location.get_room();
 	}
 
-	/**
-	 * @return The type of room of this Room's
-	 * 		   Location (conference room, classroom, etc).
-	 */
 	protected String get_type() {
 		return this.type;
 	}
 
-	/**
-	 * @return The maximum capacity of this Room.
-	 */
 	protected int get_capacity() {
 		return this.capacity;
 	}
 
-	/**
-	 * @return True if this Room has power plugs available
-	 * 		   for most occupants, false otherwise.
-	 */
 	protected boolean get_has_power() {
 		return this.has_power;
 	}
 
 	// ????? is this what we really want to do
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
 	public int compareTo(Room other) {
 		int result = ComparisonChain.start()
 			.compare(this.location, other.location)
@@ -159,9 +132,6 @@ final class Room implements Comparable<Room> {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
 	protected Room clone() {
 		Room out = new Room(this.location.clone());
 		out.type = this.type;
@@ -187,9 +157,6 @@ final class Room implements Comparable<Room> {
 		return out;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	public boolean equals(Object other) {
 		if (this == other) {
 			return true;
@@ -210,16 +177,10 @@ final class Room implements Comparable<Room> {
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
 	public int hashCode() {
 		return (Utilities.stringHashCode(this.location.toString()));
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	public String toString() {
 		StringBuilder out = new StringBuilder();
 

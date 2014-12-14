@@ -301,8 +301,8 @@ public class ActivityRoomRec extends ActionBarActivity {
 	}
 	
 	private void handle_search_random_room() {
-		Log.d(TAG, "Just entered handle_search_random_room()");
-		Log.d(TAG, "Query results: " + this.query_result.get_results());
+//		Log.d(TAG, "Just entered handle_search_random_room()");
+//		Log.d(TAG, "Query results: " + this.query_result.get_results());
 		
 		this.curr_recommendation = this.query_result.get_random_room();
 		
@@ -402,7 +402,7 @@ public class ActivityRoomRec extends ActionBarActivity {
 		String curr_course_schedule = this.query.get_current_course_schedule();
 
 		if (!Utilities.is_valid_db_filename(curr_course_schedule)) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("FATAL ERROR: invalid course schedule (" + curr_course_schedule + ")");
 		}
 
 		Building search_building = Building.get_instance(ActivityRoomRec.this, search_building_str, curr_course_schedule);

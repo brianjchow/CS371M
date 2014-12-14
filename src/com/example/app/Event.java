@@ -21,15 +21,15 @@ public class Event implements Comparable<Event> {
 	private Location location;
 
 	/**
-	 * @param event_name
-	 * @param start_date
-	 * @param end_date
-	 * @param location
-	 * 
 	 * Default constructor.
 	 * 
 	 * end_date may be null; if so, this Event's duration
 	 * will be automatically set to 90 minutes.
+	 * 
+	 * @param event_name
+	 * @param start_date
+	 * @param end_date
+	 * @param location
 	 */
 	protected Event(String event_name, String start_date, String end_date, String location) {
 		if (event_name == null || start_date == null || location == null) {
@@ -114,86 +114,59 @@ public class Event implements Comparable<Event> {
 		}
 	}
 
-	/**
-	 * @return This Event's ending date.
-	 */
 	protected Date get_end_date() {
 		return (this.end_date);
 	}
 
-	/**
-	 * @return This Event's starting date.
-	 */
 	protected String get_event_date() {
 		DateFormat format = new SimpleDateFormat(Constants.US_DATE_NO_TIME_FORMAT, Locale.ENGLISH);		// MM dd yyyy
 		return (format.format(this.start_date));
 	}
-		
-	/**
-	 * @return The day of the week this Event occurs on (Monday, Thursday, etc).
-	 */
-	protected String get_event_day_of_week() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(this.start_date);
-		return (Constants.DAYS_OF_WEEK_LONG[calendar.get(Calendar.DAY_OF_WEEK) - 1]);
-	}
-		
-	/**
-	 * @return This Event's name.
-	 */
+
+//	protected String get_event_day_of_week() {
+//		Calendar calendar = Calendar.getInstance();
+//		calendar.setTime(this.start_date);
+//		return (Constants.DAYS_OF_WEEK_LONG[calendar.get(Calendar.DAY_OF_WEEK) - 1]);
+//	}
+
 	protected String get_event_name() {
 		return (this.event_name);
 	}
 
-	/**
-	 * @return A String representing this Event's starting time, expressed in HH:mm (14:30, 19:00, etc).
-	 */
-	protected String get_event_time() {
-		DateFormat format = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
-		return (format.format(this.start_date));
-	}
+//	protected String get_event_time() {
+//		DateFormat format = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+//		return (format.format(this.start_date));
+//	}
 
-	/**
-	 * @return This Event's Location.
-	 */
 	protected Location get_location() {
 		return (this.location);
 	}
 
-	/**
-	 * @return This Event's starting date.
-	 */
 	protected Date get_start_date() {
 		return (this.start_date);
 	}
-		
-	/**
-	 * @param event_name
-	 */
-	protected void set_event_name(String event_name) {
-		if (event_name == null) {
-			throw new IllegalArgumentException("Error: event name cannot be null, set_event_name()");
-		}
-		
-		this.event_name = event_name;
-	}
 
-	/**
-	 * @param location
-	 */
-	protected void set_location(String location) {
-		if (location == null) {
-			throw new IllegalArgumentException("Error: event location cannot be null, set_location()");
-		}
-		
-		String[] temp = location.split("\\s+");
-		if (temp.length != 2) {
-			throw new IllegalArgumentException();
-		}
-		
-		this.location.set_building(temp[0]);
-		this.location.set_room(temp[1]);
-	}
+//	protected void set_event_name(String event_name) {
+//		if (event_name == null) {
+//			throw new IllegalArgumentException("Error: event name cannot be null, set_event_name()");
+//		}
+//		
+//		this.event_name = event_name;
+//	}
+
+//	protected void set_location(String location) {
+//		if (location == null) {
+//			throw new IllegalArgumentException("Error: event location cannot be null, set_location()");
+//		}
+//		
+//		String[] temp = location.split("\\s+");
+//		if (temp.length != 2) {
+//			throw new IllegalArgumentException();
+//		}
+//		
+//		this.location.set_building(temp[0]);
+//		this.location.set_room(temp[1]);
+//	}
 	
 	protected void set_start_date(Date date) {
 		if (date == null) {
@@ -242,9 +215,7 @@ public class Event implements Comparable<Event> {
 		return (date);
 	}
 		
-	/* (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
+	@Override
 	protected Event clone() {
 		DateFormat format = new SimpleDateFormat(Constants.UTCS_CSV_FEED_FORMAT, Locale.ENGLISH);
 		String start_date_copy = format.format(this.get_start_date());
@@ -252,7 +223,8 @@ public class Event implements Comparable<Event> {
 		Event copy = new Event(this.event_name, start_date_copy, end_date_copy, this.get_location().toString());
 		return copy;
 	}
-	
+
+	@Override
 	public int compareTo(Event other) {
 		int result = ComparisonChain.start()
 			.compare(this.start_date, other.start_date)
@@ -263,9 +235,6 @@ public class Event implements Comparable<Event> {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	@Override
 	public boolean equals(Object other) {
 		if (other == this) {
@@ -286,19 +255,14 @@ public class Event implements Comparable<Event> {
 
 		return false;
 	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
+
 	@Override
 	public int hashCode() {
 		int start_time = Integer.parseInt(Utilities.get_time(this.start_date).replaceAll(":", ""));
 		return (Utilities.stringHashCode(this.event_name) * start_time * this.location.hashCode());
 	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+
+	@Override
 	public String toString() {
 		StringBuilder out = new StringBuilder();
 		out.append(this.get_event_name() + "\n");

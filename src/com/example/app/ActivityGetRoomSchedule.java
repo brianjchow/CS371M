@@ -406,7 +406,7 @@ public class ActivityGetRoomSchedule extends ActionBarActivity {
 			Query.QueryResult query_result;
 			
 			try {
-				query_result = query.search_get_schedule_by_room();
+				query_result = query.search_get_room_schedule();
 			}
 			catch (Exception e) {
 				Log.d(TAG, "Caught an exception while executing search (" + e.toString() + ")");

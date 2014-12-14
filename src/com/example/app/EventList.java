@@ -329,9 +329,8 @@ public class EventList {
 		return Collections.binarySearch(this.list, search_for);
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
+
+	@Override
 	protected EventList clone() {
 		EventList out = new EventList(this.list.size());
 		
@@ -342,9 +341,8 @@ public class EventList {
 		return out;
 	}
 	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+
+	@Override
 	public boolean equals(Object other) {
 		if (this == other) {
 			return true;
@@ -368,9 +366,8 @@ public class EventList {
 		return true;
 	}
 	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+
+	@Override
 	public String toString() {
 		if (this.list == null) {
 			throw new IllegalStateException("Error: EventList's backing list cannot be null, toString()");
@@ -392,5 +389,7 @@ public class EventList {
 	}
 
 }		// end of file
+
+
 
 

@@ -625,407 +625,334 @@ public class Query implements Parcelable {
 	
 /* ############################### END QUERY PARCELABLE IMPLEMENTATION ############################### */	
 	
-/* ############################### BEGIN SEARCH ALGORITHMS ############################### */
+/* TODO ############################### SEARCH - GET RANDOM ROOM ALGORITHM AND HELPERS ############################### */
+
 
 	protected QueryResult search() {
 		return (search(Constants.CSV_FEEDS_CLEANED));
 	}
-	
-	protected QueryResult search(final EventList eolist) {
-		if (eolist == null) {
-			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
-		}
+
+	private QueryResult search(final EventList eolist) {
 		
 		String search_building_str = this.get_option_search_building();
-		
-		QueryResult query_result = new QueryResult(SearchType.GET_RANDOM_ROOM.get_enum_val(), search_building_str);
-		List<String> all_valid_rooms = new ArrayList<String>();
-		
-		if (eolist.get_size() <= 0) {
-			query_result.set_search_status(SearchStatus.NO_ROOMS_AVAIL);
-			query_result.set_results(all_valid_rooms);
-			return query_result;
-		}
-		
-		if (Constants.SHORT_CIRCUIT_SEARCH_FOR_ROOM) {
-			if (this.search_is_on_weekend()) {
-				query_result.set_search_status(SearchStatus.ALL_ROOMS_AVAIL);
-				query_result.set_results(all_valid_rooms);
-				return query_result;
-			}
-			if (this.search_is_at_night()) {
-				query_result.set_search_status(SearchStatus.GO_HOME);
-				query_result.set_results(all_valid_rooms);
-				return query_result;
-			}
-		}
-		
-		String course_schedule = this.get_current_course_schedule(query_result);
-		
-		Log.d(TAG, "Searching for random room with course schedule " + course_schedule);
-		
-		if (course_schedule == null) {
-			return search_get_random_room_handle_null_course_schedule(query_result, eolist);
-		}
-		else if (!Utilities.is_valid_db_filename(course_schedule)) {
-			query_result.set_search_status(SearchStatus.SEARCH_ERROR);
-			query_result.set_results(all_valid_rooms);
-			return query_result;
-		}
-		
-		Building search_building = Building.get_instance(this.mContext, search_building_str, course_schedule);
-		if (search_building == null) {
-			query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
-			query_result.set_results(all_valid_rooms);
-			return query_result;
-		}
-		
-		SortedSet<String> valid_rooms = search_building.get_keyset();
-
-		int wanted_capacity = this.get_option_capacity();
-		boolean wanted_power = this.get_option_power();
-		
-		if (Utilities.str_is_gdc(search_building_str)) {
-			Event curr_event;
-			String curr_room_str;
-			Room curr_room;
-
-				Iterator<Event> itr = eolist.get_iterator();
-				while (itr.hasNext()) {
-					curr_event = itr.next();
-					curr_room_str = curr_event.get_location().get_room();
-					curr_room = search_building.get_room(curr_room_str);
-					
-					if (curr_room == null) {
-						continue;
-					}
-					
-					if (curr_room_str.equals("2.506") || (wanted_power && !curr_room.get_has_power())) {
-						if (valid_rooms.contains(curr_room_str)) {
-							valid_rooms.remove(curr_room_str);
-							continue;
-						}
-					}
-					
-					if (Utilities.occur_on_same_day(curr_event.get_start_date(), this.start_date) && 
-						Utilities.times_overlap(curr_event.get_start_date(), curr_event.get_end_date(), this.start_date, this.end_date)) {
-						if (valid_rooms.contains(curr_room_str)) {
-							valid_rooms.remove(curr_room_str);
-							continue;
-						}
-					}
-				}
-
-		}
-
-		final Calendar cal1 = Calendar.getInstance();
-		final Calendar cal2 = Calendar.getInstance();
-		
-		int today = this.get_this_day_of_week();
-		boolean is_valid = true;
-		Room curr_room;
-		for (String curr_room_str : valid_rooms) {
-			curr_room = search_building.get_room(curr_room_str);
-			if (curr_room == null) {
-				continue;
-			}
-			
-			Set<Event> courses = curr_room.get_events(today);
-			
-			Date curr_start_date, curr_end_date;
-			for (Event curr_event : courses) {
-				curr_start_date = curr_event.get_start_date();
-				curr_end_date = curr_event.get_end_date();	
-				
-				cal1.setTime(curr_start_date);
-				cal2.setTime(this.start_date);
-				
-				cal1.set(Calendar.DAY_OF_YEAR, cal2.get(Calendar.DAY_OF_YEAR));
-				cal1.set(Calendar.YEAR, cal2.get(Calendar.YEAR));
-				curr_start_date = cal1.getTime();
-				
-				cal1.setTime(curr_end_date);
-				cal2.setTime(this.end_date);
-				
-				cal1.set(Calendar.DAY_OF_YEAR, cal2.get(Calendar.DAY_OF_YEAR));
-				cal1.set(Calendar.YEAR, cal2.get(Calendar.YEAR));
-				curr_end_date = cal1.getTime();
-				
-				if (Utilities.times_overlap(curr_start_date, curr_end_date, this.start_date, this.end_date)
-					|| curr_room.get_capacity() < wanted_capacity
-					) {
-					
-					is_valid = false;
-					break;
-				}
-			}
-			
-			if (is_valid) {
-				if (is_truncated_gdc_room(curr_room_str)) {
-					all_valid_rooms.add(curr_room_str + "0");
-				}
-				else {
-					all_valid_rooms.add(curr_room_str);
-				}
-			}
-			
-			is_valid = true;
-		}
-
-		if (all_valid_rooms.size() <= 0) {
-			query_result.set_search_status(SearchStatus.NO_ROOMS_AVAIL);
-		}
-		else {
-			query_result.set_search_status(SearchStatus.SEARCH_SUCCESS);
-			query_result.set_results(all_valid_rooms);
-		}
-		
-		return query_result;
-	}
-	
-	private QueryResult search_get_random_room_handle_null_course_schedule(QueryResult query_result, EventList eolist) {
-		String search_building_str = this.get_option_search_building();
-		String course_schedule = Constants.COURSE_SCHEDULE_THIS_SEMESTER;
 		boolean searching_gdc = Utilities.str_is_gdc(search_building_str);
 		
-		List<String> all_valid_rooms = new ArrayList<String>();
+		QueryResult query_result = new QueryResult(SearchType.GET_RANDOM_ROOM, search_building_str);
+		Boolean search_is_during_long_semester = true;
 		
+		String course_schedule = this.get_current_course_schedule(query_result);
+		if (course_schedule == null) {
+			course_schedule = Constants.COURSE_SCHEDULE_THIS_SEMESTER;
+			search_is_during_long_semester = Boolean.valueOf(false);
+		}
+		else if (!Utilities.is_valid_db_filename(course_schedule)) {
+			throw new IllegalArgumentException("FATAL ERROR: invalid course schedule (" + course_schedule + ")");
+		}
+		
+//		Building search_building = check_search_preconditions_and_get_building(query_result, search_is_during_long_semester);
 		Building search_building = Building.get_instance(this.mContext, search_building_str, course_schedule);
 		if (search_building == null) {
-			Log.d(TAG, "search building null: " + search_building_str);
 			query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
-			query_result.set_results(all_valid_rooms);
+			query_result.set_results(new ArrayList<String>());
 			return query_result;
 		}
+
+		/* Actual searching begins here. */
 		
-		SortedSet<String> valid_rooms = search_building.get_keyset();
+		SortedSet<String> all_rooms = search_building.get_keyset();
 		SortedSet<String> rooms_to_remove = new TreeSet<String>();
+
+		List<String> all_valid_rooms = new ArrayList<String>(all_rooms.size());
 		
-//		Log.d(TAG, this.toString());
-		Log.d(TAG, "Valid rooms, unprocessed:");
-		Log.d(TAG, valid_rooms.toString());
-
-		if (searching_gdc) {
-			Event curr_event;
-			String curr_room_str;
-
-			Iterator<Event> itr = eolist.get_iterator();
-			while (itr.hasNext()) {
-				curr_event = itr.next();
-				curr_room_str = curr_event.get_location().get_room();
-				
-				if (Utilities.occur_on_same_day(curr_event.get_start_date(), this.start_date) && 
-					Utilities.times_overlap(curr_event.get_start_date(), curr_event.get_end_date(), this.start_date, this.end_date)) {
-					
-//					Log.d(TAG, curr_event.toString());
-					Log.d(TAG, "Conflicting event: " + curr_event.get_event_name() + "; in: " + curr_room_str + "; at: " + curr_event.get_start_date().toString());
-					
-					rooms_to_remove.add(curr_room_str);
-				}
-			}
-			
-			Log.d(TAG, "Removing GDC events:");
-			Log.d(TAG, rooms_to_remove.toString());
+		// filter out by CSV feeds
+		if (searching_gdc && eolist != null) {
+			rooms_to_remove = add_invalid_rooms_by_gdc_csv_feeds(eolist, rooms_to_remove);
 		}
 		
-		String check_room_capacity;
-		Room curr_room;
-		for (Iterator<String> itr = valid_rooms.iterator(); itr.hasNext();) {
-			check_room_capacity = itr.next();
-			curr_room = search_building.get_room(check_room_capacity);
-
-			if (!rooms_to_remove.contains(check_room_capacity)) {
-				if (searching_gdc && !is_valid_gdc_room(curr_room)) {
-//					if (!is_valid_gdc_room(curr_room)) {
-//						rooms_to_remove.add(check_room_capacity);
-////						itr.remove();
-//					}
-					rooms_to_remove.add(check_room_capacity);
-////					itr.remove();
-				}
-				else {
-					if (curr_room.get_capacity() < this.get_option_capacity()) {
-						rooms_to_remove.add(check_room_capacity);
-//						itr.remove();
-					}
-				}
-			}
+		// check room characteristics (options)
+		rooms_to_remove = add_invalid_rooms_by_options(search_building, all_rooms, rooms_to_remove);
+		
+		// if search occurs during one of the two long semesters, check course schedule
+		if (search_is_during_long_semester) {
+			rooms_to_remove = add_invalid_rooms_by_course_schedule(search_building, all_rooms, rooms_to_remove);
 		}
+
+		/* Search complete. */
 		
-		Log.d(TAG, "Removing:");
-		Log.d(TAG, rooms_to_remove.toString());
-		
-		for (Iterator<String> itr = valid_rooms.iterator(); itr.hasNext();) {
+		// "remove" invalid rooms from valid_rooms
+		for (Iterator<String> itr = all_rooms.iterator(); itr.hasNext(); ) {
 			String check_remove_room = itr.next();
-			if (rooms_to_remove.contains(check_remove_room)) {
-				itr.remove();
+			if (!rooms_to_remove.contains(check_remove_room)) {
+				if (searching_gdc && is_truncated_gdc_room(check_remove_room)) {
+					check_remove_room += "0";
+				}
+				all_valid_rooms.add(check_remove_room);
 			}
 		}
 		
-		Log.d(TAG, "Valid rooms, after removing:");
-		Log.d(TAG, valid_rooms.toString());
-		
-		for (String room_str : valid_rooms) {
-			if (searching_gdc && is_truncated_gdc_room(room_str)) {
-				room_str += "0";
+		if (search_is_during_long_semester) {
+			if (all_valid_rooms.size() <= 0) {
+				query_result.set_search_status(SearchStatus.NO_ROOMS_AVAIL);
 			}
-			all_valid_rooms.add(room_str);
+			else {
+				query_result.set_search_status(SearchStatus.SEARCH_SUCCESS);
+			}
 		}
 		
 		query_result.set_results(all_valid_rooms);
 		return query_result;
 	}
-	
+
 	private boolean is_valid_gdc_room(Room room) {
 		if (room == null) {
-//			throw new IllegalArgumentException();
-//			Log.d(TAG, "null room");
 			return false;
 		}
 		
 		Location location = room.get_location();
 		if (!Utilities.str_is_gdc(location.get_building())) {
-//			Log.d(TAG, "bad building");
 			return false;
 		}
 		
 		if (location.get_room().equalsIgnoreCase("2.506")) {
-//			Log.d(TAG, "2.506");
 			return false;
 		}
 		
 		if (room.get_capacity() < this.get_option_capacity() || (this.get_option_power() && !room.get_has_power())) {
-//			Log.d(TAG, "bad gdc options");
 			return false;
 		}
 		
-//		Log.d(TAG, "good room: " + location.get_room());
 		return true;
 	}
 	
-	
-	
-	
-	
-	protected QueryResult search_get_schedule_by_room() {
-		return (search_get_schedule_by_room(Constants.CSV_FEEDS_CLEANED));
+	private SortedSet<String> add_invalid_rooms_by_gdc_csv_feeds(final EventList eolist, SortedSet<String> rooms_to_remove) {
+		Event curr_event;
+		String curr_room_str;
+
+		Iterator<Event> itr = eolist.get_iterator();
+		while (itr.hasNext()) {
+			curr_event = itr.next();
+			curr_room_str = curr_event.get_location().get_room();
+			
+			if (Utilities.occur_on_same_day(curr_event.get_start_date(), this.start_date) && 
+				Utilities.times_overlap(curr_event.get_start_date(), curr_event.get_end_date(), this.start_date, this.end_date)) {
+				
+				rooms_to_remove.add(curr_room_str);
+			}
+		}
+		
+		return rooms_to_remove;
 	}
 	
-	protected QueryResult search_get_schedule_by_room(final EventList eolist) {
-		if (eolist == null) {
-			throw new IllegalArgumentException("Error: eolist cannot be null, search()");
-		}
-		
-		QueryResult query_result = new QueryResult(SearchType.GET_ROOM_DETAILS.get_enum_val(), this.get_option_search_building());
-		List<String> schedule = new ArrayList<String>();
-		
-		String course_schedule = this.get_current_course_schedule(query_result);
-		
-		Log.d(TAG, "Getting room schedule; using course schedule " + course_schedule);
+	private SortedSet<String> add_invalid_rooms_by_options(Building search_building, SortedSet<String> valid_rooms, SortedSet<String> rooms_to_remove) {		
+		Room curr_room;
+		String curr_room_str;
 
-		if (course_schedule == null) {
+		for (Iterator<String> itr = valid_rooms.iterator(); itr.hasNext(); ) {
+			curr_room_str = itr.next();
+			curr_room = search_building.get_room(curr_room_str);
 			
-			if (Utilities.str_is_gdc(this.get_option_search_building())) {
-				String event_name, start_time, end_time;
-				StringBuilder event_str = new StringBuilder(50);
-				
-				Iterator<Event> itr = eolist.get_iterator();
-				
-				String search_room = this.get_option_search_room();
-				if (search_room.equalsIgnoreCase(Constants.RANDOM)) {
-					Building search_building = Building.get_instance(this.mContext, Constants.GDC, Constants.COURSE_SCHEDULE_THIS_SEMESTER);
-					List<String> temp = new ArrayList<String>(search_building.get_keyset());
-					int random_index = new Random().nextInt(temp.size());
-					search_room = temp.get(random_index);
-				}
-
-				Event event;
-				while (itr.hasNext()) {
-					event = itr.next();
-
-					if (event.get_location().get_room().equals(search_room) &&
-							Utilities.occur_on_same_day(event.get_start_date(), this.start_date)) {
-						
-						event_name = event.get_event_name();
-						start_time = Utilities.get_time(event.get_start_date());	// Utilities.time_to_24h(Utilities.get_time(event.get_start_date()));
-						end_time = Utilities.get_time(event.get_end_date());		// Utilities.time_to_24h(Utilities.get_time(event.get_end_date()));
-						
-						event_str.append(event_name + "\n");
-						event_str.append("Start: " + start_time + "\n");
-						event_str.append("End: " + end_time + "\n");
-						event_str.append("\n");
-						
-						schedule.add(event_str.toString());
-						event_str.setLength(0);
-
-					}
-				}
+			if (rooms_to_remove.contains(curr_room_str)) {
+				continue;
 			}
 			
-			query_result.set_results(schedule);
-			return query_result;
+			if (Utilities.str_is_gdc(this.get_option_search_building()) && !is_valid_gdc_room(curr_room)) {
+				rooms_to_remove.add(curr_room_str);
+			}
+			else {
+				if (curr_room.get_capacity() < this.get_option_capacity()) {
+					rooms_to_remove.add(curr_room_str);
+				}
+			}
+		}
+		
+		return rooms_to_remove;
+	}
+	
+	private SortedSet<String> add_invalid_rooms_by_course_schedule(Building search_building, SortedSet<String> valid_rooms, SortedSet<String> rooms_to_remove) {
+		final Calendar cal1 = Calendar.getInstance();
+		final Calendar cal2 = Calendar.getInstance();
+
+		int today = this.get_this_day_of_week();
+		Room curr_room;
+
+		for (String curr_room_str : valid_rooms) {
+			if (rooms_to_remove.contains(curr_room_str)) {
+				continue;
+			}
+						
+			curr_room = search_building.get_room(curr_room_str);
+			if (curr_room == null) {
+				continue;
+			}
+
+			Set<Event> courses = curr_room.get_events(today);
+
+			Date curr_start_date, curr_end_date;
+			for (Event curr_event : courses) {
+				curr_start_date = curr_event.get_start_date();
+				curr_end_date = curr_event.get_end_date();	
+
+				cal1.setTime(curr_start_date);
+				cal2.setTime(this.start_date);
+
+				cal1.set(Calendar.DAY_OF_YEAR, cal2.get(Calendar.DAY_OF_YEAR));
+				cal1.set(Calendar.YEAR, cal2.get(Calendar.YEAR));
+				curr_start_date = cal1.getTime();
+
+				cal1.setTime(curr_end_date);
+				cal2.setTime(this.end_date);
+
+				cal1.set(Calendar.DAY_OF_YEAR, cal2.get(Calendar.DAY_OF_YEAR));
+				cal1.set(Calendar.YEAR, cal2.get(Calendar.YEAR));
+				curr_end_date = cal1.getTime();
+
+				if (Utilities.times_overlap(curr_start_date, curr_end_date, this.start_date, this.end_date)) {
+					rooms_to_remove.add(curr_room_str);
+					break;
+				}
+			}
+		}
+
+		return rooms_to_remove;
+	}
+	
+//	private Building check_search_preconditions_and_get_building(QueryResult qr, Boolean search_during_long_sem) {
+//		
+//		String course_schedule = this.get_current_course_schedule(qr);
+//		if (course_schedule == null) {
+//			course_schedule = Constants.COURSE_SCHEDULE_THIS_SEMESTER;
+//			search_during_long_sem = Boolean.valueOf(false);
+//			
+//			Log.d(TAG, "Search precondition check, search during long semester is now false");
+//		}
+////		else if (!Utilities.is_valid_db_filename(course_schedule) && qr.get_search_type() == SearchType.GET_RANDOM_ROOM) {
+////			query_result.set_search_status(SearchStatus.SEARCH_ERROR);
+////			query_result.set_results(new ArrayList<String>());
+////			return query_result;
+////		}
+//		else if (!Utilities.is_valid_db_filename(course_schedule)) {
+//			throw new IllegalArgumentException("FATAL ERROR: invalid course schedule (" + course_schedule + ")");
+//		}
+//		
+//		Building search_building = Building.get_instance(this.mContext, this.get_option_search_building(), course_schedule);
+//		return search_building;
+//	}
+	
+
+/* TODO ############################### SEARCH - GET ROOM SCHEDULE ALGORITHM AND HELPERS ############################### */
+	
+	protected QueryResult search_get_room_schedule() {
+		return (search_get_room_schedule(Constants.CSV_FEEDS_CLEANED));
+	}
+
+	protected QueryResult search_get_room_schedule(final EventList eolist) {
+		
+		String search_building_str = this.get_option_search_building();
+		boolean searching_gdc = Utilities.str_is_gdc(search_building_str);
+		
+		QueryResult query_result = new QueryResult(SearchType.GET_ROOM_SCHEDULE, search_building_str);
+		Boolean search_is_during_long_semester = Boolean.valueOf(true);
+		
+		String course_schedule = this.get_current_course_schedule(query_result);
+		if (course_schedule == null) {
+			course_schedule = Constants.COURSE_SCHEDULE_THIS_SEMESTER;
+			search_is_during_long_semester = Boolean.valueOf(false);
 		}
 		else if (!Utilities.is_valid_db_filename(course_schedule)) {
-//			course_schedule = Constants.COURSE_SCHEDULE_THIS_SEMESTER;
 			throw new IllegalArgumentException("FATAL ERROR: invalid course schedule (" + course_schedule + ")");
 		}
 		
-		Building search_building = Building.get_instance(this.mContext, this.get_option_search_building(), course_schedule);
+//		Building search_building = check_search_preconditions_and_get_building(query_result, search_is_during_long_semester);
+		Building search_building = Building.get_instance(this.mContext, search_building_str, course_schedule);
 		if (search_building == null) {
 			query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
-			query_result.set_results(schedule);
+			query_result.set_results(new ArrayList<String>());
 			return query_result;
 		}
 		
-		Room search_room;
-		if (this.get_option_search_building().equals(Constants.RANDOM)) {
-			search_room = search_building.get_random_room();
-		}
-		else {
-			search_room = search_building.get_room(this.get_option_search_room());
-		}
-		
+		Room search_room = get_search_room(search_building);
 		if (search_room == null) {
 			query_result.set_search_status(SearchStatus.NO_INFO_AVAIL);
-			query_result.set_results(schedule);
+			query_result.set_results(new ArrayList<String>());
 			return query_result;
 		}
 		
-		int today = this.get_this_day_of_week();
-		Set<Event> all_events = search_room.get_events(today);
+		Log.d(TAG, "Get course sked: search during long semester is " + search_is_during_long_semester);
+
+		/* Actual searching begins here. */
 		
-		Calendar cal1 = Calendar.getInstance();
-		cal1.setTime(this.start_date);
-		int day_of_year = cal1.get(Calendar.DAY_OF_YEAR);
-		int year = cal1.get(Calendar.YEAR);
+		Set<Event> all_events = get_course_schedule_for_room(search_room, search_is_during_long_semester);
 		
-		for (Event event : all_events) {
-			cal1.setTime(event.get_start_date());
-			cal1.set(Calendar.DAY_OF_YEAR, day_of_year);
-			cal1.set(Calendar.YEAR, year);
-			event.set_start_date(cal1.getTime());
+		if (searching_gdc && eolist != null) {
+			all_events = add_gdc_csv_feed_events(eolist, all_events, search_room, search_is_during_long_semester);
 		}
 		
-//		if (all_events.size() <= 0) {
-//			query_result.set_search_status(SearchStatus.ROOM_FREE_ALL_DAY);
-//			query_result.set_results(schedule);
-//			return query_result;
-//		}
+		List<String> schedule = eventset_to_string(all_events);
+		
+		/* Search complete here. */
+
+		if (search_is_during_long_semester) {
+			if (schedule.size() <= 0) {
+				query_result.set_search_status(SearchStatus.ROOM_FREE_ALL_DAY);
+			}
+			else {
+				query_result.set_search_status(SearchStatus.SEARCH_SUCCESS);
+			}
+		}
+		
+		query_result.set_results(schedule);		
+		return query_result;
+	}
+
+	private Room get_search_room(Building search_building) {
+		String search_room_str = this.get_option_search_room();
+		if (!search_room_str.equals(Constants.RANDOM)) {
+			return (search_building.get_room(search_room_str));
+		}
+		return (search_building.get_random_room());
+	}
+	
+	private Set<Event> get_course_schedule_for_room(Room search_room, boolean search_is_during_long_semester) {
+		Set<Event> all_events;
+		if (search_is_during_long_semester) {
+			int today = this.get_this_day_of_week();
+			all_events = search_room.get_events(today);
+			
+			Calendar cal1 = Calendar.getInstance();
+			cal1.setTime(this.start_date);
+			int day_of_year = cal1.get(Calendar.DAY_OF_YEAR);
+			int year = cal1.get(Calendar.YEAR);
+			
+			for (Event event : all_events) {
+				cal1.setTime(event.get_start_date());
+				cal1.set(Calendar.DAY_OF_YEAR, day_of_year);
+				cal1.set(Calendar.YEAR, year);
+				event.set_start_date(cal1.getTime());
+			}
+		}
+		else {
+			all_events = new TreeSet<Event>();
+		}
+		
+		return all_events;
+	}
+	
+	private Set<Event> add_gdc_csv_feed_events(final EventList eolist, 
+			final Set<Event> all_events, final Room search_room, boolean search_is_during_long_semester) {
 		
 		boolean is_valid = true;
-		String event_name, start_time, end_time;
-		StringBuilder event_str = new StringBuilder(50);
+		Iterator<Event> itr = eolist.get_iterator();
 		
-		if (Utilities.str_is_gdc(this.get_option_search_building())) {
-			Iterator<Event> itr = eolist.get_iterator();
+		Event event;
+		while (itr.hasNext()) {
+			event = itr.next();
 			
-			Event event;
-			while (itr.hasNext()) {
-				event = itr.next();
+			if (
+//				event.get_location().get_room().equals(search_room.get_location().get_room()) &&
+				event.get_location().equals(search_room.get_location()) &&
+				Utilities.occur_on_same_day(event.get_start_date(), this.start_date)) {
 				
-				if (event.get_location().equals(search_room.get_location()) &&
-					Utilities.occur_on_same_day(event.get_start_date(), this.start_date)) {
-					
+				if (search_is_during_long_semester) {
 					/*
 					 * This loop IS necessary. The CSV feeds also list courses occurring, with their
 					 * names prefixed by the word "Registrar"; however, it also files extracurricular
@@ -1039,18 +966,27 @@ public class Query implements Parcelable {
 							break;
 						}
 					}
-					
-					if (is_valid) {
-						all_events.add(event);
-					}
-					
-					is_valid = true;
 				}
+				
+				if (is_valid) {
+					all_events.add(event);
+				}
+				
+				is_valid = true;					
 			}
 		}
 		
+		return all_events;
+	}
+	
+	private List<String> eventset_to_string(final Set<Event> eventset) {
+		List<String> schedule = new ArrayList<String>(eventset.size());
+		
+		String event_name, start_time, end_time;
+		StringBuilder event_str = new StringBuilder(50);
+		
 		Event prev_event = null;
-		for (Event event : all_events) {
+		for (Event event : eventset) {
 			event_name = event.get_event_name();
 			start_time = Utilities.get_time(event.get_start_date());	// Utilities.time_to_24h(Utilities.get_time(event.get_start_date()));
 			end_time = Utilities.get_time(event.get_end_date());		// Utilities.time_to_24h(Utilities.get_time(event.get_end_date()));
@@ -1074,17 +1010,8 @@ public class Query implements Parcelable {
 			schedule.add(event_str.toString());
 			event_str.setLength(0);
 		}
-
-		if (schedule.size() <= 0) {
-			query_result.set_search_status(SearchStatus.ROOM_FREE_ALL_DAY);
-		}
-		else {
-			query_result.set_search_status(SearchStatus.SEARCH_SUCCESS);
-		}
 		
-		query_result.set_results(schedule);
-		
-		return query_result;
+		return schedule;
 	}
 	
 /* ############################### END SEARCH ALGORITHMS ############################### */	
@@ -1102,12 +1029,12 @@ public class Query implements Parcelable {
 		private List<String> results;
 		private String message_status;
 		
-		private QueryResult(int search_type, final String building_name) {
+		private QueryResult(SearchType search_type, final String building_name) {
 			if (building_name == null || building_name.length() != Constants.BUILDING_CODE_LENGTH) {
 				throw new IllegalArgumentException();
 			}
 			
-			this.search_type = search_type;
+			this.search_type = search_type.get_enum_val();
 			this.building_name = building_name.toUpperCase(Constants.DEFAULT_LOCALE);
 			this.results = new ArrayList<String>();
 			this.message_status = SearchStatus.SEARCH_ERROR.toString();
@@ -1232,7 +1159,7 @@ public class Query implements Parcelable {
 	public enum SearchType {
 		
 		GET_RANDOM_ROOM		(0),
-		GET_ROOM_DETAILS	(1)
+		GET_ROOM_SCHEDULE	(1)
 		;
 		
 		private final int type;
